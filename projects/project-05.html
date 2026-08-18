@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 05 · On-Device Personal Memory Agent (SMIM) — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .video-embed {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid var(--gray-200, #E5E7EB);
+  }
+  .video-embed iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: 0;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 05</span>
+  </div>
+  <span class="num-badge">PROJECT 05</span>
+  <h1>SMIM — On-Device Personal Memory Agent</h1>
+  <div class="subtitle">Ambient Recall: 작성 중 맥락 감지 → 개인 문서에서 검증된 근거 카드 · 100% on-device · <b>2026 AI·SW중심대학 디지털 경진대회</b> SW부문</div>
+  <div class="stack">
+    <span class="tech">Electron</span>
+    <span class="tech">Native AI Runtime</span>
+    <span class="tech">granite-embedding-311m</span>
+    <span class="tech">Qwen 3B / 4B / 7B</span>
+    <span class="tech">LanceDB</span>
+    <span class="tech">Hybrid Retrieval (BM25 + Vec + RRF)</span>
+    <span class="tech">Cross-encoder Rerank</span>
+    <span class="tech">Corrective / Reflection Loop</span>
+    <span class="tech">Grounding Validator</span>
+    <span class="tech">pytest (150 cases · model-free)</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> Team Member (Retrieval &amp; Agent)</div>
+    <div><span class="label">Team</span> 이어인하다 · 5명 (AI · CS · EE · Design · Business)</div>
+    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026</div>
+    <div><span class="label">Domain</span> On-device Agent · Hybrid RAG · sLLM</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <img src="../assets/p05/overview.png"
+         alt="System Overview — Ambient Recall: 작성 중 텍스트 → Trigger → Hybrid Retrieval → sLLM 카드 생성 → Grounding-validated 근거 카드" />
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>지식 노동자는 <b>스치듯 본 자료를 다시 찾기 위해 주 5.3시간</b>을 검색·전환에 소비하고, 그 결과 <b>재생산에 소요되는 시간의 50% 이상</b>이 "이미 본 것을 다시 찾는" 과정에 낭비된다 (McKinsey · IDC).</p>
+    <p style="margin-top:10px;">기존 검색·챗 기반 도구는 <b>능동적으로 다시 꺼내주지 못하고</b>, 개인 문서를 클라우드로 올려야 해 <b>프라이버시·규제 리스크</b>가 크다. 필요한 것은 <b>작성 중인 맥락을 감지</b>해서 <b>원문 근거가 붙은 카드</b>를 <b>온디바이스</b>에서 스스로 꺼내주는 에이전트다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>사용자의 <b>작성 맥락 변화</b>를 감지해 관련 개인 문서를 <b>스스로 꺼내주는</b> Ambient Recall 파이프라인을 설계한다.</li>
+      <li>Sparse + Dense를 <b>안정적으로 융합</b>하고, 재랭킹·구조 신호까지 얹은 <b>Hybrid Retrieval</b>을 만든다.</li>
+      <li>생성된 카드가 <b>원문에 근거</b>하는지 검증하고, 저품질일 때 <b>스스로 교정/재생성</b>하는 이중 루프를 만든다.</li>
+      <li>Ollama/LanceDB가 없는 환경에서도 안전하게 리팩터링할 수 있는 <b>모델-프리 pytest 인프라</b>를 갖춘다.</li>
+    </ul>
+    <p style="margin-top:12px;color:var(--sub, #6B7280);font-size:0.9rem;">
+      * 팀 내 본인 담당은 <b>Retrieval 파이프라인 (Hybrid + Rerank + 구조신호)</b>과 <b>Agent 자기 교정 루프 (Corrective / Reflection / Grounding Validator)</b>이다. Electron UI·디자인·비즈니스 파트는 별도 팀원이 담당했다.
+    </p>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);margin-bottom:14px;">
+      전체 시스템은 <b>Electron Application + Native AI Runtime</b> 2-계층으로 나누어 UI 반응성과 AI 성능(CPU · GPU · Neural Engine)을 분리하고, <b>100% 온디바이스</b>로 개인 문서가 기기 밖으로 나가지 않도록 설계했다. 본인은 이 중 파란색으로 강조된 <b>Hybrid Retrieval</b>과 <b>Corrective / Reflection 루프 + Grounding Validator</b>를 담당했다.
+    </p>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p05/architecture.png"
+           alt="Architecture — Electron App (UI · Agent Orchestrator · Local Vector DB · pytest) + Native AI Runtime (Hybrid Retrieval · sLLM 카드 생성 · Grounding Validator · Ingest Pipeline). Retrieval + 자기 교정 루프가 본인 담당." />
+    </div>
+
+    <ul style="padding-left:18px;color:var(--gray-700);margin-top:20px;">
+      <li><b>Hybrid Retrieval (담당)</b> — <b>BM25 (키워드 · 수치 · 전문 용어)</b> + <b>Vector search (granite-embedding-311m · 768d)</b>를 <b>RRF (Cormack et al., 2009)</b>로 융합하고, <b>Cross-encoder re-ranker</b>로 Top-K를 최종 정렬. 여기에 <b>tier · recency · view</b> 등 구조 신호를 가중치로 얹어 관련도를 보정.</li>
+      <li><b>Corrective-RAG 외부 루프 (담당)</b> — Query Planning 단계에서 의도를 분해하고, Grounding 근거가 부족하면 <b>low_confidence</b>로 판정해 <b>쿼리 refinement</b>를 자동으로 재실행.</li>
+      <li><b>Reflection 내부 루프 (담당)</b> — sLLM이 카드마다 self-critique를 수행하고, 저점 카드는 <b>critique-guided regeneration</b>. 2회 재시도 후에는 keyword-based 카드로 폴백.</li>
+      <li><b>Grounding Validator (담당)</b> — 생성된 카드의 각 주장을 <b>원문 청크와 대조</b>해 근거가 없는 문장을 걸러내고, 근거가 약하면 카드를 <b>보류</b> 상태로 유지. Structured output으로 카드 스키마를 강제해 파싱 실패를 원천 차단.</li>
+      <li><b>Ingest Pipeline</b> — 개인 문서 → 파싱 → Semantic Chunking → granite-embedding-311m (768d) → LanceDB. 인덱싱은 사용자 노트 폴더 선택 → 권한 설정 → 로컬 sLLM 설치 순 온보딩으로 시작된다.</li>
+      <li><b>모델-프리 pytest suite (150 케이스 · 5 modules)</b> — RRF 공식, BM25 캐시, 쿼리 플래너, 재랭킹, 카드 검증을 <b>Ollama · LanceDB 없이</b> 검증해 리팩터링 안정성을 확보.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p05/flow_card.png"
+           alt="Card Generation Flow — Trigger → Query Plan → Hybrid Retrieval → Cross-encoder Re-ranker → sLLM Card 생성 → Grounding Validator → 사용자 카드. 외부 Corrective 루프(low_confidence → Query Refinement)와 내부 Reflection 루프(카드별 critique → 재생성)가 함께 돌아간다." />
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <div class="video-embed">
+        <iframe src="https://www.youtube.com/embed/LxGrkbosrJY"
+                title="SMIM — On-Device Personal Memory Agent Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
+        * SMIM 데모 영상 &mdash; 사용자가 노트를 작성하는 도중 SMIM이 <b>스스로 관련 개인 문서를 꺼내</b> 근거가 붙은 카드로 제안한다.
+      </p>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      본인이 담당한 <b>Hybrid Retrieval + 자기 교정 루프</b>는 자체 벤치(10-query · 40 chunks · 19 docs)에서 <b>vec-only baseline 대비 MRR@3 0.70 → 0.95, Hit@1 60% → 90%</b>로 개선되었다. BM25만 추가해도 (rrf_no_rerank) MRR@3 <b>+0.300</b>이 확보되었고, 여기에 구조 신호까지 얹은 full_current가 안정적인 최상단 점수를 냈다. E2E 파이프라인(26 카드)에서는 <b>81%가 sLLM 카드로 정상 생성</b>되었고 나머지 19%는 keyword 폴백으로 안전하게 처리되었다.
+    </p>
+
+    <div class="kpi-grid" style="margin-top:16px;">
+      <div class="kpi-tile">
+        <div class="k-label">MRR@3 (10-query bench)</div>
+        <div class="k-value">0.70 → 0.95</div>
+        <div class="k-sub">semantic_only → full_current · 자체 벤치</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Hit@1 / Hit@3</div>
+        <div class="k-value">60% → 90% / 100%</div>
+        <div class="k-sub">BM25 + Vec + Rerank + 구조신호</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">E2E 카드 생성률</div>
+        <div class="k-value">81%</div>
+        <div class="k-sub">sLLM 21/26 · keyword 폴백 5/26</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Latency (E2E)</div>
+        <div class="k-value">17.3s / p95 30.5s</div>
+        <div class="k-sub">Qwen2.5-7B · 온디바이스 (Ollama)</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Model-free pytest</div>
+        <div class="k-value">150 cases</div>
+        <div class="k-sub">5 modules · Ollama/LanceDB 없이</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Privacy</div>
+        <div class="k-value">100% on-device</div>
+        <div class="k-sub">개인 문서 · 임베딩 · 카드 모두 로컬</div>
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p05/perf_ablation.png"
+           alt="Phase 3 Ablation — 10-query 자체 벤치. semantic_only(vec-only) MRR@3 0.70 → rrf_no_rerank(BM25+vec) 1.00 → full_current(BM25+vec+rerank+구조신호) 0.95. BM25 기여 MRR@3 +0.300." />
+    </div>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-04.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">VLA Bi-manipulator</div>
+  </a>
+  <a class="next" href="project-06.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">Warehouse Robot Arm (6-DOF Replanning)</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

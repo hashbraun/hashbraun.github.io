@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Yunjae Cho · Portfolio</title>
+
+<!-- Pretendard (Korean-first sans) -->
+<link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<!-- JetBrains Mono for numeric / badge accents -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ TOP HEADER ============ -->
+<header class="top-header">
+  <div class="inner">
+    <div class="who">
+      <div class="avatar" style="background-image:url('photo.jpg');"></div>
+      <span>조윤재 (Yunjae Cho)</span>
+      <span class="role">· AI Engineer / Undergraduate Researcher</span>
+    </div>
+    <div class="grow"></div>
+    <div class="actions">
+      <button class="btn-ghost" onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText(location.href)">↗ URL 복사</button>
+      <a class="btn-ghost" href="mailto:devilishvoice@inha.edu">✉ Email</a>
+      <a class="btn-ghost" href="https://github.com/hashbraun" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 3-COLUMN LAYOUT ============ -->
+<div class="layout">
+
+  <!-- =============== BODY COLUMN =============== -->
+  <div class="col-body">
+
+    <!-- ===== HERO ===== -->
+    <section class="section hero" id="basic">
+      <div class="s-label">기본 정보</div>
+      <div class="s-body">
+        <div class="grid">
+          <div class="photo" style="background-image:url('photo.jpg');"></div>
+          <div>
+            <div class="name">조윤재</div>
+            <div class="role">AI Engineer · Undergraduate Researcher</div>
+            <div class="contact">
+              <span class="item">✉ <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a></span>
+              <span class="item">📱 010-2664-6276</span>
+              <span class="item">🐙 <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a></span>
+            </div>
+            <div class="intro">
+              <p>
+                인하대학교 인공지능공학과 학부생으로,
+                <b>실제로 배포 가능한 CV·VLA 시스템</b>을 만드는 데 관심이 많습니다.
+                모델 하나를 잘 학습시키는 것보다, 데이터 파이프라인부터 라벨링 툴, 정책 학습, 실기 로봇 평가까지
+                <b>end-to-end로 굴러가는 시스템</b>을 짜는 일을 좋아합니다.
+              </p>
+              <p>
+                현재 <b>HDC LABS (AI LAB)</b>에서 건설현장 안전 검출용 세미오토 라벨링 파이프라인과 TTS·모니터링 시스템을 담당하고 있으며,
+                과거에는 <b>RILS Lab</b>에서 SO-101 기반 bi-manipulator VLA 파이프라인을 실기 로봇 위에서 end-to-end로 다뤘습니다.
+              </p>
+              <p>
+                최근에는 <b>2026 INHA AI Challenge</b>에서 Cosmos-Predict3-Nano를 개인 참가로 튜닝해
+                action-conditioned world model의 액션 표현·주입 구조를 실험하고 있습니다
+                (리더보드 0.2454, action MAE ↔ leaderboard 상관 r=+0.820).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EXPERIENCE ===== -->
+    <section class="section" id="experience">
+      <div class="s-label">업무 경험</div>
+      <div class="s-body">
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              HDC LABS (AI LAB)
+              <span class="role">· AI Researcher</span>
+            </div>
+            <div class="entry-period">2026.03 ~ 재직 중</div>
+          </div>
+          <div class="entry-org">서울, Korea</div>
+          <div class="bracket">
+            <ul>
+              <li>사내 여러 파이프라인에 기여 — <b>건설현장 안전 검출용 세미오토 라벨링 툴</b>, <b>TTS 데이터셋 구축 파이프라인</b>, <b>데이터·모델 모니터링 / 검증 시스템</b> (프로젝트 상세는 아래 섹션 참고).</li>
+              <li>주 1회 <b>논문 리뷰 세미나</b> 참여.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              RILS Lab, 인하대학교
+              <span class="role">· 학부연구생 (지도: Prof. Woojin Ahn)</span>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.03</div>
+          </div>
+          <div class="entry-org">인천, Korea</div>
+          <div class="bracket">
+            <ul>
+              <li>실기 로봇 데이터 수집부터 정책 학습, closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간</b>을 end-to-end로 경험.</li>
+              <li>주간 세미나 및 <b>Physical AI Hackathon</b> 참여.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section class="section" id="projects">
+      <div class="s-label">프로젝트</div>
+      <div class="s-body">
+
+        <!-- 1 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              Smart-Elevator CCTV 자동 라벨링 시스템
+              <a class="more" href="projects/project-01.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.04</div>
+          </div>
+          <div class="entry-org">with <b>현대엘리베이터</b> · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>탑뷰(top-down) 4K CCTV 도메인의 학습 데이터 확보를 위한 <b>풀스택 라벨링 툴</b>.</li></ul>
+            <div class="bhead">[기존 문제점]</div>
+            <ul>
+              <li>탑뷰 시점은 COCO pretrained detector가 사실상 무용지물 → 수작업 라벨링 비용 폭증.</li>
+              <li>SAM2의 centroid-point prompting은 초기 마스크가 불안정하면 클립 전체에 드리프트 누적.</li>
+            </ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>YOLO11m-seg 도메인 파인튜닝</b> (19K frames · 241 seqs).</li>
+              <li><b>Polygon-Mask Prompting</b>으로 SAM2 초기 마스크 앵커 재설계.</li>
+              <li><b>Active Learning 루프</b> (저신뢰 프레임 4× oversample + replay).</li>
+              <li>FastAPI + React/Vite + Docker + SLURM + NAS 기반 <b>다중 사용자 웹 툴 배포</b>.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li>YOLO11m-seg <b>Box mAP50 = 0.978 · Mask mAP50 = 0.978</b>.</li>
+              <li>SAM2 tracking IoU <b>+55.4pp</b> (3 × 60-frame clip 평균).</li>
+              <li>Clicks/frame <b>7 → 2</b>, 60-frame clip 라벨링 시간 <b>30 min → 4 min</b>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              건설안전 검출 세미오토 라벨링 툴
+              <a class="more" href="projects/project-02.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2026.04 ~ 재직 중</div>
+          </div>
+          <div class="entry-org">with <b>HDC LABS</b> · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>건설현장 CCTV용 10-class 중장비 / 작업자 검출기 개선 + 사내 세미오토 라벨링 툴 (FastAPI + Docker + SLURM) 배포.</li></ul>
+            <div class="bhead">[기존 문제점]</div>
+            <ul>
+              <li>소수 클래스(pump car, RMC 등) F1이 사실상 무의미한 수준.</li>
+              <li>학습 val-mAP가 실측 성능과 어긋나는 metric–reality 괴리.</li>
+            </ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li>Scene-level 3-way split + 소수 클래스 val/test 강제 할당.</li>
+              <li>12 → 10 클래스 (signalman → person 병합, check → 신뢰도 기반 후처리 룰).</li>
+              <li><b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 레시피 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>, <code>close_mosaic=30</code>).</li>
+              <li>배포 판정 지표를 <b>poc_eval per-class F1</b>로 이동.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li>Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>.</li>
+              <li>포화 클래스인 window는 <b>0.84 → 0.72</b>로 통제된 트레이드오프.</li>
+              <li><b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              Action-Conditioned Video Generation World Model
+              <a class="more" href="projects/project-03.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2026.07 ~ 2026.08</div>
+          </div>
+          <div class="entry-org"><b>2026 INHA AI Challenge</b> · Independent Entry</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>첫 프레임과 joint-action 시퀀스가 주어졌을 때 로봇의 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>.</li></ul>
+            <div class="bhead">[기존 문제점]</div>
+            <ul>
+              <li>Cosmos-Predict3-Nano 프리트레인 action distribution과 태스크의 절대 joint-angle 표현 사이의 방향성 mismatch.</li>
+              <li>LoRA 소자 튜닝만으로는 리더보드 유의한 개선 어려움.</li>
+            </ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>Action Injection Module</b> (<code>action_proj_in/out</code> + action-modality embedding) 직접 학습.</li>
+              <li><b>LoRA rank 32</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>) + MLP (<code>gate/up/down_proj</code>) 파인튜닝.</li>
+              <li>액션 표현을 <b>End-Effector delta + gripper [0,1]</b> 정규화로 재설계.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li>Action Injection <b>MAE −43.2%</b>, LoRA <b>−8.6%</b>, EE-Delta <b>−8.5%</b>.</li>
+              <li>최종 리더보드 <b>0.2454</b> (v5_base, delta, gs=5.0, 50 steps).</li>
+              <li>Action MAE ↔ 리더보드 상관 <b>r = +0.820</b> 검증.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              VLA Imitation Learning Bi-manipulator
+              <a class="more" href="projects/project-04.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.02</div>
+          </div>
+          <div class="entry-org">Undergraduate Research @ <b>RILS Lab</b> · Team Leader</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>RGB-only imitation policy의 <b>location memorization</b>과 <b>pose hallucination</b>을 완화하는 bi-manipulator VLA 정책.</li></ul>
+            <div class="bhead">[담당 업무]</div>
+            <ul>
+              <li>Teleoperation rig 세팅 · <b>SO-101 시연 데이터 수집</b> · 에피소드 큐레이션 · 정책 학습 · closed-loop 평가.</li>
+              <li>비주얼 경로에 <b>3D Point-Cloud 임베딩</b> 주입 (FPS로 균일 커버리지 확보).</li>
+              <li>top / front / wrist 3-camera + proprioceptive state + <b>프레임-액션 temporal context</b> 융합.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>실기 로봇 데이터 수집 ~ closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간</b>을 end-to-end로 경험.</li></ul>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              On-Device Personal Memory Agent
+              <a class="more" href="projects/project-05.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2026.07 ~ 2026.08</div>
+          </div>
+          <div class="entry-org"><b>SW중심대학 사업단</b> 공모전 · Agent Developer</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>온디바이스 개인 지식을 다루는 <b>Agentic RAG 시스템</b>.</li></ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>Corrective-RAG</b> 외부 루프 (LLM retrieval eval → query refinement → 전체 재-ingest 폴백).</li>
+              <li><b>Reflection</b> 내부 루프 (카드별 LLM 1~5 스코어 → 저점만 critique-guided 재생성 → 키워드 기반 폴백).</li>
+              <li><b>Hybrid Retrieval (RRF)</b> BM25 + vector, contextual chunking + MiniLM cross-encoder rerank.</li>
+              <li><b>Query Planning</b> — 문서 타입 라우팅 + LLM relevance 필터.</li>
+              <li>Ollama·LanceDB 없이도 돌아가는 <b>model-free pytest 40+ 케이스</b>.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li>커스텀 30-쿼리 벤치마크에서 single-hop <b>Hit@1 67% → 73%</b>, multi-hop <b>Recall@3 70% → 80%</b>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              6-DOF Robot Arm · Dynamic Obstacle-Aware Path Replanning
+              <a class="more" href="projects/project-06.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.08 ~ 2025.12</div>
+          </div>
+          <div class="entry-org">인공지능종합설계 팀프로젝트 · UR5e (Gazebo Sim) · 3인 · Team Member</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>Gazebo 상 UR5e에서 <b>동적 장애물이 실행 중인 궤적으로 들어오는 상황</b>을 감지·회피하는 반응형 리플래닝 파이프라인.</li></ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li>Depth camera(Sim) → PointCloud → <b>OctoMap (OccupancyMapUpdater)</b> → Planning Scene 반영.</li>
+              <li>MoveIt 2 + <b>RRT-Connect (OMPL)</b> + <b>Continuous Collision Check</b>로 궤적 수준 미래 충돌 예측.</li>
+              <li><b>지도 데이터량 변화(bytes-diff, τ≈160)</b> 트리거의 <b>Monitor → Detect → Stop → Back-off → Replan → Resume</b> Recovery FSM.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>Perception–Planning–Control–Recovery FSM 4단이 결합된 반응형 리플래닝을 Gazebo UR5e에서 end-to-end 시연 (예: <span style="font-family:'JetBrains Mono',monospace;">14615→14455(Δ160)</span> 감지 → replan SUCCESS, 5회 반복 3/5 성공).</li></ul>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              AGI을 활용한 영상 데이터 오토라벨링 (Mowed / Unmowed)
+              <a class="more" href="projects/project-07.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.04 ~ 2025.09</div>
+          </div>
+          <div class="entry-org">산학협력 · with <b>한국로봇융합연구원 (KIRO)</b> · 참여연구원 (인하대 학사)</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>자율 예초 로봇용 <b>산길 이미지</b>에서 <b>예초 완료(Mowed) / 미예초(Unmowed) 영역</b>을 학습 없이 픽셀 단위로 자동 라벨링.</li></ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>Stage 1: GPT-4o-mini (OpenRouter)</b>로 이미지별 <b>클래스 목록 동적 추출</b> (예: Road/Mowed/Unmowed/Sky/Tree/Others).</li>
+              <li><b>Stage 2: SAM (vit_h)</b>를 <b>dual-config</b>(세밀 32pt + 큰영역 16pt)로 마스크 생성 후 <b>IoU 0.7 dedup</b>.</li>
+              <li><b>Stage 3-4: GPT-4o-mini per-mask 분류 + DBSCAN (eps=0.1) 병합 + MORPH_CLOSE</b>로 인접 마스크를 하나의 영역으로 통합.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>SAM 원본 <b>100개 → 71개(IoU dedup) → 클래스 분류 → DBSCAN 병합</b>으로 이미지당 <b>6~15개 마스크</b>의 사용 가능한 오토라벨을 학습 없이 확보.</li></ul>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              CV AI Agent · VLM Video Action Recognition
+              <a class="more" href="projects/project-08.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.04</div>
+          </div>
+          <div class="entry-org">Qwen3-VL · Zero training · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>전용 action recognizer 학습 없이 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>(15 categories)로 변환.</li></ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li>Qwen3-VL <b>structured output</b> + constraint-aware 프롬프트 엔지니어링 (액션 정의, 우선순위, 가시성, ≥5s 임계).</li>
+              <li><b>Adaptive ffmpeg downsampling</b> 전처리로 장시간 클립 OOM 방지, SLURM 전 데이터셋 배치 처리.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>학습 없이도 신뢰 가능한 액션 세그먼트를 배치 처리 가능한 파이프라인으로 안착.</li></ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <section class="section" id="skills">
+      <div class="s-label">전문 분야</div>
+      <div class="s-body">
+
+        <div class="subhead">주요 스택</div>
+        <div class="pill-group">
+          <span class="pill primary">Python</span>
+          <span class="pill primary">PyTorch</span>
+          <span class="pill primary">Computer Vision</span>
+          <span class="pill primary">VLA / VLM</span>
+        </div>
+
+        <div class="subhead">ML / DL</div>
+        <div class="pill-group">
+          <span class="pill">Hugging Face (Transformers)</span>
+          <span class="pill">Diffusers</span>
+          <span class="pill">PEFT / LoRA</span>
+          <span class="pill">Scikit-learn</span>
+          <span class="pill">TensorFlow</span>
+          <span class="pill">Ultralytics YOLO</span>
+          <span class="pill">SAM2 / SAM3</span>
+        </div>
+
+        <div class="subhead">Robotics / Simulation</div>
+        <div class="pill-group">
+          <span class="pill">LeRobot</span>
+          <span class="pill">ROS2 (Humble)</span>
+          <span class="pill">Gazebo</span>
+          <span class="pill">Isaac Sim</span>
+          <span class="pill">MoveIt2 / RViz2</span>
+          <span class="pill">RRT-Connect (OMPL)</span>
+          <span class="pill">FCL</span>
+          <span class="pill">OctoMap</span>
+        </div>
+
+        <div class="subhead">Data / Retrieval</div>
+        <div class="pill-group">
+          <span class="pill">NumPy</span>
+          <span class="pill">Pandas</span>
+          <span class="pill">Matplotlib</span>
+          <span class="pill">LanceDB</span>
+          <span class="pill">BM25 (rank-bm25)</span>
+          <span class="pill">Cross-encoder rerank</span>
+        </div>
+
+        <div class="subhead">Backend / Infra</div>
+        <div class="pill-group">
+          <span class="pill">FastAPI</span>
+          <span class="pill">Docker</span>
+          <span class="pill">SLURM</span>
+          <span class="pill">Linux / SSH</span>
+          <span class="pill">MySQL</span>
+          <span class="pill">Firebase</span>
+          <span class="pill">Node.js</span>
+          <span class="pill">Conda</span>
+          <span class="pill">Git</span>
+          <span class="pill">WSL2</span>
+        </div>
+
+        <div class="subhead">Frontend</div>
+        <div class="pill-group">
+          <span class="pill">React</span>
+          <span class="pill">TypeScript</span>
+          <span class="pill">Vite</span>
+          <span class="pill">Figma</span>
+        </div>
+
+        <div class="subhead">Programming Languages</div>
+        <div class="pill-group">
+          <span class="pill">Python</span>
+          <span class="pill">C++</span>
+          <span class="pill">Java</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EDUCATION ===== -->
+    <section class="section" id="education">
+      <div class="s-label">학력</div>
+      <div class="s-body">
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              인하대학교
+              <span class="role">· 인공지능공학과 학사</span>
+            </div>
+            <div class="entry-period">2021.03 ~ 2027.02 (예정)</div>
+          </div>
+          <div class="entry-org">인천, Korea</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== AWARDS ===== -->
+    <section class="section" id="awards">
+      <div class="s-label">수상 및 활동</div>
+      <div class="s-body">
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">탄소중립 혁신 아카데미 5기 <span class="role">· 최우수상 (1위)</span></div>
+            <div class="entry-period">2025.08 ~ 2025.12</div>
+          </div>
+          <div class="entry-org">AI Lead · 기업 멘토: DesignedAI</div>
+          <div class="bracket">
+            <ul>
+              <li>온디바이스 NPU 추론을 목표로 하는 <b>건설현장 안전 모니터링 시스템</b> 개발.</li>
+              <li><b>YOLOv8m-seg</b> 중장비 검출기 파인튜닝 (공공 데이터셋, <b>mAP50 ≈ 0.90</b>) + <b>작업 반경 룰</b> 주입으로 위험 구역 인식.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">인하대학교 학과 학생회장 <span class="role">· 봉사 장학금</span></div>
+            <div class="entry-period">2025.03 ~ 2025.12</div>
+          </div>
+          <div class="entry-org">Student Association, Inha University</div>
+          <div class="bracket">
+            <ul>
+              <li>학기말 총회 규모를 <b>10명 → 70명+</b>으로 확장 (스피커 시리즈 — 대학원생·인턴·창업자·교환학생).</li>
+              <li><b>학과 스튜디오 라운지</b> 신설 및 학생회 기반 세팅.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">13th i-STARTUP LAB Accelerating Program <span class="role">· Team Leader / Presenter</span></div>
+            <div class="entry-period">2025.05 ~ 2025.07</div>
+          </div>
+          <div class="entry-org">Context-aware collaboration tool (React · Firebase · ChatGPT API)</div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">Google Developer Groups on Campus INHA <span class="role">· Core Member, BD Lead</span></div>
+            <div class="entry-period">2024.09 ~ 2025.07</div>
+          </div>
+          <div class="entry-org">LINC 3.0 · SW중심대학 사업단</div>
+          <div class="bracket">
+            <ul>
+              <li>16일 · 40명 규모 해커톤 기획 및 운영.</li>
+              <li><b>DevSprint 2025</b> (3-week MVP program) 설계·운영 — 4팀 end-to-end 관리.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">AWS Cloud Club INHA 3rd <span class="role">· Member</span></div>
+            <div class="entry-period">2024.09 ~ 2024.12</div>
+          </div>
+          <div class="entry-org">Taggle (preference-collection web/app) 백엔드 기여</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== TEACHING ===== -->
+    <section class="section" id="teaching">
+      <div class="s-label">Teaching</div>
+      <div class="s-body">
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">인하대학교 · Database / Computer Vision <span class="role">· Teaching Assistant</span></div>
+            <div class="entry-period">2025.03 ~ 2025.12</div>
+          </div>
+          <div class="bracket">
+            <ul>
+              <li>학부 3학년 실습 세션 보조.</li>
+              <li>실습 과제 코드 리뷰 및 디버깅 질의응답.</li>
+              <li>실습 자료(예제 코드·데이터셋) 관리 및 이슈 대응.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">해솔수학학원 <span class="role">· 중등 수학 강사</span></div>
+            <div class="entry-period">2025.03 ~ 2025.07</div>
+          </div>
+          <div class="bracket">
+            <ul>
+              <li><b>시험대비 · 일반 수업 · 선행학습</b>을 모두 담당하며 학생별 학습 단계에 맞춘 수업 진행.</li>
+              <li>담당 학생들의 시험 성적을 <b>평균 20~30% 향상</b>시켰으며, 개별 사례로 <b>15점대 → 60점대</b>까지 끌어올린 경험 보유.</li>
+              <li>학생·학부모와 정기 커뮤니케이션을 통해 학습 목표와 진도를 조율.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== OTHERS ===== -->
+    <section class="section" id="others">
+      <div class="s-label">기타</div>
+      <div class="s-body">
+
+        <div class="subhead">Others (개인 프로젝트)</div>
+        <div class="bracket">
+          <ul>
+            <li>LLM 기반 크로스컬처 커뮤니케이션 피드백 서비스 (OpenAI API, Redux)</li>
+            <li>Crack Detection & Length/Width Estimation (SegFormer, Skeleton Algorithm)</li>
+            <li>Sequence-to-Sequence NMT (RNN Encoder-Decoder, Attention)</li>
+            <li>IMDB 감성 분석 (RNN, LSTM, GRU · PyTorch, TorchText)</li>
+            <li>IMDB 감성 분류기 LoRA 파인튜닝 (Hugging Face Transformers, PEFT)</li>
+            <li>비선형 데이터 분류 · Feature Mapping · Kernelized K-Means (NumPy)</li>
+            <li>ControlNet + Stable Diffusion 기반 이미지 컬러화 (Diffusers, PEFT)</li>
+            <li>시계열 기상 데이터 이상 이벤트 검출 (NumPy, Pandas)</li>
+          </ul>
+        </div>
+
+        <div class="subhead" style="margin-top:22px;">외국어 · 자격증</div>
+        <div class="bracket">
+          <ul>
+            <li><b>OPIc IM1</b> (2026.03)</li>
+            <li><b>SQLD</b> (2025.05)</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- =============== RIGHT SIDE NAV =============== -->
+  <aside class="col-nav">
+    <nav class="side-nav" id="sideNav">
+      <a href="#basic">기본 정보</a>
+      <a href="#experience">업무 경험</a>
+      <a href="#projects">프로젝트</a>
+      <a href="#skills">전문 분야</a>
+      <a href="#education">학력</a>
+      <a href="#awards">수상 및 활동</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#others">기타</a>
+    </nav>
+  </aside>
+
+</div>
+
+<!-- ============ CONTACT FAB ============ -->
+<a class="contact-fab" href="mailto:devilishvoice@inha.edu">💬 연락하기</a>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+<!-- ============ SCROLL-SPY ============ -->
+<script>
+  (function () {
+    const links = document.querySelectorAll('#sideNav a');
+    const map = {};
+    links.forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) map[id] = { link: a, el };
+    });
+    function onScroll() {
+      const y = window.scrollY + 120;
+      let current = null;
+      for (const id in map) {
+        if (map[id].el.offsetTop <= y) current = id;
+      }
+      links.forEach(a => a.classList.remove('active'));
+      if (current && map[current]) map[current].link.classList.add('active');
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
+</body>
+</html>

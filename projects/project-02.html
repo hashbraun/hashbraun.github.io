@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 02 · Semi-Auto Labeling (HDC LABS) — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 02</span>
+  </div>
+  <span class="num-badge">PROJECT 02</span>
+  <h1>Semi-Auto Labeling Tool with Construction-Safety Detector</h1>
+  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class heavy-equipment / worker detection</div>
+  <div class="stack">
+    <span class="tech">YOLO26x</span>
+    <span class="tech">imgsz 1280</span>
+    <span class="tech">FastAPI</span>
+    <span class="tech">Docker</span>
+    <span class="tech">SLURM</span>
+    <span class="tech">Scene-level Split</span>
+    <span class="tech">Augmentation Recipe</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> AI Researcher</div>
+    <div><span class="label">Period</span> Apr. 2026 – Present</div>
+    <div><span class="label">Domain</span> CV · Long-tail Detection · Labeling Ops</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <div class="placeholder">
+      <div class="type-badge">PNG</div>
+      <div class="label-line">System Overview &mdash; Seed labels → Detector → Semi-auto labeling tool → Human review → Retrain</div>
+      <div class="fname">assets/p02/overview.png</div>
+      <div class="hint">전체 파이프라인 다이어그램 자리</div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>건설현장 CCTV용 12-클래스 중장비·작업자 검출기가 있었지만, 소수 클래스(펌프카·RMC 등)에 대한 성능이 사실상 무의미한 수준이었고, <b>대규모 라벨을 소량 시드로부터 부트스트랩</b>하는 사내 세미오토 라벨링 툴(FastAPI + Docker + SLURM)에 그대로 얹기 어려웠다.</p>
+    <p style="margin-top:10px;">또한 학습 val-mAP가 실측 성능과 어긋나는, <b>metric-과 real-world 사이의 괴리</b>가 있었다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>소수 클래스를 살리는 방향으로 <b>학습 데이터 분할과 클래스 스킴</b>을 재설계한다.</li>
+      <li>롱테일에 맞는 <b>백본·해상도·증강 레시피</b>를 결정한다.</li>
+      <li><b>배포 판정 지표를 재정의</b>하여, 사내 배포 결정을 리더보드 편향 없이 내릴 수 있게 한다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>데이터 스플릿 재구성</b> — scene-level 3-way split을 만들고, 소수 클래스는 val/test에 강제 할당해 저평가되지 않도록 함.</li>
+      <li><b>클래스 스킴 12→10</b> — <i>signalman</i>은 <i>person</i>으로 병합, <i>check</i>는 신뢰도 기반 후처리 룰로 오프로딩.</li>
+      <li><b>YOLO26x · imgsz 1280</b> 백본 채택 + 롱테일 구제용 증강 레시피 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>, <code>close_mosaic=30</code>).</li>
+      <li><b>배포 판정을 poc_eval per-class F1로 이동</b> — scene-held-out val은 본질적으로 어렵기 때문에, 별도의 holdout <code>poc_eval</code> 세트를 acceptance gate로 사용.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <div class="placeholder">
+        <div class="type-badge">PNG</div>
+        <div class="label-line">Architecture &mdash; Scene-split → YOLO26x@1280 → poc_eval F1 gate → Semi-auto labeling deploy</div>
+        <div class="fname">assets/p02/architecture.png</div>
+      </div>
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <div class="placeholder">
+          <div class="type-badge gif">GIF</div>
+          <div class="label-line">Long-tail rescue &mdash; pump car detection before/after</div>
+          <div class="fname">assets/p02/demo_pump.gif</div>
+        </div>
+      </div>
+      <div class="media">
+        <div class="placeholder">
+          <div class="type-badge gif">GIF</div>
+          <div class="label-line">Semi-auto labeling tool UX</div>
+          <div class="fname">assets/p02/demo_tool.gif</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <div class="kpi-grid">
+      <div class="kpi-tile">
+        <div class="k-label">Pump Car F1</div>
+        <div class="k-value">0.00 → 0.57</div>
+        <div class="k-sub">poc_eval per-class</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">RMC F1</div>
+        <div class="k-value">0.20 → 0.72</div>
+        <div class="k-sub">poc_eval per-class</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Person F1</div>
+        <div class="k-value">0.50 → 0.75</div>
+        <div class="k-sub">poc_eval per-class</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Window (saturated)</div>
+        <div class="k-value">0.84 → 0.72</div>
+        <div class="k-sub">controlled trade-off</div>
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <div class="placeholder">
+        <div class="type-badge">PNG</div>
+        <div class="label-line">Performance Chart &mdash; per-class F1 (baseline vs v1 attempt 2)</div>
+        <div class="fname">assets/p02/perf_f1.png</div>
+      </div>
+    </div>
+
+    <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
+      <b>v1 attempt 2</b> weight가 배포 가중치로 채택되어 사내 세미오토 라벨링 툴에 얹혀 운영되고 있다.
+    </p>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-01.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">Smart-Elevator Auto-Labeling</div>
+  </a>
+  <a class="next" href="project-03.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">Action-Conditioned Video Generation</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

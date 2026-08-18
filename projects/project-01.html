@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 01 · Smart-Elevator Auto-Labeling — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 01</span>
+  </div>
+  <span class="num-badge">PROJECT 01</span>
+  <h1>Automated Labeling System for Smart-Elevator CCTV</h1>
+  <div class="subtitle">with <b>Hyundai Elevator</b> · Top-down CCTV domain</div>
+  <div class="stack">
+    <span class="tech">YOLO11m-seg</span>
+    <span class="tech">SAM2</span>
+    <span class="tech">Polygon-Mask Prompting</span>
+    <span class="tech">Active Learning</span>
+    <span class="tech">FastAPI</span>
+    <span class="tech">React/Vite</span>
+    <span class="tech">Docker</span>
+    <span class="tech">SLURM</span>
+    <span class="tech">NAS</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> AI Researcher</div>
+    <div><span class="label">Period</span> Jul. 2025 – Apr. 2026</div>
+    <div><span class="label">Domain</span> CV · Segmentation · Labeling Ops</div>
+  </div>
+</div>
+
+<section>
+
+  <!-- OVERVIEW MEDIA -->
+  <div class="media">
+    <img src="../assets/p01/overview.png"
+         alt="System Overview — CCTV → YOLO11m-seg → SAM2 → Labeling UI (with Active-Learning feedback loop)" />
+  </div>
+
+  <!-- STAR: SITUATION -->
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>스마트 엘리베이터 프로젝트에서 요구되는 학습 데이터는 <b>탑뷰(top-down) 시점의 4K CCTV 영상</b>이었다.
+    이 도메인은 COCO 계열 pretrained detector가 가정하는 시점(정면·측면)과 완전히 달라 <b>기성 모델의 검출 성능이 심각하게 떨어지고</b>, 그에 따라 수작업 라벨링 비용이 폭발적으로 증가하는 구조적 병목이 있었다.</p>
+    <p style="margin-top:10px;">SAM2 기반의 마스크 전파(video propagation)를 사용하더라도, <b>centroid-point prompting</b>은 마스크 초기 상태가 부정확할 때 클립 전체에 걸쳐 드리프트가 누적되는 불안정성을 보였다.</p>
+  </div>
+
+  <!-- STAR: TASK -->
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>탑뷰 도메인에 특화된 <b>세그멘테이션 검출기</b>를 확보한다.</li>
+      <li>SAM2의 마스크 전파 파이프라인을 <b>안정화</b>하여 클립 전체의 트래킹 품질을 끌어올린다.</li>
+      <li>모델 결과를 사람이 실제로 <b>다중 사용자 환경</b>에서 검수·수정할 수 있는 웹 라벨링 툴로 배포한다.</li>
+      <li>초기 라벨 소량으로 시작해 <b>모델이 데이터를 스스로 확장</b>하는 사이클을 갖춘다.</li>
+    </ul>
+  </div>
+
+  <!-- STAR: ACTION (with architecture + demo placeholders) -->
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>YOLO11m-seg 파인튜닝</b> — 4K 탑뷰 엘리베이터 영상 <b>19K 프레임 · 241 시퀀스</b>에 대해 탑뷰 도메인 적응.</li>
+      <li><b>Polygon-Mask Prompting</b> — SAM2의 centroid-point prompting을 폴리곤 마스크 프롬프트로 교체해, 검증된 초기 마스크가 propagation의 앵커 역할을 하도록 재설계.</li>
+      <li><b>Active Learning 루프</b> — 저신뢰 프레임을 자동 큐잉하고 <b>4× 오버샘플링 + replay</b>로 지속 재학습.</li>
+      <li><b>풀스택 배포</b> — FastAPI + React/Vite + Docker + SLURM + NAS mount 기반 다중 사용자 웹 툴로 사내 배포.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p01/architecture.png"
+           alt="Architecture — YOLO11m-seg → Polygon Prompt Builder → SAM2 Propagation → Active-Learning Queue" />
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <img src="../assets/p01/demo_centroid.gif"
+             alt="Centroid Prompt (baseline) — drift over 60 frames" />
+      </div>
+      <div class="media">
+        <img src="../assets/p01/demo_polygon.gif"
+             alt="Polygon-Mask Prompt (ours) — stable propagation" />
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p01/tool_ux.gif"
+           alt="Web Labeling Tool UX — 7 clicks/frame → 2 clicks/frame" />
+    </div>
+  </div>
+
+  <!-- STAR: RESULT -->
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <div class="kpi-grid">
+      <div class="kpi-tile">
+        <div class="k-label">YOLO11m-seg</div>
+        <div class="k-value">0.978</div>
+        <div class="k-sub">Box mAP50 · Mask mAP50</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">SAM2 Tracking IoU</div>
+        <div class="k-value">+55.4 pp</div>
+        <div class="k-sub">avg. across 3 × 60-frame test clips</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Clicks / Frame</div>
+        <div class="k-value">7 → 2</div>
+        <div class="k-sub">annotator effort</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Time / 60-frame clip</div>
+        <div class="k-value">30 → 4 min</div>
+        <div class="k-sub">end-to-end labeling</div>
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p01/perf_iou.png"
+           alt="Tracking IoU — Centroid vs Polygon-Mask Prompt (avg +55.4pp)" />
+    </div>
+
+    <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
+      최종적으로 사내 <b>다중 사용자 웹 라벨링 툴</b>로 배포되어, 탑뷰 CCTV 도메인에 대한 학습 데이터 확보 파이프라인의 인력 병목을 실질적으로 완화하였다.
+    </p>
+  </div>
+</section>
+
+<!-- Prev / Next -->
+<div class="pager">
+  <a class="disabled" href="#">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">—</div>
+  </a>
+  <a class="next" href="project-02.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">Semi-Auto Labeling &mdash; HDC LABS</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

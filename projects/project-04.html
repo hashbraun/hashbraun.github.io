@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 04 · VLA Bi-manipulator (RILS Lab) — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 04</span>
+  </div>
+  <span class="num-badge">PROJECT 04</span>
+  <h1>VLA Imitation Learning Bi-manipulator</h1>
+  <div class="subtitle">Undergraduate Research @ <b>RILS Lab</b> (Prof. Woojin Ahn) · SO-101</div>
+  <div class="stack">
+    <span class="tech">LeRobot</span>
+    <span class="tech">SO-101</span>
+    <span class="tech">Teleoperation</span>
+    <span class="tech">Point-Cloud (FPS)</span>
+    <span class="tech">Multi-Camera Fusion</span>
+    <span class="tech">Imitation Learning</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> Team Leader</div>
+    <div><span class="label">Period</span> Jul. 2025 – Feb. 2026</div>
+    <div><span class="label">Domain</span> VLA · Manipulation · Real-Robot</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <img src="../assets/p04/overview.png"
+         alt="System Overview — Teleop Rig → SO-101 Bi-arm → Multi-modal Demos → VLA Policy → Closed-loop Rollout" />
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>RGB만 사용하는 imitation policy는 <b>물체 위치 암기(location memorization)</b>와 <b>포즈 헛발(pose hallucination)</b>에 취약해, 학습 분포에서 벗어난 배치에서 실패가 잦다.</p>
+    <p style="margin-top:10px;">Bi-manipulator 세팅에서는 두 팔의 협조가 필요해 이 문제가 더 뚜렷해진다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>실기 <b>teleoperation rig 구축</b>과 SO-101 시연 데이터 수집·큐레이션 파이프라인을 세운다.</li>
+      <li>비전-액션 매핑에 <b>기하학적 근거(3D)</b>를 주입한다.</li>
+      <li>다중 카메라 스트림과 proprioceptive state를 <b>시간 축과 함께 융합</b>한다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>Teleop rig & 데이터 수집</b> — 리그 세팅, on-robot SO-101 시연 수집, 에피소드 큐레이션, 정책 학습, closed-loop 평가까지 end-to-end 담당.</li>
+      <li><b>3D Point-Cloud embedding 주입</b> — 비주얼 경로에 point-cloud 임베딩을 주입해 vision–action 매핑을 명시적으로 grounding. <b>FPS (Farthest Point Sampling)</b>로 균일한 기하학적 커버리지 확보 (군집 편향된 랜덤 샘플링 대신).</li>
+      <li><b>Multi-camera + proprioception fusion</b> — top / front / wrist 3개 카메라와 로봇 proprioceptive state를 융합, 프레임-액션 <b>temporal context</b>를 포함해 이동 방향·속도 추정을 개선.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p04/architecture.png"
+           alt="Architecture — (RGB×3 + Point-Cloud/FPS + Proprio) → Multi-modal Fusion → VLA Policy Head → Dual-arm Actions" />
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <img src="../assets/p04/demo_teleop.gif"
+             alt="Teleoperation demo collection — 리더-팔로워 방식 SO-101 시연 수집" />
+      </div>
+      <div class="media">
+        <img src="../assets/p04/demo_rollout.gif"
+             alt="Closed-loop bi-manipulation rollout — 컵 pick-and-place" />
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p04/pointcloud.png"
+           alt="RealSense Depth → FPS-sampled Point Cloud — RealSense Viewer 컬러 depth cloud와 FPS로 균일 샘플링한 bi-arm point cloud" />
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      실기 로봇 데이터 수집부터 정책 학습·closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간을 end-to-end로 경험</b>한 것이 이 프로젝트의 성과이다. Point-Cloud (FPS) 기반 grounding과 3-camera + proprioception fusion을 통해 RGB-only 대비 <b>location memorization / pose hallucination 완화 방향의 구조적 설계</b>를 검증하였다.
+    </p>
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p04/perf_qual.png"
+           alt="Qualitative Results (illustrative) — RGB-only baseline vs Ours (+PC/FPS) phase별 롤아웃 스냅샷" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
+        * 위 비교 이미지는 구조적 설계 의도를 전달하기 위한 <b>일러스트레이션</b>이다.
+        정량 벤치마크(성공률·궤적 오차 등)는 실기 롤아웃 데이터가 확보되는 대로 별도 보고 예정.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-03.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">Action-Conditioned Video Generation</div>
+  </a>
+  <a class="next" href="project-05.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">On-Device Personal Memory Agent</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

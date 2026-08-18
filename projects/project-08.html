@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 08 · VLM Video Action Recognition — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 08</span>
+  </div>
+  <span class="num-badge">PROJECT 08</span>
+  <h1>CV AI Agent: Video Action Recognition with VLMs</h1>
+  <div class="subtitle">Zero training · Qwen3-VL structured-output pipeline · 15 action categories</div>
+  <div class="stack">
+    <span class="tech">Qwen3-VL</span>
+    <span class="tech">Structured Output</span>
+    <span class="tech">Constraint-aware Prompt</span>
+    <span class="tech">Adaptive ffmpeg</span>
+    <span class="tech">SLURM Batch</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> AI Researcher</div>
+    <div><span class="label">Period</span> Jul. 2025 – Apr. 2026</div>
+    <div><span class="label">Domain</span> VLM · Video Understanding · Prompt Eng.</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <img src="../assets/p08/overview.png"
+         alt="System Overview — MP4 → Adaptive ffmpeg → Qwen3-VL (structured) → Timestamped Action Segments" />
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>15개 카테고리에 대한 <b>초 단위 정밀 타임스탬프 액션 세그먼트</b>가 필요했지만, <b>전용 action recognizer를 새로 학습할 자원과 시간이 없었다</b>.</p>
+    <p style="margin-top:10px;">또한 원본 클립이 길어 그대로 VLM에 넣으면 <b>OOM</b>이 자주 발생, 전체 데이터셋 배치가 불가능했다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>학습 없이도 신뢰 가능한 액션 세그먼트를 뽑는 <b>VLM 파이프라인</b>을 설계한다.</li>
+      <li>SLURM 위에서 <b>전체 데이터셋을 안전하게 배치 처리</b>할 수 있게 한다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>Qwen3-VL structured output 파이프라인</b> — 액션 정의, 우선순위 규칙, 가시성 조건, 시간 임계값(≥5s)을 강제하는 <b>constraint-aware 프롬프트 엔지니어링 프레임워크</b>를 설계해 라벨 신뢰도를 높이고 hallucination을 완화.</li>
+      <li><b>Adaptive ffmpeg downsampling (pre-VLM)</b> — 장시간 클립에서 OOM을 방지, SLURM 위에서 <b>전 데이터셋 배치</b>를 가능하게 함.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p08/architecture.png"
+           alt="Architecture — MP4 → adaptive ffmpeg → Qwen3-VL structured JSON → validators & repair → timestamped segments · SLURM batch" />
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <img src="../assets/p08/demo_ffmpeg.gif"
+             alt="Adaptive ffmpeg — dense raw frames → 0.33/0.1fps keyframes, width=512, metadata stripped, OOM-guard" />
+      </div>
+      <div class="media">
+        <img src="../assets/p08/demo_struct.gif"
+             alt="Structured output — Qwen3-VL JSON dict {MM:SS – MM:SS: action_index} 채워지며 타임라인 완성" />
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      전용 액션 인식기를 학습하지 않고도, <b>Qwen3-VL + constraint-aware structured output + adaptive ffmpeg</b>의 조합만으로 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>로 변환하는 파이프라인을 확보하였고, SLURM 위에서 <b>전 데이터셋 배치 처리</b>가 가능한 상태로 안착시켰다.
+    </p>
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p08/perf_timeline.png"
+           alt="Qualitative Output — VLM-generated action timeline vs raw MP4 · 8 segments · priority-aware coloring" />
+    </div>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p08/frame_grid.png"
+           alt="VLM 실제 예시 — 실제 추론 결과 (Bp_free17 / Hyeyoung_Lee / room01, 9개 프레임) · using phone / watching tv / getting up from bed / walking / sitting on sofa / drinking 등 15개 카테고리에 대한 MM:SS 타임스탬프 라벨" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
+        * 9개 샘플 프레임에 Qwen3-VL이 출력한 <b>MM:SS 타임스탬프 · 액션 라벨</b>을 오버레이. Bp_free17 / Hyeyoung_Lee / room01 세션.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-07.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">AGI Auto-labeling (KIRO)</div>
+  </a>
+  <a class="disabled" href="#">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">—</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

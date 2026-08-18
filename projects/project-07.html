@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 07 · AGI Auto-labeling (KIRO 산학협력) — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 07</span>
+  </div>
+  <span class="num-badge">PROJECT 07</span>
+  <h1>AGI을 활용한 영상 데이터 오토라벨링 프로그램 개발</h1>
+  <div class="subtitle">산학협력 · with <b>한국로봇융합연구원 (KIRO)</b> · 산길·예초(Mowed / Unmowed) 이미지 · SAM (vit_h) + GPT-4o-mini + DBSCAN Mask Merge</div>
+  <div class="stack">
+    <span class="tech">SAM (vit_h)</span>
+    <span class="tech">SamAutomaticMaskGenerator</span>
+    <span class="tech">GPT-4o-mini (OpenRouter)</span>
+    <span class="tech">Dynamic Class Extraction</span>
+    <span class="tech">IoU Dedup</span>
+    <span class="tech">DBSCAN Mask Merging</span>
+    <span class="tech">Morphological Closing</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> 참여연구원 (인하대 학사과정)</div>
+    <div><span class="label">Period</span> Apr. 2025 – Sep. 2025</div>
+    <div><span class="label">Partner</span> KIRO · 인하대학교 (책임: 안우진 교수)</div>
+    <div><span class="label">Domain</span> CV · Zero-Training Auto-Labeling</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <img src="../assets/p07/overview.png"
+         alt="System Overview — 산길 원본 이미지(좌)와 SAM + GPT-4o-mini + DBSCAN 파이프라인이 6개 클래스(Person / Vehicle / Sky / Mowed Area / Unmowed Area / Tree)로 자동 분할한 결과(우, 28개 마스크)" />
+    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+      * 산길 원본 vs 오토라벨링 결과 (좌: <span style="font-family:'JetBrains Mono',monospace;">zed_7_images_00300.png</span>, 우: 6개 클래스 · 28개 마스크). Person / Vehicle / Sky / <b>Mowed Area</b> / <b>Unmowed Area</b> / Tree.
+    </p>
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p><b>KIRO(한국로봇융합연구원) 산학협력 과제</b>로, 산업 현장의 대규모 이미지 데이터를 <b>사람 개입을 최소화한 오토 라벨링 파이프라인</b>으로 처리해 인건비·시간을 절감하는 것이 과제 목표였다. 인하대 팀이 <b>AGI + LLM 연계 알고리즘</b>을, KIRO가 <b>현장 데이터 수집·검증</b>을 맡는 구성.</p>
+    <p style="margin-top:10px;">첫 적용 도메인은 <b>자율 예초 로봇</b>이 다루는 <b>산길·초지 이미지</b>로, 특히 <b>예초 완료 영역(Mowed) / 미예초 영역(Unmowed)</b> 구분이 요구되었다. 그러나 이 클래스 체계로 사전 라벨된 공개 데이터셋이 없고, 산길은 <b>풀·초지 경계가 연속적</b>이라 수동 폴리곤 라벨링의 라벨러 편차와 시간 비용이 매우 컸다. 학습 없이 곧바로 라벨 후보를 뽑아낼 수 있는 <b>제로-트레이닝 파이프라인</b>이 필요했다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>학습 없이도 <b>산길 이미지에 등장하는 클래스 목록을 이미지별로 자동 추출</b>한다 (사전 정의된 라벨 세트에 종속되지 않도록).</li>
+      <li><b>SAM으로 마스크 후보를 조밀히 생성</b>하고, 각 마스크에 <b>추출된 클래스 중 하나</b>를 부여해 라벨을 완성한다.</li>
+      <li>SAM이 뱉는 <b>과분할된 인접 마스크</b>를 같은 클래스끼리 병합해, 예초 여부 판단에 실제로 쓸 수 있는 <b>깔끔한 영역 단위 라벨</b>로 정리한다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>Stage 1 · 동적 클래스 추출 (GPT-4o-mini)</b> — 각 산길 이미지를 base64로 인코딩해 <b>GPT-4o-mini (OpenRouter)</b>에 전달, "길/사람·동물/차량/<b>예초·비예초</b>/배경(Sky·Rock·Tree·Building)/Other" 6개 카테고리 힌트를 주고 <b>해당 이미지에 실제로 등장하는 클래스 목록만 추출</b>. 예: <span style="font-family:'JetBrains Mono',monospace;">[Road, Mowed Area, Unmowed Area, Sky, Tree, Others]</span>.</li>
+      <li><b>Stage 2 · Dual-config SAM 마스크 생성</b> — <b>SAM vit_h</b> + <code>SamAutomaticMaskGenerator</code>를 두 설정으로 실행: (a) <b>세밀</b> <span style="font-family:'JetBrains Mono',monospace;">points_per_side=32, pred_iou=0.85, stability=0.92, min_area=300</span>, (b) <b>큰영역</b> <span style="font-family:'JetBrains Mono',monospace;">points_per_side=16, pred_iou=0.7, stability=0.85, min_area=2000</span>. 두 결과를 합친 뒤 <b>IoU ≥ 0.7 기준 중복 제거</b> (큰 마스크 우선).</li>
+      <li><b>Stage 3 · 마스크별 클래스 분류 (GPT-4o-mini)</b> — 각 마스크의 bbox로 원본을 crop해 다시 GPT-4o-mini에 넘기고, Stage 1에서 뽑힌 <b>클래스 목록으로만 답하도록 제약</b> ("반드시 위 목록에서만 선택", 없으면 'Other'). 마스크 하나당 1회 호출로 라벨 부여.</li>
+      <li><b>Stage 4 · DBSCAN 마스크 병합 + 형태학적 정리</b> — 같은 클래스의 마스크들의 <b>중심점(mask centroid)</b>을 이미지 크기로 정규화해 <b>DBSCAN (eps=0.1, min_samples=1)</b>으로 인접 마스크를 클러스터링, 클러스터 내 마스크는 OR 병합 후 <b>MORPH_CLOSE (10×10 ellipse)</b>로 작은 구멍 제거. 예초 영역이 여러 조각으로 쪼개져도 하나의 영역으로 통합.</li>
+    </ul>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; align-items:start;">
+      <div>
+        <div style="font-size:0.82rem; color:var(--mute, #6B7280); margin-bottom:6px; letter-spacing:0.02em;">STAGE 1 · GPT-4o-mini 프롬프트 (핵심 발췌)</div>
+        <pre style="background:var(--bg-soft, #F9FAFB); border:1px solid var(--line, #E5E7EB); border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono', ui-monospace, monospace; font-size:0.78rem; line-height:1.55; color:var(--ink, #111827); white-space:pre-wrap; word-break:keep-all; overflow-x:auto; margin:0;">이 산길 이미지에서 간단한 segmentation을
+수행하려고 합니다. 다음과 같이 segmentation
+해야 할 클래스들을 뽑아주세요:
+
+- 길/도로 관련 (예: Road, Path, Trail)
+- 사람이나 동물 (예: Person, Animal)
+- 차량 (예: Vehicle)
+- <b>예초 관련 식물 영역 (Mowed / Unmowed Area)</b>
+- 기타 배경 (Sky, Rock, Tree, Building)
+- 애매한 객체는 others로 분류.
+
+너무 세세하게 구분할 필요는 없고,
+<b>예초/비예초 영역 구분이 목적</b>임을
+기억해주세요. 이 이미지에 실제로 나타나는
+주요 객체들만 포함해주세요.</pre>
+        <p style="color:var(--sub, #6B7280); font-size:0.82rem; margin-top:8px; font-style:italic;">
+          * 사전 라벨 세트에 종속되지 않도록 <b>이미지별 동적 클래스 추출</b> + <b>과제 목적</b>을 프롬프트에 명시.
+        </p>
+      </div>
+
+      <div>
+        <div style="font-size:0.82rem; color:var(--mute, #6B7280); margin-bottom:6px; letter-spacing:0.02em;">실행 로그 &middot; <span style="font-family:'JetBrains Mono', monospace;">zed_8_images_00170.png</span></div>
+        <pre style="background:var(--bg-soft, #F9FAFB); border:1px solid var(--line, #E5E7EB); border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono', ui-monospace, monospace; font-size:0.78rem; line-height:1.55; color:var(--ink, #111827); white-space:pre-wrap; overflow-x:auto; margin:0;">1단계: LLM으로 클래스 확인 중...
+  → [Road, Mowed Area, Unmowed Area,
+     Sky, Tree, Others]
+
+2단계: SAM으로 마스크 생성 중...
+  총 100개 → 71개 (IoU ≥ 0.7 dedup)
+
+3단계: 전체 71개 마스크 분류 중...
+  Mowed Area:    5 →  5개
+  Unmowed Area: 18 → 12개
+  Tree:         12 →  9개
+  Others:        9 →  7개   (DBSCAN 병합 후)
+
+4단계: 결과 시각화 완료</pre>
+        <p style="color:var(--sub, #6B7280); font-size:0.82rem; margin-top:8px; font-style:italic;">
+          * SAM 원본 <b>100 → 71(dedup) → 분류 → DBSCAN 병합</b> 후 Mowed 5 · Unmowed 12 · Tree 9 · Others 7 마스크.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      <b>학습 없이도</b> 산길 이미지에서 <b>예초 완료 영역(Mowed) / 미예초 영역(Unmowed)</b>을 포함한 6개 안팎의 클래스에 대해 픽셀 단위 오토라벨을 생성하는 파이프라인을 완성하였다. <b>동적 클래스 추출 → SAM dual-config → per-mask LLM 분류 → DBSCAN 병합</b>으로 이어지는 4단계 구조 덕에, 라벨 스키마를 새로 정의하지 않고도 <b>이미지 특성에 맞춰 6~15개 마스크 규모</b>의 세그멘테이션 결과를 곧바로 얻을 수 있었다.
+    </p>
+
+    <div class="media-grid-2" style="margin-top:20px;">
+      <div class="media">
+        <img src="../assets/p07/result_mountain_path.png"
+             alt="Qualitative result 1 — 하늘·나무·주황 미예초 초지·소량의 초록 예초 영역이 뒤섞인 산길 (zed_11_images_00150.png). 4개 클래스 · 30개 마스크로 자동 라벨: Sky / Mowed Area / Unmowed Area / Tree" />
+      </div>
+      <div class="media">
+        <img src="../assets/p07/result_green_hills.png"
+             alt="Qualitative result 2 — 광활한 초록·주황 능선 산길 (zed_8_images_00170.png). 6개 클래스 · 34개 마스크: Mowed Area / Unmowed Area / Sky / Tree / Others. DBSCAN 병합 후에도 예초/비예초 경계가 넓게 유지" />
+      </div>
+    </div>
+    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+      * 정성 결과 &mdash; 좌: 4클래스 · 30 마스크 (하늘/나무 + 예초/비예초), 우: 6클래스 · 34 마스크 (예초·비예초 능선이 넓게 유지됨).
+    </p>
+
+    <ul style="padding-left:18px;color:var(--gray-700); margin-top:16px;">
+      <li>실행 환경 &mdash; <b>Google Colab (GPU) · Python · PyTorch · segment-anything · scikit-learn · OpenCV</b></li>
+      <li>Segmenter &mdash; <b>Meta SAM (vit_h, sam_vit_h_4b8939.pth)</b> · <code>SamAutomaticMaskGenerator</code> dual-config</li>
+      <li>LLM &mdash; <b>openai/gpt-4o-mini</b> via <b>OpenRouter</b> (base64 vision · Stage 1 클래스 추출 + Stage 3 마스크 분류)</li>
+      <li>Post-processing &mdash; <b>IoU 0.7 dedup</b> · <b>DBSCAN (eps=0.1, min_samples=1)</b> · <b>MORPH_CLOSE 10×10</b></li>
+      <li>Data &mdash; KIRO가 수집한 <b>산길 · 예초 현장 이미지</b>, ZED 스테레오 카메라 (<code>forest_image/zed_*.png</code>)</li>
+      <li>Team &mdash; 안우진 (인하대 조교수, 책임) · 장선호 (KIRO 주임, 공동연구자) · 조윤재 · 권유진 · 김건우 (인하대 학사 · 참여연구원)</li>
+      <li>Notes &mdash; 학습 없는 파이프라인이라 <b>Stage 3 LLM 분류 편차</b>와 <b>DBSCAN eps</b> 튜닝이 다음 반복의 개선 포인트</li>
+    </ul>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-06.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">Dynamic Obstacle-Aware Replanning</div>
+  </a>
+  <a class="next" href="project-08.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">VLM Video Action Recognition</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 03 · Action-Conditioned Video Generation (INHA 2026) — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 03</span>
+  </div>
+  <span class="num-badge">PROJECT 03</span>
+  <h1>Action-Conditioned Video Generation World Model</h1>
+  <div class="subtitle"><b>2026 INHA AI Challenge</b> · Independent Entry · Cosmos-Predict3-Nano</div>
+  <div class="stack">
+    <span class="tech">Cosmos3-Nano</span>
+    <span class="tech">LoRA (rank 32)</span>
+    <span class="tech">Action Injection</span>
+    <span class="tech">EE-Delta Representation</span>
+    <span class="tech">SO-100</span>
+    <span class="tech">Diffusers</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> Independent Entry</div>
+    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026</div>
+    <div><span class="label">Domain</span> Generative WM · VLA · Diffusion</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <div class="placeholder">
+      <div class="type-badge">PNG</div>
+      <div class="label-line">System Overview &mdash; First frame + joint-action sequence → Cosmos3 → predicted future frames</div>
+      <div class="fname">assets/p03/overview.png</div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>2026 INHA AI Challenge는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다.</p>
+    <p style="margin-top:10px;">기반 모델인 Cosmos-Predict3-Nano는 프리트레인 시 사용된 <b>action distribution</b>과 태스크의 액션 표현 사이에 방향성 불일치 문제가 있었고, LoRA 소자 튜닝만으로는 리더보드에서 유의한 개선을 얻기 어려웠다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>Cosmos3-Nano에 <b>SO-100 액션 토큰</b>을 흘려 넣을 경로를 만든다.</li>
+      <li><b>액션 표현 자체를 프리트레인 분포에 맞게</b> 다시 디자인한다.</li>
+      <li>리더보드에서 유의한 개선을 만드는 <b>튜닝 절차</b>를 확립한다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>Action Injection Module</b> — <code>action_proj_in/out</code> + action-modality embedding을 base LR로 직접 학습하여 SO-100 액션 토큰을 비디오 백본으로 라우팅 (<b>action MAE −43.2%</b>).</li>
+      <li><b>LoRA 파인튜닝 (rank 32)</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>)과 MLP projection (<code>gate/up/down_proj</code>)에 LoRA 부착 (<b>action MAE −8.6%</b>).</li>
+      <li><b>Action 표현 재설계</b> — 절대 joint angle이 Cosmos3 프리트레인 분포와 호환되지 않는 방향성 mismatch를 진단, <b>end-effector delta + gripper [0,1] 정규화</b>로 교체 (<b>action MAE −8.5%</b>).</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <div class="placeholder">
+        <div class="type-badge">PNG</div>
+        <div class="label-line">Architecture &mdash; Action tokens → action_proj_in → Cosmos3 (LoRA on attn/MLP) → predicted frames</div>
+        <div class="fname">assets/p03/architecture.png</div>
+      </div>
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <div class="placeholder">
+          <div class="type-badge gif">GIF</div>
+          <div class="label-line">Joint-angle baseline &mdash; drift / hallucination</div>
+          <div class="fname">assets/p03/demo_joint.gif</div>
+        </div>
+      </div>
+      <div class="media">
+        <div class="placeholder">
+          <div class="type-badge gif">GIF</div>
+          <div class="label-line">EE-Delta representation (ours) &mdash; stable rollout</div>
+          <div class="fname">assets/p03/demo_eedelta.gif</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <div class="kpi-grid">
+      <div class="kpi-tile">
+        <div class="k-label">Leaderboard</div>
+        <div class="k-value">0.2454</div>
+        <div class="k-sub">Cosmos3-Nano v5_base, delta, gs=5.0, 50 steps</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Action MAE (Injection)</div>
+        <div class="k-value">−43.2%</div>
+        <div class="k-sub">action-modality routing</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Action MAE (LoRA)</div>
+        <div class="k-value">−8.6%</div>
+        <div class="k-sub">rank 32 on attn/MLP</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">MAE ↔ Leaderboard</div>
+        <div class="k-value">r = +0.820</div>
+        <div class="k-sub">strong correlation validated</div>
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <div class="placeholder">
+        <div class="type-badge">PNG</div>
+        <div class="label-line">Performance Chart &mdash; Action MAE vs Leaderboard scatter (r=+0.820)</div>
+        <div class="fname">assets/p03/perf_corr.png</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-02.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">Semi-Auto Labeling &mdash; HDC LABS</div>
+  </a>
+  <a class="next" href="project-04.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">VLA Bi-manipulator</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>

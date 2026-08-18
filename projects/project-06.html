@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROJECT 06 · Dynamic Obstacle-Aware Path Replanning — Yunjae Cho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><a href="../portfolio.html">Yunjae <span class="dot">•</span> Cho</a></div>
+  <ul>
+    <li><a href="../portfolio.html">Home</a></li>
+    <li><a href="../portfolio.html#projects">All Projects</a></li>
+    <li><a href="../portfolio.html#skills">Skills</a></li>
+    <li><a href="../portfolio.html#awards">Awards</a></li>
+  </ul>
+</nav>
+
+<div class="detail-header">
+  <div class="breadcrumb">
+    <a href="../portfolio.html">Portfolio</a><span class="sep">/</span>
+    <a href="../portfolio.html#projects">Projects</a><span class="sep">/</span>
+    <span>PROJECT 06</span>
+  </div>
+  <span class="num-badge">PROJECT 06</span>
+  <h1>Dynamic Obstacle-Aware Path Replanning for a 6-DOF Robot Arm</h1>
+  <div class="subtitle">인공지능종합설계 팀프로젝트 · UR5e (Gazebo Sim) · Reactive Recovery FSM</div>
+  <div class="stack">
+    <span class="tech">UR5e (Gazebo)</span>
+    <span class="tech">Depth Camera (Sim)</span>
+    <span class="tech">OctoMap</span>
+    <span class="tech">MoveIt 2</span>
+    <span class="tech">RRT-Connect (OMPL)</span>
+    <span class="tech">Continuous Collision Check</span>
+    <span class="tech">Recovery FSM</span>
+    <span class="tech">ROS 2 Humble · rclpy</span>
+  </div>
+  <div class="meta-row">
+    <div><span class="label">Role</span> Team Member (3인 · AI 트랙)</div>
+    <div><span class="label">Period</span> Aug. 2025 – Dec. 2025</div>
+    <div><span class="label">Domain</span> Robotics · Motion Planning (Sim)</div>
+  </div>
+</div>
+
+<section>
+
+  <div class="media">
+    <img src="../assets/p06/overview.png"
+         alt="System Overview — Depth Camera → PointCloud → OctoMap → Planning Scene → MoveIt2/OMPL → JointTrajectory Controller → UR5e (Gazebo), with reactive replan feedback loop" />
+  </div>
+
+  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="card-block">
+    <p>정적 플래너만으로는 <b>실행 중인 궤적에 갑자기 들어오는 동적 장애물</b>을 회피할 수 없다. 실제 UR5e 하드웨어를 다루기 전, <b>Gazebo 시뮬레이션 위에서 반응형 재계획 파이프라인의 동작을 먼저 검증</b>할 필요가 있었다.</p>
+    <p style="margin-top:10px;">특히 팀프로젝트 특성상 <b>장애물 감지 → 정지 → 후퇴 → 재계획 → 재개</b>가 별도 인식기 학습 없이도 안정적으로 트리거되도록 설계 자체를 단순화해야 했다.</p>
+  </div>
+
+  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>Gazebo 상의 depth camera 스트림을 <b>확률적 3D 격자(OctoMap)</b>로 통합해 MoveIt2 planning scene에 반영한다.</li>
+      <li>MoveIt2 + OMPL(RRT-Connect) 위에 <b>continuous collision checking</b>을 얹어 궤적 수준의 미래 충돌을 예측한다.</li>
+      <li>지도 데이터량 변화(bytes-diff)로 <b>동적 장애물 진입을 감지</b>하고, <b>stop → back-off → replan → resume</b>을 자동 트리거하는 recovery FSM을 붙인다.</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>Perception 파이프라인 (Gazebo Sim)</b> — Gazebo depth camera → PointCloud → <b>OctoMap (OccupancyMapUpdater)</b> → Planning Scene 반영. 별도 인식기(YOLO/ICP)를 학습·연결하지 않고, <b>OctoMap이 유지하는 확률적 3D 점유 격자 자체를 장애물 표현</b>으로 사용.</li>
+      <li><b>Motion Planning</b> — MoveIt 2 + OMPL <b>RRT-Connect</b>로 시작–목표 관절공간 경로를 생성하고, <b>Continuous Collision Check</b>로 궤적 상태 사이 구간의 미래 충돌까지 예측.</li>
+      <li><b>Reactive Recovery FSM (bytes-diff 트리거)</b> — Planning Scene의 <b>지도 데이터량 변화(voxel bytes)</b>가 임계값(τ ≈ 160 bytes)을 넘으면 동적 장애물 진입으로 판단, <b>Monitor → Detect → Stop → Back-off → Replan → Resume</b>을 순서대로 실행. UR5e는 <b>JointTrajectory Controller</b>로 실행/정지/재개.</li>
+    </ul>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p06/architecture.png"
+           alt="Architecture — Perception (Depth Camera → OctoMap) · Planning (MoveIt2 + OMPL + CCC) · Control (JointTrajectory Ctrl → UR5e Driver/Gazebo) · Reactive Recovery FSM: Monitor → Detect (bytes-diff τ=160) → Stop → Back-off → Replan → Resume" />
+    </div>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p06/octomap_raycasting.png"
+           alt="OctoMap raycasting 원리 — 카메라에서 쏜 ray를 따라 free 셀(흰색)과 occupied 셀(녹색)을 확률적으로 갱신, 미관측 영역은 unknown(회색)으로 유지" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * OctoMap 업데이트 원리 &mdash; depth ray를 따라 통과한 셀은 free, 끝점 셀은 occupied로 확률 갱신. 미관측 영역은 unknown 상태로 유지.
+      </p>
+    </div>
+
+    <div class="media-grid-2" style="margin-top:16px;">
+      <div class="media">
+        <img src="../assets/p06/gazebo_scene.png"
+             alt="Gazebo scene — UR5e 6-DOF 매니퓰레이터가 초록 큐브(target) 방향으로 접근, 테이블 위 정적 장애물과 동적 장애물이 함께 배치된 시뮬레이션 환경" />
+      </div>
+      <div class="media">
+        <img src="../assets/p06/log_replan.png"
+             alt="Replan 로그 — [replan_trigger] 지도 데이터량 변화 감지 기준: 14615 → 현재: 14455 | 차이: 160 → 동적 장애물 감지, 이동 정지 → 이동 중단 및 재계획 요청 → replan_command 발행 → 경로 계획 성공! → 새 경로 실행 SUCCESS" />
+      </div>
+    </div>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p06/rqt_graph.png"
+           alt="rqt_graph — ROS 2 node/topic 토폴로지: gazebo · robot_state_publisher · move_group(MoveIt2) · joint_trajectory_controller · octomap_server · replan_trigger 노드가 planning_scene, joint_states, depth/points 토픽으로 상호 연결된 전체 그래프" />
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      Gazebo 상 UR5e에서 <b>Perception–Planning–Control–Recovery FSM 4단이 결합된 반응형 리플래닝</b>을 end-to-end로 동작시켰다. 지도 데이터량 변화(bytes-diff, τ ≈ 160)만으로도 <b>동적 장애물 진입 → 즉시 정지 → 후퇴 → 재계획 → 재개</b>가 별도 인식기 없이 트리거되는 것을 로그·RViz로 확인하였다 (예: <span style="font-family:'JetBrains Mono',monospace;">14615 → 14455 (Δ160)</span> 감지 → replan SUCCESS).
+    </p>
+    <p style="color:var(--gray-700); margin-top:10px;">
+      5회 반복 라운드 기준 <b>3/5 성공(약 70%)</b>, 팀 자체 평가 자율 동작 완성도 약 86% 수준으로 기록되었다. 한계로는 (1) bytes-diff 임계값이 장면 구성에 민감해 튜닝이 필요하고, (2) 실기 UR5e·실기 depth sensor 이식은 다음 단계 과제로 남았다.
+    </p>
+
+    <div class="media-grid-2" style="margin-top:20px;">
+      <div class="media">
+        <img src="../assets/p06/rviz_octomap.png"
+             alt="RViz — planning scene에 실제로 얹힌 OctoMap 복셀 (보라색). MoveIt MotionPlanning 패널의 Planning/Collision-aware IK/Replanning 옵션과 함께 실행 중인 상태" />
+      </div>
+      <div class="media">
+        <video src="../assets/p06/demo_replan.mp4"
+               autoplay loop muted playsinline
+               style="width:100%; display:block; border-radius:8px;"
+               aria-label="Demo replan — UR5e가 초록 target 방향으로 이동 중 red 실린더(동적 장애물) 진입 감지 → 정지 → 후퇴 → replan → 재개 시퀀스"></video>
+      </div>
+    </div>
+
+    <ul style="padding-left:18px;color:var(--gray-700); margin-top:16px;">
+      <li>실행 환경 &mdash; <b>Ubuntu 22.04 · ROS 2 Humble · Gazebo Classic 11 · RViz 2 · Python 3.10 (rclpy)</b></li>
+      <li>Motion Planning &mdash; <b>MoveIt 2 + OMPL (RRT-Connect)</b>, Continuous Collision Check</li>
+      <li>Perception &mdash; <b>OctoMap (MoveIt OccupancyMapUpdater)</b>, Planning Scene 실시간 반영</li>
+      <li>Robot &mdash; <b>UR5e (6-DOF, Gazebo Sim)</b>, JointTrajectory Controller</li>
+      <li>Team &mdash; 양태훈 (데이터사이언스) · 오상민 (AI) · 조윤재 (AI) — 인공지능종합설계 팀프로젝트</li>
+    </ul>
+  </div>
+</section>
+
+<div class="pager">
+  <a class="prev" href="project-05.html">
+    <div class="arrow">← PREV</div>
+    <div class="p-title">On-Device Personal Memory Agent</div>
+  </a>
+  <a class="next" href="project-07.html">
+    <div class="arrow">NEXT →</div>
+    <div class="p-title">AGI Auto-labeling (KIRO)</div>
+  </a>
+</div>
+
+<footer>
+  &copy; 2026 <span class="accent">Yunjae Cho</span> &nbsp;·&nbsp;
+  <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a>
+</footer>
+
+</body>
+</html>
