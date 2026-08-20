@@ -245,6 +245,31 @@
       </p>
     </div>
 
+    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Good case rollout (실제 재생)</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
+      <div>
+        <img src="../assets/p03/good_sample_085.gif"
+             alt="Good case rollout 1 — sample_000085 (MAE 0.332). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
+             style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000085 &middot; MAE = 0.332</div>
+      </div>
+      <div>
+        <img src="../assets/p03/good_sample_086.gif"
+             alt="Good case rollout 2 — sample_000086 (MAE 0.357). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
+             style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000086 &middot; MAE = 0.357</div>
+      </div>
+      <div>
+        <img src="../assets/p03/good_sample_052.gif"
+             alt="Good case rollout 3 — sample_000052 (MAE 0.366). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
+             style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000052 &middot; MAE = 0.366</div>
+      </div>
+    </div>
+    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+      * Good case 3개 rollout을 원본 6 fps로 loop 재생. Cosmos3-Nano B4 step 6000 pred, 16 frame, 320px 다운스케일. 로봇 팔 궤적과 물체 위치가 부드럽게 유지되는 것이 확인된다.
+    </p>
+
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Lessons Learned &mdash; 6일 스프린트 회고</h3>
     <ul style="padding-left:18px;color:var(--gray-700); margin-top:8px;">
       <li><b>LB 지표의 실체</b> &mdash; 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·DINO + 0.3·R3D + 0.4·act_mae</span>지만 실제로는 <b>act_mae 항의 스케일(≈2.8)이 dominant</b>이라, R3D 항은 사실상 <b>video naturalness detector</b>로 작동. compositing/warping류 후처리는 자연스러움 지표에서 원천적으로 손해.</li>
