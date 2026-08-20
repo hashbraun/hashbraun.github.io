@@ -270,20 +270,10 @@
       * Good case 3개 rollout을 원본 6 fps로 loop 재생. Cosmos3-Nano B4 step 6000 pred, 16 frame, 320px 다운스케일. 로봇 팔 궤적과 물체 위치가 부드럽게 유지되는 것이 확인된다.
     </p>
 
-    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Lessons Learned &mdash; 6일 스프린트 회고</h3>
-    <ul style="padding-left:18px;color:var(--gray-700); margin-top:8px;">
-      <li><b>LB 지표의 실체</b> &mdash; 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·DINO + 0.3·R3D + 0.4·act_mae</span>지만 실제로는 <b>act_mae 항의 스케일(≈2.8)이 dominant</b>이라, R3D 항은 사실상 <b>video naturalness detector</b>로 작동. compositing/warping류 후처리는 자연스러움 지표에서 원천적으로 손해.</li>
-      <li><b>Training loss 최저점 ≠ LB 최적점</b> &mdash; step별 sweep으로 checkpoint selection이 학습 자체보다 결과 기여도가 컸다 (도전본 step 6000).</li>
-      <li><b>대형 도전 트랙 6개 전부 실패</b> &mdash; Track A(Cosmos-Predict2.5 마이그레이션 · G5 falsification FAIL), Track B(constant-weight aux · LB 0.2508 visual 손상), Track C(Cosmos3-Edge · 아키텍처 미스매치 + DROID-only 도메인), Track D/E, Robot-Factored WM까지 6개 트랙 시도 후 <b>모두 안전본 대비 후퇴</b>. 남은 기간은 <b>안전본 방어 + 단일 축(B4 sweep) 최적화</b>로 pivot한 것이 최선이었다.</li>
-      <li><b>인프라 검증의 중요성</b> &mdash; 슬럼 라벨 <span style="font-family:'JetBrains Mono',monospace;">p6000</span>인 gpu-113이 실물은 <b>RTX PRO 6000 Blackwell 95GB (sm_120)</b>였음. <span style="font-family:'JetBrains Mono',monospace;">nvidia-smi</span> 실측으로 확인 후 nightly torch env를 새로 만들어 <b>7배 가속</b>. "레이블을 믿지 말고 실측하라"는 원칙 재확인.</li>
-      <li><b>확증편향 대응</b> &mdash; 결정 전 codex CLI로 자문받은 tick 로그를 남기고, 실측 실패(예: B4v2 constant-weight)를 별도 파일로 기록해 재시도 금지 목록 관리. 과감한 pivot과 안전본 방어를 분리한 것이 정답이었다.</li>
-    </ul>
-
-    <ul style="padding-left:18px;color:var(--gray-700); margin-top:16px;">
+    <ul style="padding-left:18px;color:var(--gray-700); margin-top:24px;">
       <li>실행 환경 &mdash; <b>Ubuntu 22.04 · Slurm · PyTorch 2.6 (inha2026 env) + PyTorch 2.15 nightly cu130 (inha2026_bw, Blackwell 전용)</b></li>
       <li>Model &mdash; <b>Cosmos-Predict3-Nano</b> · Diffusers 0.39.0 · PEFT 0.20.0 · LoRA rank 32 (attn + MLP)</li>
       <li>Data &mdash; <b>SO-100 로봇 15-frame 롤아웃</b> · Dacon 236736 · train/eval action 분포 편차 EDA 완료</li>
-      <li>Automation &mdash; <b>auto_loop_v2</b> (10분 tick, candidate 학습→inference→Action mean 판정→codex 자문 launch를 무한 loop)</li>
     </ul>
   </div>
 
