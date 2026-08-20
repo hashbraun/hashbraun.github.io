@@ -67,8 +67,9 @@
               </p>
               <p>
                 최근에는 <b>2026 INHA AI Challenge</b>에서 Cosmos-Predict3-Nano를 개인 참가로 튜닝해
-                action-conditioned world model의 액션 표현·주입 구조를 실험하고 있습니다
-                (리더보드 0.2454, action MAE ↔ leaderboard 상관 r=+0.820).
+                action-conditioned world model의 액션 표현·주입 구조를 실험하였고
+                (도전본 리더보드 <b>0.2407</b> / 안전본 0.24524, action MAE ↔ leaderboard 상관 r=+0.820),
+                6일 스프린트 6개 도전 트랙 회고를 통해 <b>안전본 방어와 checkpoint selection의 중요성</b>을 정리하며 챌린지를 마무리했습니다.
               </p>
             </div>
           </div>
@@ -198,12 +199,12 @@
               Action-Conditioned Video Generation World Model
               <a class="more" href="projects/project-03.html">상세 보기 →</a>
             </div>
-            <div class="entry-period">2026.07 ~ 2026.08</div>
+            <div class="entry-period">2026.07 ~ 2026.08 (챌린지 마감 2026-08-20)</div>
           </div>
-          <div class="entry-org"><b>2026 INHA AI Challenge</b> · Independent Entry</div>
+          <div class="entry-org"><b>2026 INHA AI Challenge</b> (Dacon 236736) · Independent Entry</div>
           <div class="bracket">
             <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>첫 프레임과 joint-action 시퀀스가 주어졌을 때 로봇의 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>.</li></ul>
+            <ul><li>첫 프레임과 joint-action 시퀀스가 주어졌을 때 로봇의 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>. 채점식 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO) + 0.3·(1&minus;R3D) + 0.4·act_mae</span> (lower better).</li></ul>
             <div class="bhead">[기존 문제점]</div>
             <ul>
               <li>Cosmos-Predict3-Nano 프리트레인 action distribution과 태스크의 절대 joint-angle 표현 사이의 방향성 mismatch.</li>
@@ -214,12 +215,13 @@
               <li><b>Action Injection Module</b> (<code>action_proj_in/out</code> + action-modality embedding) 직접 학습.</li>
               <li><b>LoRA rank 32</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>) + MLP (<code>gate/up/down_proj</code>) 파인튜닝.</li>
               <li>액션 표현을 <b>End-Effector delta + gripper [0,1]</b> 정규화로 재설계.</li>
+              <li><b>ANCHORED_soft 앙상블</b>로 안전본(v5_base) 방어 + <b>B4 sweep step 6000 도전본</b>으로 개선.</li>
             </ul>
             <div class="bhead">[성과]</div>
             <ul>
-              <li>Action Injection <b>MAE −43.2%</b>, LoRA <b>−8.6%</b>, EE-Delta <b>−8.5%</b>.</li>
-              <li>최종 리더보드 <b>0.2454</b> (v5_base, delta, gs=5.0, 50 steps).</li>
-              <li>Action MAE ↔ 리더보드 상관 <b>r = +0.820</b> 검증.</li>
+              <li>Action Injection <b>MAE &minus;43.2%</b>, LoRA <b>&minus;8.6%</b>, EE-Delta <b>&minus;8.5%</b>. Action MAE ↔ LB 상관 <b>r = +0.820</b> 검증.</li>
+              <li>최종 <b>도전본 LB 0.2407</b> (B4 sweep step 6000) / <b>안전본 LB 0.24524</b> (v5_base ANCHORED_soft) — <b>안전본 대비 &minus;0.0045</b> 개선.</li>
+              <li>6일 스프린트 6개 도전 트랙(Track A~E + Robot-Factored WM) 모두 안전본 후퇴로 회귀 판정 후 <b>단일 축 최적화 pivot</b>. Blackwell(sm_120) 실측으로 nightly torch env 신설, diffusion step <b>7배 가속</b>.</li>
             </ul>
           </div>
         </div>

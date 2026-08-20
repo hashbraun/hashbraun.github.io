@@ -29,18 +29,20 @@
   </div>
   <span class="num-badge">PROJECT 03</span>
   <h1>Action-Conditioned Video Generation World Model</h1>
-  <div class="subtitle"><b>2026 INHA AI Challenge</b> · Independent Entry · Cosmos-Predict3-Nano</div>
+  <div class="subtitle"><b>2026 INHA AI Challenge</b> · Independent Entry · Cosmos-Predict3-Nano · <b>Final LB 0.2407</b> (챌린지 완료)</div>
   <div class="stack">
     <span class="tech">Cosmos3-Nano</span>
     <span class="tech">LoRA (rank 32)</span>
     <span class="tech">Action Injection</span>
     <span class="tech">EE-Delta Representation</span>
+    <span class="tech">Flow Matching</span>
+    <span class="tech">Blackwell GPU env</span>
     <span class="tech">SO-100</span>
     <span class="tech">Diffusers</span>
   </div>
   <div class="meta-row">
     <div><span class="label">Role</span> Independent Entry</div>
-    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026</div>
+    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026 (챌린지 마감 2026-08-20)</div>
     <div><span class="label">Domain</span> Generative WM · VLA · Diffusion</div>
   </div>
 </div>
@@ -48,17 +50,25 @@
 <section>
 
   <div class="media">
-    <div class="placeholder">
-      <div class="type-badge">PNG</div>
-      <div class="label-line">System Overview &mdash; First frame + joint-action sequence → Cosmos3 → predicted future frames</div>
-      <div class="fname">assets/p03/overview.png</div>
-    </div>
+    <img src="../assets/p03/eval_samples.png"
+         alt="Eval 샘플 프리뷰 — 6개 SO-100 첫 프레임(상단, 로봇 gripper가 큐브를 조작하는 top-down view)과 각 샘플에 대응하는 15-step joint action 시퀀스(하단, shoulder/elbow/wrist/gripper 6채널 궤적)" />
+    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+      * 챌린지 데이터 예시 &mdash; SO-100 첫 프레임 6개(상단)와 15-step joint-angle 시퀀스(하단). 이 짝을 조건으로 <b>15-frame 미래 롤아웃</b>을 생성해야 한다.
+    </p>
   </div>
 
   <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
   <div class="card-block">
-    <p>2026 INHA AI Challenge는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다.</p>
-    <p style="margin-top:10px;">기반 모델인 Cosmos-Predict3-Nano는 프리트레인 시 사용된 <b>action distribution</b>과 태스크의 액션 표현 사이에 방향성 불일치 문제가 있었고, LoRA 소자 튜닝만으로는 리더보드에서 유의한 개선을 얻기 어려웠다.</p>
+    <p>2026 INHA AI Challenge (Dacon 236736)는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다. 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO_cos) + 0.3·(1&minus;VideoR3D_cos) + 0.4·Action_MAE</span> (lower better).</p>
+    <p style="margin-top:10px;">기반 모델 Cosmos-Predict3-Nano는 프리트레인 시 사용된 <b>action distribution</b>과 태스크의 절대 joint-angle 표현 사이에 방향성 불일치가 있었고, LoRA 소자 튜닝만으로는 리더보드에서 유의한 개선을 얻기 어려웠다. 또 SO-100 도메인 자체의 <b>train/eval action 분포 편차</b>가 있어 데이터 이해가 사전에 필요했다.</p>
+
+    <div class="media" style="margin-top:16px;">
+      <img src="../assets/p03/dataset_eda.png"
+           alt="SO-100 챌린지 데이터셋 EDA 9-panel — (상단) Action 분포 히스토그램, Train vs Eval 평균 비교 barplot, joint별 action velocity boxplot. (중단) Δaction 분포, gripper 궤적 20샘플, shoulder lift 궤적 20샘플. (하단) 밝기 분포, wrist roll train/eval 편차, shoulder pan start vs end 산점도" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * 자체 EDA (9-panel) &mdash; joint별 분포/velocity/Δaction, train↔eval 편차, gripper·shoulder 궤적 패턴, 프레임 밝기 분포. 액션 재설계·anchoring 전략의 근거.
+      </p>
+    </div>
   </div>
 
   <h2 class="section-title"><span class="num">T ·</span> Task</h2>
@@ -73,69 +83,58 @@
   <h2 class="section-title"><span class="num">A ·</span> Action</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
-      <li><b>Action Injection Module</b> — <code>action_proj_in/out</code> + action-modality embedding을 base LR로 직접 학습하여 SO-100 액션 토큰을 비디오 백본으로 라우팅 (<b>action MAE −43.2%</b>).</li>
-      <li><b>LoRA 파인튜닝 (rank 32)</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>)과 MLP projection (<code>gate/up/down_proj</code>)에 LoRA 부착 (<b>action MAE −8.6%</b>).</li>
-      <li><b>Action 표현 재설계</b> — 절대 joint angle이 Cosmos3 프리트레인 분포와 호환되지 않는 방향성 mismatch를 진단, <b>end-effector delta + gripper [0,1] 정규화</b>로 교체 (<b>action MAE −8.5%</b>).</li>
+      <li><b>Action Injection Module</b> — <code>action_proj_in/out</code> + action-modality embedding을 base LR로 직접 학습하여 SO-100 액션 토큰을 비디오 백본으로 라우팅 (<b>action MAE &minus;43.2%</b>).</li>
+      <li><b>LoRA 파인튜닝 (rank 32)</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>)과 MLP projection (<code>gate/up/down_proj</code>)에 LoRA 부착 (<b>action MAE &minus;8.6%</b>).</li>
+      <li><b>Action 표현 재설계</b> — 절대 joint angle이 Cosmos3 프리트레인 분포와 호환되지 않는 방향성 mismatch를 진단, <b>end-effector delta + gripper [0,1] 정규화</b>로 교체 (<b>action MAE &minus;8.5%</b>).</li>
+      <li><b>ANCHORED_soft 앙상블</b> — 채점 metric이 <span style="font-family:'JetBrains Mono',monospace;">act_mae</span> dominant(2.804)임을 실험으로 검증한 뒤 <b>안전본(v5_base ANCHORED_soft)</b>로 baseline 방어, <b>도전본(B4 sweep step 6000)</b>으로 개선.</li>
+      <li><b>Blackwell GPU env 신설</b> — gpu-113 실물이 <b>RTX PRO 6000 Blackwell 95GB (sm_120)</b>였음을 <span style="font-family:'JetBrains Mono',monospace;">nvidia-smi</span>로 확인 후 <code>inha2026_bw</code> env(torch 2.15 nightly cu130) 신설, diffusion step ~11s → ~1.5s로 <b>7배 가속</b>.</li>
     </ul>
-
-    <div class="media" style="margin-top:20px;">
-      <div class="placeholder">
-        <div class="type-badge">PNG</div>
-        <div class="label-line">Architecture &mdash; Action tokens → action_proj_in → Cosmos3 (LoRA on attn/MLP) → predicted frames</div>
-        <div class="fname">assets/p03/architecture.png</div>
-      </div>
-    </div>
-
-    <div class="media-grid-2" style="margin-top:16px;">
-      <div class="media">
-        <div class="placeholder">
-          <div class="type-badge gif">GIF</div>
-          <div class="label-line">Joint-angle baseline &mdash; drift / hallucination</div>
-          <div class="fname">assets/p03/demo_joint.gif</div>
-        </div>
-      </div>
-      <div class="media">
-        <div class="placeholder">
-          <div class="type-badge gif">GIF</div>
-          <div class="label-line">EE-Delta representation (ours) &mdash; stable rollout</div>
-          <div class="fname">assets/p03/demo_eedelta.gif</div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <h2 class="section-title"><span class="num">R ·</span> Result</h2>
   <div class="card-block">
     <div class="kpi-grid">
       <div class="kpi-tile">
-        <div class="k-label">Leaderboard</div>
-        <div class="k-value">0.2454</div>
-        <div class="k-sub">Cosmos3-Nano v5_base, delta, gs=5.0, 50 steps</div>
+        <div class="k-label">Final Leaderboard (도전본)</div>
+        <div class="k-value">0.2407</div>
+        <div class="k-sub">B4 sweep step 6000 · 안전본 대비 &minus;0.0045</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">Safety 안전본</div>
+        <div class="k-value">0.24524</div>
+        <div class="k-sub">v5_base + ANCHORED_soft · 재현 검증됨</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">Action MAE (Injection)</div>
-        <div class="k-value">−43.2%</div>
+        <div class="k-value">&minus;43.2%</div>
         <div class="k-sub">action-modality routing</div>
-      </div>
-      <div class="kpi-tile">
-        <div class="k-label">Action MAE (LoRA)</div>
-        <div class="k-value">−8.6%</div>
-        <div class="k-sub">rank 32 on attn/MLP</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">MAE ↔ Leaderboard</div>
         <div class="k-value">r = +0.820</div>
-        <div class="k-sub">strong correlation validated</div>
+        <div class="k-sub">상관 검증 (초기 tuning phase)</div>
       </div>
     </div>
 
-    <div class="media" style="margin-top:20px;">
-      <div class="placeholder">
-        <div class="type-badge">PNG</div>
-        <div class="label-line">Performance Chart &mdash; Action MAE vs Leaderboard scatter (r=+0.820)</div>
-        <div class="fname">assets/p03/perf_corr.png</div>
-      </div>
-    </div>
+    <p style="color:var(--gray-700); margin-top:20px;">
+      <b>Cosmos-Predict3-Nano</b>를 SO-100 도메인에 개인 참가로 튜닝, 최종 <b>도전본 LB 0.2407 / 안전본 LB 0.24524</b>로 챌린지를 마무리했다. Action Injection + LoRA + EE-Delta 재설계까지 3단 파이프라인이 초기 phase에서 <b>action MAE ↔ LB 상관 r = +0.820</b>을 안정적으로 만들어 준 것이 이후 안전본 방어 전략의 근거가 되었다.
+    </p>
+
+    <h3 style="margin-top:24px; font-size:1.05rem; color:var(--ink);">Lessons Learned &mdash; 6일 스프린트 회고</h3>
+    <ul style="padding-left:18px;color:var(--gray-700); margin-top:8px;">
+      <li><b>LB 지표의 실체</b> &mdash; 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·DINO + 0.3·R3D + 0.4·act_mae</span>지만 실제로는 <b>act_mae 항의 스케일(≈2.8)이 dominant</b>이라, R3D 항은 사실상 <b>video naturalness detector</b>로 작동. compositing/warping류 후처리는 자연스러움 지표에서 원천적으로 손해.</li>
+      <li><b>Training loss 최저점 ≠ LB 최적점</b> &mdash; step별 sweep으로 checkpoint selection이 학습 자체보다 결과 기여도가 컸다 (도전본 step 6000).</li>
+      <li><b>대형 도전 트랙 6개 전부 실패</b> &mdash; Track A(Cosmos-Predict2.5 마이그레이션 · G5 falsification FAIL), Track B(constant-weight aux · LB 0.2508 visual 손상), Track C(Cosmos3-Edge · 아키텍처 미스매치 + DROID-only 도메인), Track D/E, Robot-Factored WM까지 6개 트랙 시도 후 <b>모두 안전본 대비 후퇴</b>. 남은 기간은 <b>안전본 방어 + 단일 축(B4 sweep) 최적화</b>로 pivot한 것이 최선이었다.</li>
+      <li><b>인프라 검증의 중요성</b> &mdash; 슬럼 라벨 <span style="font-family:'JetBrains Mono',monospace;">p6000</span>인 gpu-113이 실물은 <b>RTX PRO 6000 Blackwell 95GB (sm_120)</b>였음. <span style="font-family:'JetBrains Mono',monospace;">nvidia-smi</span> 실측으로 확인 후 nightly torch env를 새로 만들어 <b>7배 가속</b>. "레이블을 믿지 말고 실측하라"는 원칙 재확인.</li>
+      <li><b>확증편향 대응</b> &mdash; 결정 전 codex CLI로 자문받은 tick 로그를 남기고, 실측 실패(예: B4v2 constant-weight)를 별도 파일로 기록해 재시도 금지 목록 관리. 과감한 pivot과 안전본 방어를 분리한 것이 정답이었다.</li>
+    </ul>
+
+    <ul style="padding-left:18px;color:var(--gray-700); margin-top:16px;">
+      <li>실행 환경 &mdash; <b>Ubuntu 22.04 · Slurm · PyTorch 2.6 (inha2026 env) + PyTorch 2.15 nightly cu130 (inha2026_bw, Blackwell 전용)</b></li>
+      <li>Model &mdash; <b>Cosmos-Predict3-Nano</b> · Diffusers 0.39.0 · PEFT 0.20.0 · LoRA rank 32 (attn + MLP)</li>
+      <li>Data &mdash; <b>SO-100 로봇 15-frame 롤아웃</b> · Dacon 236736 · train/eval action 분포 편차 EDA 완료</li>
+      <li>Automation &mdash; <b>auto_loop_v2</b> (10분 tick, candidate 학습→inference→Action mean 판정→codex 자문 launch를 무한 loop)</li>
+    </ul>
   </div>
 </section>
 
