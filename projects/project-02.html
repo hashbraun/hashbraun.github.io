@@ -54,12 +54,11 @@
 <section>
 
   <div class="media">
-    <div class="placeholder">
-      <div class="type-badge">PNG</div>
-      <div class="label-line">System Overview &mdash; Seed labels → Detector → Semi-auto labeling tool → Human review → Retrain</div>
-      <div class="fname">assets/p02/overview.png</div>
-      <div class="hint">전체 파이프라인 다이어그램 자리</div>
-    </div>
+    <img src="../assets/p02/overview.png"
+         alt="Semi-Auto Labeling Pipeline (Construction CCTV) — Seed Labels → Detector (YOLO26x/YOLOv11x/RT-DETR) → Semi-Auto Labeling Tool (FastAPI+Docker) → Human Review → Retrain (Auto-loop codex-review). 순환 iteration 표시." />
+    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+      * <b>전체 파이프라인</b> — 소량 seed 라벨을 시작으로 detector가 pre-annotate → 툴에서 사람 검수 → 재학습 순환. codex-review 기반 auto-loop이 하이퍼파라미터 튜닝을 자동화.
+    </p>
   </div>
 
   <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
@@ -87,27 +86,27 @@
     </ul>
 
     <div class="media" style="margin-top:20px;">
-      <div class="placeholder">
-        <div class="type-badge">PNG</div>
-        <div class="label-line">Architecture &mdash; Scene-split → YOLO26x@1280 → poc_eval F1 gate → Semi-auto labeling deploy</div>
-        <div class="fname">assets/p02/architecture.png</div>
-      </div>
+      <img src="../assets/p02/architecture.png"
+           alt="Detection Pipeline Architecture v2 — DATA (PoC 37K + Novel 155 scenes + AIHub SAM2-crop synth 5K) → SPLIT (Scene-level 3-way held-out, leakage=0) → MODELS 7 (YOLO26x·YOLOv11x·RT-DETR) → WBF Ensemble (mAP@0.5 0.670) + TTA/SWA → DEPLOY (Test-inclusion Retrain + BOTSORT+ReID tracking + FastAPI/Docker/SLURM)" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>v2 아키텍처</b> — 데이터 3계열 → 씬 단위 3-way split → 7개 detection 모델 → WBF 앙상블 + TTA/SWA → 배포 (test-inclusion 재학습 + BOTSORT+ReID tracking).
+      </p>
     </div>
 
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
-        <div class="placeholder">
-          <div class="type-badge gif">GIF</div>
-          <div class="label-line">Long-tail rescue &mdash; pump car detection before/after</div>
-          <div class="fname">assets/p02/demo_pump.gif</div>
-        </div>
+        <img src="../assets/p02/demo_pump.gif"
+             alt="Pump car detection before/after — window_10.mp4 (test_poc의 pump car 유일 씬) 8초 side-by-side. 왼쪽: v1 baseline detection (pump car 잘 못 잡음), 오른쪽: v2 antiof1 detection (pump car 안정 검출)." />
+        <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+          * <b>Long-tail rescue</b> &mdash; window_10.mp4 (pump car 씬)에서 v1 baseline (좌) vs v2 antiof1 (우) 검출 비교.
+        </p>
       </div>
       <div class="media">
-        <div class="placeholder">
-          <div class="type-badge gif">GIF</div>
-          <div class="label-line">Semi-auto labeling tool UX</div>
-          <div class="fname">assets/p02/demo_tool.gif</div>
-        </div>
+        <img src="../assets/p02/demo_tool_flow.png"
+             alt="Semi-Auto Labeling Tool UX Flow — 3단계: ① Auto Pre-annotate (Detector predict + bbox draw), ② Human Review & Fix (Web UI에서 add/remove/move/relabel), ③ Apply & Retrain (SLURM job + codex-review args tuning + regression alarm). 순환 iteration으로 pool 확장." />
+        <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+          * <b>사내 세미오토 라벨링 툴 UX flow</b> &mdash; pre-annotate → human review → retrain 순환 (FastAPI+Docker).
+        </p>
       </div>
     </div>
   </div>
@@ -171,11 +170,13 @@
     </ul>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">3. 7 attempt 통제 실험 + LLM-in-the-loop</h3>
-    <div class="media" style="margin-top:10px;">
-      <div class="placeholder">
-        <div class="type-badge">TABLE</div>
-        <div class="label-line">test_poc mAP@0.5 · 씬 단위 held-out · 5,766 frames</div>
-        <div class="fname" style="text-align:left;font-family:monospace;font-size:0.85rem;line-height:1.7;color:var(--gray-800);white-space:pre;">
+    <div class="card-block" style="margin-top:10px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
+      <p style="font-size:0.86rem;color:var(--gray-700);margin-bottom:10px;line-height:1.7;">
+        <b>test_poc</b>: 학습에 쓰지 않은 <b>35개 CCTV 비디오 · 5,766 프레임</b>.
+        <b>씬 단위 held-out</b> = 같은 비디오 프레임이 train과 test에 절대 섞이지 않음 (프레임 단위 split의 부풀림 방지).
+        <b>mAP@0.5</b> = IoU 0.5 기준 클래스별 Average Precision 평균.
+      </p>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.75;color:var(--gray-800);white-space:pre;background:#FFFFFF;padding:12px 16px;border-radius:6px;border:1px solid #E2E8F0;">
 att2 (D=baseline poc-only)         0.421
 att3 (C=poc+synth 5K)              0.455  (+3.4pp)
 ext1 (데이터 확장 37K, 155 씬)     0.589  (+13.4pp)
@@ -185,7 +186,6 @@ hires1 (imgsz 1536)                0.554
 rtdetr-x-v1 (Transformer)          0.498
 yolo11x-v1 (신 YOLO)               0.615
 antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
-        </div>
       </div>
     </div>
     <ul style="padding-left:18px;color:var(--gray-700);margin-top:10px;">
