@@ -32,12 +32,17 @@
   <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class heavy-equipment / worker detection</div>
   <div class="stack">
     <span class="tech">YOLO26x</span>
+    <span class="tech">YOLOv11-x</span>
+    <span class="tech">RT-DETR</span>
+    <span class="tech">SAM2</span>
     <span class="tech">imgsz 1280</span>
     <span class="tech">FastAPI</span>
     <span class="tech">Docker</span>
     <span class="tech">SLURM</span>
-    <span class="tech">Scene-level Split</span>
-    <span class="tech">Augmentation Recipe</span>
+    <span class="tech">Scene-level Held-out</span>
+    <span class="tech">WBF Ensemble</span>
+    <span class="tech">BOTSORT+ReID</span>
+    <span class="tech">Codex LLM-in-the-loop</span>
   </div>
   <div class="meta-row">
     <div><span class="label">Role</span> AI Researcher</div>
@@ -143,6 +148,120 @@
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
       <b>v1 attempt 2</b> weight가 배포 가중치로 채택되어 사내 세미오토 라벨링 툴에 얹혀 운영되고 있다.
     </p>
+  </div>
+
+  <!-- ============================================================
+       v2 확장: 데이터·아키텍처·앙상블·트래킹까지
+       ============================================================ -->
+  <h2 class="section-title"><span class="num">v2 ·</span> Progression (Aug 2026)</h2>
+  <div class="card-block">
+    <p><b>v1 배포 직후</b> 방법론과 데이터셋 규모를 근본적으로 재정비. 씬 단위 held-out 원칙을 세우고, 7개 attempt를 통제 실험으로 비교한 뒤 앙상블·트래킹까지 end-to-end로 확장.</p>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">1. 정직한 평가 확립</h3>
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>기존 mixed test (5,916)를 <b>test_poc (5,766 · 35 씬)</b> / test_aihub (110) / test_wd (40) 로 소스별 분리 → pure CCTV 지표 확립.</li>
+      <li>이전 mAP 95%는 프레임 단위 split의 leakage 부산물이었음을 확인. <b>씬 단위 held-out</b>에선 실질 0.4~0.6 수준이 정직한 성능.</li>
+    </ul>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">2. AIHub partial-label 회귀 진단</h3>
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>v2 att1 (mixed 학습)에서 person <span class="warn" style="color:#b45309;">-3%</span> · fork lift <span class="warn" style="color:#b45309;">-7%</span> 회귀 관측.</li>
+      <li>원인: AIHub 237 라벨은 excavator만 존재 · 프레임 속 unlabeled person이 background로 학습되어 검출 억제.</li>
+      <li>대응: <b>SAM2 마스크 기반 crop 합성 파이프라인</b> (외형만 흡수, 환경은 PoC) — pre_extracted_bg 오염 77장 중 53장 발견 → 제외.</li>
+    </ul>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">3. 7 attempt 통제 실험 + LLM-in-the-loop</h3>
+    <div class="media" style="margin-top:10px;">
+      <div class="placeholder">
+        <div class="type-badge">TABLE</div>
+        <div class="label-line">test_poc mAP@0.5 · 씬 단위 held-out · 5,766 frames</div>
+        <div class="fname" style="text-align:left;font-family:monospace;font-size:0.85rem;line-height:1.7;color:var(--gray-800);white-space:pre;">
+att2 (D=baseline poc-only)         0.421
+att3 (C=poc+synth 5K)              0.455  (+3.4pp)
+ext1 (데이터 확장 37K, 155 씬)     0.589  (+13.4pp)
+tune1 (patience 0, aug 최소)       0.524
+tune3 (cls=2.5, minority 강화)     0.592
+hires1 (imgsz 1536)                0.554
+rtdetr-x-v1 (Transformer)          0.498
+yolo11x-v1 (신 YOLO)               0.615
+antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
+        </div>
+      </div>
+    </div>
+    <ul style="padding-left:18px;color:var(--gray-700);margin-top:10px;">
+      <li><b>codex JSON 검토 기반 auto-loop</b> — 학습 완료 → 3-슬라이스 평가 → codex가 args.yaml 파라미터 제안 → 자동 재학습 → 반복 (regression alarm 자동 중단).</li>
+      <li><b>overfitting 원인 규명</b>: val_cls_loss 폭증 (3~4×) = classification overconfidence 과적합. AdamW + lr 0.0005 + cls 가중치 0.8로 <b>val_cls 6~12 → 0.31로 감쇠 확인</b> (antiof1).</li>
+    </ul>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">4. WBF 앙상블 (7 모델)</h3>
+    <div class="kpi-grid" style="margin-top:8px;">
+      <div class="kpi-tile">
+        <div class="k-label">WBF Ensemble mAP@0.5</div>
+        <div class="k-value">0.670</div>
+        <div class="k-sub">test_poc · 7 모델 · +3.8pp vs best 개별</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">truck</div>
+        <div class="k-value">0.903</div>
+        <div class="k-sub">Recall 99.3%</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">fork lift</div>
+        <div class="k-value">0.869</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">car</div>
+        <div class="k-value">0.842</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">RMC</div>
+        <div class="k-value">0.831</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">dump truck</div>
+        <div class="k-value">0.826</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">window</div>
+        <div class="k-value">0.816</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="k-label">person</div>
+        <div class="k-value">0.773</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">5. Test-inclusion 재학습 (배포 최종)</h3>
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>배포 카메라 = 학습 도메인이므로 held-out 검증 후 <b>train + val + test_poc 모두 편입 재학습</b> (all-data 51K frames).</li>
+      <li>산업 표준 pipeline (Kaggle 우승 · Waymo · Amazon SageMaker AutoML): 개발 시 held-out으로 방법 검증 → 배포용은 all data 재학습.</li>
+      <li><b>deploy-v1</b> 후보 · antiof1 승자 설정 (AdamW + lr↓ + aug↓) 유지 · 예상 실배포 성능 <b>0.85+</b>.</li>
+    </ul>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. End-to-end Tracking (BOTSORT + ReID)</h3>
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li>JDE (Joint Detection & Embedding) 실무 등가로 <b>Ultralytics BOTSORT + ReID</b> (<code>with_reid: True</code>) 채택.</li>
+      <li>appearance-based re-identification으로 <b>occlusion 복구</b> (사람이 트럭 뒤로 사라졌다 재등장해도 같은 ID 유지).</li>
+      <li>데모 결과 (manual_css411202z041, 453 frames): 5 unique IDs 안정 추적 · max_conf 0.85~0.99.</li>
+    </ul>
+    <div class="media" style="margin-top:14px;">
+      <div class="placeholder">
+        <div class="type-badge gif">GIF</div>
+        <div class="label-line">BOTSORT+ReID tracking demo &mdash; person/truck IDs preserved across occlusions</div>
+        <div class="fname">assets/p02/tracking_demo.gif</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
+  <div class="card-block">
+    <ul style="padding-left:18px;color:var(--gray-700);">
+      <li><b>정직한 평가 &gt; 화려한 지표.</b> 이전 mAP 95%는 프레임 leakage로 부풀린 수치. 씬 단위 held-out으로 재정립한 0.6대가 실질.</li>
+      <li><b>Partial-label의 함정.</b> 외부 데이터 편입 시 라벨 온톨로지 mismatch가 negative supervision을 유도해 오히려 회귀 유발. 합성으로 회피.</li>
+      <li><b>데이터 다양성 &gt; 하이퍼파라미터.</b> 씬 다양성 5× (32→155)이 hyperparameter 튜닝 총합보다 큰 편익 (+14pp).</li>
+      <li><b>LLM-in-the-loop MLOps.</b> codex의 파라미터 제안 + regression alarm이 4h 학습 낭비를 방지.</li>
+      <li><b>Held-out은 배포용 모델이 아님.</b> 검증 후 all-data 재학습이 산업 표준. Test-inclusion 재학습은 leakage가 아니라 <b>산업 관행</b>.</li>
+    </ul>
   </div>
 </section>
 
