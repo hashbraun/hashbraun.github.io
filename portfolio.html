@@ -67,9 +67,8 @@
               </p>
               <p>
                 최근에는 <b>2026 INHA AI Challenge</b>에서 Cosmos-Predict3-Nano를 개인 참가로 튜닝해
-                action-conditioned world model의 액션 표현·주입 구조를 실험하였고
-                (도전본 리더보드 <b>0.2407</b> / 안전본 0.24524, action MAE ↔ leaderboard 상관 r=+0.820),
-                6일 스프린트 6개 도전 트랙 회고를 통해 <b>안전본 방어와 checkpoint selection의 중요성</b>을 정리하며 챌린지를 마무리했습니다.
+                action-conditioned world model의 액션 표현·주입 구조를 실험하였고,
+                <b>전체 215명 중 학부생 부문 11위</b>로 챌린지를 마무리했습니다.
               </p>
             </div>
           </div>
@@ -128,71 +127,6 @@
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
-              Smart-Elevator CCTV 자동 라벨링 시스템
-              <a class="more" href="projects/project-01.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.07 ~ 2026.04</div>
-          </div>
-          <div class="entry-org">with <b>현대엘리베이터</b> · AI Researcher</div>
-          <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>탑뷰(top-down) 4K CCTV 도메인의 학습 데이터 확보를 위한 <b>풀스택 라벨링 툴</b>.</li></ul>
-            <div class="bhead">[기존 문제점]</div>
-            <ul>
-              <li>탑뷰 시점은 COCO pretrained detector가 사실상 무용지물 → 수작업 라벨링 비용 폭증.</li>
-              <li>SAM2의 centroid-point prompting은 초기 마스크가 불안정하면 클립 전체에 드리프트 누적.</li>
-            </ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>YOLO11m-seg 도메인 파인튜닝</b> (19K frames · 241 seqs).</li>
-              <li><b>Polygon-Mask Prompting</b>으로 SAM2 초기 마스크 앵커 재설계.</li>
-              <li><b>Active Learning 루프</b> (저신뢰 프레임 4× oversample + replay).</li>
-              <li>FastAPI + React/Vite + Docker + SLURM + NAS 기반 <b>다중 사용자 웹 툴 배포</b>.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li>YOLO11m-seg <b>Box mAP50 = 0.978 · Mask mAP50 = 0.978</b>.</li>
-              <li>SAM2 tracking IoU <b>+55.4pp</b> (3 × 60-frame clip 평균).</li>
-              <li>Clicks/frame <b>7 → 2</b>, 60-frame clip 라벨링 시간 <b>30 min → 4 min</b>.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 2 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              건설안전 검출 세미오토 라벨링 툴
-              <a class="more" href="projects/project-02.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2026.04 ~ 재직 중</div>
-          </div>
-          <div class="entry-org">with <b>HDC LABS</b> · AI Researcher</div>
-          <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>건설현장 CCTV용 10-class 중장비 / 작업자 검출기 개선 + 사내 세미오토 라벨링 툴 (FastAPI + Docker + SLURM) 배포.</li></ul>
-            <div class="bhead">[기존 문제점]</div>
-            <ul>
-              <li>소수 클래스(pump car, RMC 등) F1이 사실상 무의미한 수준.</li>
-              <li>학습 val-mAP가 실측 성능과 어긋나는 metric–reality 괴리.</li>
-            </ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>v1</b> — Scene-level 3-way split + 소수 클래스 val/test 강제 할당 · 12→10 클래스 · <b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>) · 배포 판정 지표 <b>poc_eval per-class F1</b>로 이동.</li>
-              <li><b>v2</b> — 씬 단위 3-way held-out (leakage=0) 재정립 · <b>SAM2 crop synth</b>로 AIHub partial-label 회귀 회피 · <b>9 attempt codex LLM-in-the-loop</b> auto-loop (val_cls_loss regression alarm) · <b>WBF 7-model ensemble</b> + TTA/SWA · <b>Test-inclusion 재학습</b> · <b>BOTSORT+ReID</b> tracking.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li><b>v1 (배포본)</b> &mdash; Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>. window는 <b>0.84 → 0.72</b>로 통제 트레이드오프. <b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
-              <li><b>v2 (진행형)</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(453 frames, 5 unique IDs) end-to-end 확립.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 3 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
               Action-Conditioned Video Generation World Model
               <a class="more" href="projects/project-03.html">상세 보기 →</a>
             </div>
@@ -218,36 +152,12 @@
             <ul>
               <li>Action Injection <b>MAE &minus;43.2%</b>, LoRA <b>&minus;8.6%</b>, EE-Delta <b>&minus;8.5%</b>. Action MAE ↔ LB 상관 <b>r = +0.820</b> 검증.</li>
               <li>최종 <b>도전본 LB 0.2407</b> (B4 sweep step 6000) / <b>안전본 LB 0.24524</b> (v5_base ANCHORED_soft) — <b>안전본 대비 &minus;0.0045</b> 개선.</li>
-              <li>6일 스프린트 6개 도전 트랙(Track A~E + Robot-Factored WM) 모두 안전본 후퇴로 회귀 판정 후 <b>단일 축 최적화 pivot</b>. Blackwell(sm_120) 실측으로 nightly torch env 신설, diffusion step <b>7배 가속</b>.</li>
+              <li>전체 215명 중 <b>학부생 부문 11위</b>로 마감.</li>
             </ul>
           </div>
         </div>
 
-        <!-- 4 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              VLA Imitation Learning Bi-manipulator
-              <a class="more" href="projects/project-04.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.07 ~ 2026.02</div>
-          </div>
-          <div class="entry-org">Undergraduate Research @ <b>RILS Lab</b> · Team Leader</div>
-          <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>RGB-only imitation policy의 <b>location memorization</b>과 <b>pose hallucination</b>을 완화하는 bi-manipulator VLA 정책.</li></ul>
-            <div class="bhead">[담당 업무]</div>
-            <ul>
-              <li>Teleoperation rig 세팅 · <b>SO-101 시연 데이터 수집</b> · 에피소드 큐레이션 · 정책 학습 · closed-loop 평가.</li>
-              <li>비주얼 경로에 <b>3D Point-Cloud 임베딩</b> 주입 (FPS로 균일 커버리지 확보).</li>
-              <li>top / front / wrist 3-camera + proprioceptive state + <b>프레임-액션 temporal context</b> 융합.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>실기 로봇 데이터 수집 ~ closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간</b>을 end-to-end로 경험.</li></ul>
-          </div>
-        </div>
-
-        <!-- 5 -->
+        <!-- 2 -->
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
@@ -275,7 +185,119 @@
           </div>
         </div>
 
+        <!-- 3 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              건설안전 검출 세미오토 라벨링 툴
+              <a class="more" href="projects/project-02.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2026.06 ~ 2026.08</div>
+          </div>
+          <div class="entry-org">with <b>HDC LABS</b> · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>건설현장 CCTV용 10-class 중장비 / 작업자 검출기 개선 + 사내 세미오토 라벨링 툴 (FastAPI + Docker + SLURM) 배포.</li></ul>
+            <div class="bhead">[기존 문제점]</div>
+            <ul>
+              <li>소수 클래스(pump car, RMC 등) F1이 사실상 무의미한 수준.</li>
+              <li>학습 val-mAP가 실측 성능과 어긋나는 metric–reality 괴리.</li>
+            </ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>v1</b> — Scene-level 3-way split + 소수 클래스 val/test 강제 할당 · 12→10 클래스 · <b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>) · 배포 판정 지표 <b>poc_eval per-class F1</b>로 이동.</li>
+              <li><b>v2</b> — 씬 단위 3-way held-out (leakage=0) 재정립 · <b>SAM2 crop synth</b>로 AIHub partial-label 회귀 회피 · <b>9 attempt codex LLM-in-the-loop</b> auto-loop (val_cls_loss regression alarm) · <b>WBF 7-model ensemble</b> + TTA/SWA · <b>Test-inclusion 재학습</b> · <b>BOTSORT+ReID</b> tracking.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li><b>v1 (배포본)</b> &mdash; Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>. window는 <b>0.84 → 0.72</b>로 통제 트레이드오프. <b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
+              <li><b>v2 (진행형)</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(453 frames, 5 unique IDs) end-to-end 확립.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              Smart-Elevator CCTV 자동 라벨링 시스템
+              <a class="more" href="projects/project-01.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2026.03 ~ 2026.05</div>
+          </div>
+          <div class="entry-org">with <b>현대엘리베이터</b> · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>탑뷰(top-down) 4K CCTV 도메인의 학습 데이터 확보를 위한 <b>풀스택 라벨링 툴</b>.</li></ul>
+            <div class="bhead">[기존 문제점]</div>
+            <ul>
+              <li>탑뷰 시점은 COCO pretrained detector가 사실상 무용지물 → 수작업 라벨링 비용 폭증.</li>
+              <li>SAM2의 centroid-point prompting은 초기 마스크가 불안정하면 클립 전체에 드리프트 누적.</li>
+            </ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li><b>YOLO11m-seg 도메인 파인튜닝</b> (19K frames · 241 seqs).</li>
+              <li><b>Polygon-Mask Prompting</b>으로 SAM2 초기 마스크 앵커 재설계.</li>
+              <li><b>Active Learning 루프</b> (저신뢰 프레임 4× oversample + replay).</li>
+              <li>FastAPI + React/Vite + Docker + SLURM + NAS 기반 <b>다중 사용자 웹 툴 배포</b>.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul>
+              <li>YOLO11m-seg <b>Box mAP50 = 0.978 · Mask mAP50 = 0.978</b>.</li>
+              <li>SAM2 tracking IoU <b>+55.4pp</b> (3 × 60-frame clip 평균).</li>
+              <li>Clicks/frame <b>7 → 2</b>, 60-frame clip 라벨링 시간 <b>30 min → 4 min</b>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              CV AI Agent · VLM Video Action Recognition
+              <a class="more" href="projects/project-08.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.04</div>
+          </div>
+          <div class="entry-org">Qwen3-VL · Zero training · AI Researcher</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>전용 action recognizer 학습 없이 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>(15 categories)로 변환.</li></ul>
+            <div class="bhead">[해결 방안]</div>
+            <ul>
+              <li>Qwen3-VL <b>structured output</b> + constraint-aware 프롬프트 엔지니어링 (액션 정의, 우선순위, 가시성, ≥5s 임계).</li>
+              <li><b>Adaptive ffmpeg downsampling</b> 전처리로 장시간 클립 OOM 방지, SLURM 전 데이터셋 배치 처리.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>학습 없이도 신뢰 가능한 액션 세그먼트를 배치 처리 가능한 파이프라인으로 안착.</li></ul>
+          </div>
+        </div>
+
         <!-- 6 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              VLA Imitation Learning Bi-manipulator
+              <a class="more" href="projects/project-04.html">상세 보기 →</a>
+            </div>
+            <div class="entry-period">2025.07 ~ 2026.02</div>
+          </div>
+          <div class="entry-org">Undergraduate Research @ <b>RILS Lab</b> · Team Leader</div>
+          <div class="bracket">
+            <div class="bhead">[프로젝트 소개]</div>
+            <ul><li>RGB-only imitation policy의 <b>location memorization</b>과 <b>pose hallucination</b>을 완화하는 bi-manipulator VLA 정책.</li></ul>
+            <div class="bhead">[담당 업무]</div>
+            <ul>
+              <li>Teleoperation rig 세팅 · <b>SO-101 시연 데이터 수집</b> · 에피소드 큐레이션 · 정책 학습 · closed-loop 평가.</li>
+              <li>비주얼 경로에 <b>3D Point-Cloud 임베딩</b> 주입 (FPS로 균일 커버리지 확보).</li>
+              <li>top / front / wrist 3-camera + proprioceptive state + <b>프레임-액션 temporal context</b> 융합.</li>
+            </ul>
+            <div class="bhead">[성과]</div>
+            <ul><li>실기 로봇 데이터 수집 ~ closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간</b>을 end-to-end로 경험.</li></ul>
+          </div>
+        </div>
+
+        <!-- 7 -->
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
@@ -299,7 +321,7 @@
           </div>
         </div>
 
-        <!-- 7 -->
+        <!-- 8 -->
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
@@ -320,29 +342,6 @@
             </ul>
             <div class="bhead">[성과]</div>
             <ul><li>SAM 원본 <b>100개 → 71개(IoU dedup) → 클래스 분류 → DBSCAN 병합</b>으로 이미지당 <b>6~15개 마스크</b>의 사용 가능한 오토라벨을 학습 없이 확보.</li></ul>
-          </div>
-        </div>
-
-        <!-- 8 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              CV AI Agent · VLM Video Action Recognition
-              <a class="more" href="projects/project-08.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.07 ~ 2026.04</div>
-          </div>
-          <div class="entry-org">Qwen3-VL · Zero training · AI Researcher</div>
-          <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>전용 action recognizer 학습 없이 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>(15 categories)로 변환.</li></ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li>Qwen3-VL <b>structured output</b> + constraint-aware 프롬프트 엔지니어링 (액션 정의, 우선순위, 가시성, ≥5s 임계).</li>
-              <li><b>Adaptive ffmpeg downsampling</b> 전처리로 장시간 클립 OOM 방지, SLURM 전 데이터셋 배치 처리.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>학습 없이도 신뢰 가능한 액션 세그먼트를 배치 처리 가능한 파이프라인으로 안착.</li></ul>
           </div>
         </div>
 
