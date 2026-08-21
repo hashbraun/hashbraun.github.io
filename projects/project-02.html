@@ -154,8 +154,8 @@
       </div>
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">BOTSORT + ReID</div>
-        <div class="k-value">5 IDs</div>
-        <div class="k-sub">453 frames · occlusion 이후 ID 유지</div>
+        <div class="k-value">2 stable IDs</div>
+        <div class="k-sub">451 frames · max_conf 0.97~0.98</div>
       </div>
     </div>
 
@@ -290,14 +290,14 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>JDE (Joint Detection & Embedding) 실무 등가로 <b>Ultralytics BOTSORT + ReID</b> (<code>with_reid: True</code>) 채택.</li>
       <li>appearance-based re-identification으로 <b>occlusion 복구</b> (사람이 트럭 뒤로 사라졌다 재등장해도 같은 ID 유지).</li>
-      <li>데모 결과 (manual_css411202z041, 453 frames): 5 unique IDs 안정 추적 · max_conf 0.85~0.99.</li>
+      <li>실측 데모 (<span style="font-family:'JetBrains Mono',monospace;">manual_css411202z045</span>, 451 frames): dump truck·fork lift 2개 유효 ID 전 구간 안정 유지, max_conf <b>0.97~0.98</b>.</li>
     </ul>
     <div class="media" style="margin-top:14px;">
-      <div class="placeholder">
-        <div class="type-badge gif">GIF</div>
-        <div class="label-line">BOTSORT + ReID tracking demo &mdash; antiof1 detection + appearance-based tracker · 453 frames · 5 unique IDs · occlusion 이후 ID 유지</div>
-        <div class="fname">assets/p02/tracking_demo.gif &nbsp;<span class="hint">(pending)</span></div>
-      </div>
+      <img src="../assets/p02/tracking_demo.gif"
+           alt="BOTSORT + ReID tracking demo — antiof1 detection + BOTSORT+ReID tracker · manual_css411202z045 (15s, 451 frames) · ID 1 fork lift(max 0.98)·ID 2 dump truck(max 0.97) 안정 추적" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>BOTSORT + ReID 실측 데모</b> &mdash; antiof1 detection + tracker on <span style="font-family:'JetBrains Mono',monospace;">manual_css411202z045</span> (15 s · 451 frames). <b>ID 1 fork lift (max_conf 0.98)</b>와 <b>ID 2 dump truck (max_conf 0.97)</b>가 전 구간 안정 유지 (3rd ID는 1 frame 단발 FP). 재렌더 파이프라인: <code>v4_tracking_demo.py</code> + <code>botsort_reid.yaml</code>.
+      </p>
     </div>
   </div>
 
