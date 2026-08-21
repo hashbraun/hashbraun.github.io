@@ -138,11 +138,11 @@
     </div>
 
     <div class="media" style="margin-top:20px;">
-      <div class="placeholder">
-        <div class="type-badge">PNG</div>
-        <div class="label-line">Performance Chart &mdash; per-class F1 (baseline vs v1 attempt 2)</div>
-        <div class="fname">assets/p02/perf_f1.png</div>
-      </div>
+      <img src="../assets/p02/perf_f1.png"
+           alt="Per-class Performance chart — v1 attempt 2 (poc_eval F1) 대 v2 WBF ensemble (test_poc AP@0.5) · 9 클래스 나란히 bar 비교 · 빨간 참고선 = ensemble all mAP 0.670" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>v1 baseline vs v2 WBF ensemble</b> (7 모델). v1은 poc_eval F1, v2는 test_poc AP@0.5. car/RMC/truck/fork lift/dump truck/window 전반 큰 개선, pump car·defect는 여전히 낮음.
+      </p>
     </div>
 
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
@@ -245,11 +245,11 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
       <li>데모 결과 (manual_css411202z041, 453 frames): 5 unique IDs 안정 추적 · max_conf 0.85~0.99.</li>
     </ul>
     <div class="media" style="margin-top:14px;">
-      <div class="placeholder">
-        <div class="type-badge gif">GIF</div>
-        <div class="label-line">BOTSORT+ReID tracking demo &mdash; person/truck IDs preserved across occlusions</div>
-        <div class="fname">assets/p02/tracking_demo.gif</div>
-      </div>
+      <img src="../assets/p02/tracking_demo.gif"
+           alt="BOTSORT+ReID tracking demo — 15초 CCTV 영상에 antiof1 detection + BOTSORT+ReID tracker 적용. 5 unique IDs (truck 1개 + person 4개) 안정 추적, max_conf 0.85~0.99. Occlusion 뒤 재등장 시 ID 유지." />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>BOTSORT + ReID (JDE 등가) 데모</b> — antiof1 (test_poc mAP 0.632) detection에 appearance-based tracker 결합. 453 frames · 5 unique IDs.
+      </p>
     </div>
   </div>
 
