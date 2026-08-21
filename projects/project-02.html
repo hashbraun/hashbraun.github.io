@@ -48,11 +48,10 @@
 <section>
 
   <div class="media">
-    <div class="placeholder">
-      <div class="type-badge">PNG</div>
-      <div class="label-line">System Overview &mdash; Seed Labels → Detector (YOLO26x/YOLOv11x/RT-DETR) → Semi-Auto Labeling Tool (FastAPI+Docker) → Human Review → Retrain (Auto-loop codex-review)</div>
-      <div class="fname">assets/p02/overview.png &nbsp;<span class="hint">(pending)</span></div>
-    </div>
+    <img src="../assets/p02/overview.png"
+         alt="System overview — Seed → Detector → Semi-Auto Tool → Human Review → Retrain"
+         style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+    <div class="cap" style="margin-top:8px;">System overview &middot; iterative label-pool 확장 루프. 결과: v1 attempt 2 배포 &middot; v2 WBF ensemble mAP@0.5 = 0.670.</div>
   </div>
 
   <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
@@ -80,27 +79,24 @@
     </ul>
 
     <div class="media" style="margin-top:20px;">
-      <div class="placeholder">
-        <div class="type-badge">PNG</div>
-        <div class="label-line">v2 Architecture &mdash; DATA (PoC 37K + Novel 155 scenes + AIHub SAM2-crop synth 5K) → SPLIT (Scene-level 3-way held-out) → 7 detectors → WBF Ensemble (mAP@0.5 0.670) + TTA/SWA → DEPLOY (Test-inclusion retrain + BOTSORT+ReID)</div>
-        <div class="fname">assets/p02/architecture.png &nbsp;<span class="hint">(pending)</span></div>
-      </div>
+      <img src="../assets/p02/architecture.png"
+           alt="v2 architecture — DATA → SPLIT → 9 attempts → WBF ensemble → deploy + tracking"
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <div class="cap" style="margin-top:8px;">v2 detection pipeline &middot; scene-level held-out → 9 attempts → 7-model WBF (+3.8pp) → deploy candidate + BOTSORT+ReID tracking.</div>
     </div>
 
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
-        <div class="placeholder">
-          <div class="type-badge gif">GIF</div>
-          <div class="label-line">Pump car long-tail rescue &mdash; window_10.mp4 (test_poc pump car 씬) v1 baseline vs v2 antiof1 side-by-side</div>
-          <div class="fname">assets/p02/demo_pump.gif &nbsp;<span class="hint">(pending)</span></div>
-        </div>
+        <img src="../assets/p02/demo_pump.gif"
+             alt="v1 vs v2 pump-car detection side-by-side on window_10.mp4"
+             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+        <div class="cap" style="margin-top:8px;">Pump-car confusion fix &middot; v1 (좌) 은 창문을 pump car로 대량 오검(long-tail bleed), v2 antiof1 (우) 은 <code>window</code> 로 정확히 회복 &middot; conf ≥ 0.5.</div>
       </div>
       <div class="media">
-        <div class="placeholder">
-          <div class="type-badge">PNG</div>
-          <div class="label-line">Semi-Auto Labeling Tool UX flow &mdash; ① Pre-annotate → ② Human Review & Fix → ③ Apply & Retrain (SLURM + codex-review)</div>
-          <div class="fname">assets/p02/demo_tool_flow.png &nbsp;<span class="hint">(pending)</span></div>
-        </div>
+        <img src="../assets/p02/demo_tool_flow.png"
+             alt="Semi-Auto Labeling Tool UX — Pre-annotate → Review → Apply & Retrain"
+             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+        <div class="cap" style="margin-top:8px;">Semi-Auto Labeling Tool UX &middot; ① Pre-annotate → ② Human Review & Fix → ③ Apply & Retrain (SLURM + Codex).</div>
       </div>
     </div>
   </div>
