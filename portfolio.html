@@ -178,16 +178,13 @@
             </ul>
             <div class="bhead">[해결 방안]</div>
             <ul>
-              <li>Scene-level 3-way split + 소수 클래스 val/test 강제 할당.</li>
-              <li>12 → 10 클래스 (signalman → person 병합, check → 신뢰도 기반 후처리 룰).</li>
-              <li><b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 레시피 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>, <code>close_mosaic=30</code>).</li>
-              <li>배포 판정 지표를 <b>poc_eval per-class F1</b>로 이동.</li>
+              <li><b>v1</b> — Scene-level 3-way split + 소수 클래스 val/test 강제 할당 · 12→10 클래스 · <b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>) · 배포 판정 지표 <b>poc_eval per-class F1</b>로 이동.</li>
+              <li><b>v2</b> — 씬 단위 3-way held-out (leakage=0) 재정립 · <b>SAM2 crop synth</b>로 AIHub partial-label 회귀 회피 · <b>9 attempt codex LLM-in-the-loop</b> auto-loop (val_cls_loss regression alarm) · <b>WBF 7-model ensemble</b> + TTA/SWA · <b>Test-inclusion 재학습</b> · <b>BOTSORT+ReID</b> tracking.</li>
             </ul>
             <div class="bhead">[성과]</div>
             <ul>
-              <li>Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>.</li>
-              <li>포화 클래스인 window는 <b>0.84 → 0.72</b>로 통제된 트레이드오프.</li>
-              <li><b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
+              <li><b>v1 (배포본)</b> &mdash; Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>. window는 <b>0.84 → 0.72</b>로 통제 트레이드오프. <b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
+              <li><b>v2 (진행형)</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(453 frames, 5 unique IDs) end-to-end 확립.</li>
             </ul>
           </div>
         </div>
