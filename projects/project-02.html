@@ -29,7 +29,7 @@
   </div>
   <span class="num-badge">PROJECT 02</span>
   <h1>Semi-Auto Labeling Tool with Construction-Safety Detector</h1>
-  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class heavy-equipment / worker detection</div>
+  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class · v1 deployed → v2 WBF <b>mAP@0.5 0.670</b> (진행형)</div>
   <div class="stack">
     <span class="tech">YOLO26x / YOLOv11x / RT-DETR</span>
     <span class="tech">SAM2</span>
@@ -105,11 +105,13 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result &mdash; v1 (배포본)</h2>
+  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
-      아래 KPI는 <b>v1 attempt 2 · poc_eval per-class F1</b> 기준이다 (사내 배포 가중치로 채택된 버전). v2 진행형 최고 성능은 아래 <b>v2 · Progression</b> 섹션에서 별도 정리한다.
+      <b>v1 (배포본) — poc_eval per-class F1</b> 4개 tile과 <b>v2 (진행형) — test_poc AP@0.5 · WBF 앙상블</b> 4개 tile을 나란히 배치한다. v2 세부 실험 과정은 아래 <b>v2 · Progression</b> 섹션.
     </p>
+
+    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">v1 (배포본) &middot; poc_eval per-class F1</div>
     <div class="kpi-grid">
       <div class="kpi-tile">
         <div class="k-label">Pump Car F1</div>
@@ -133,6 +135,30 @@
       </div>
     </div>
 
+    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:24px 0 6px;">v2 (진행형) &middot; test_poc AP@0.5 · WBF 7-model ensemble</div>
+    <div class="kpi-grid">
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">WBF Ensemble mAP@0.5</div>
+        <div class="k-value">0.670</div>
+        <div class="k-sub">7 모델 · +3.8pp vs best 개별 (antiof1 0.632)</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">truck  ·  fork lift</div>
+        <div class="k-value">0.903 · 0.869</div>
+        <div class="k-sub">truck Recall 99.3%</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">RMC  ·  dump truck</div>
+        <div class="k-value">0.831 · 0.826</div>
+        <div class="k-sub">v1 대비 minority 대폭 회복</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">BOTSORT + ReID</div>
+        <div class="k-value">5 IDs</div>
+        <div class="k-sub">453 frames · occlusion 이후 ID 유지</div>
+      </div>
+    </div>
+
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p02/perf_f1.png"
            alt="Per-class Performance chart — v1 attempt 2 (poc_eval F1) 대 v2 WBF ensemble (test_poc AP@0.5) · 9 클래스 나란히 bar 비교 · 빨간 참고선 = ensemble all mAP 0.670" />
@@ -144,6 +170,14 @@
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
       <b>v1 attempt 2</b> weight가 배포 가중치로 채택되어 사내 세미오토 라벨링 툴에 얹혀 운영되고 있다.
     </p>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/hard_case_fn_gallery.png"
+           alt="Hard cases 갤러리 — dump truck (v1 att2 F1 0.15, 4 프레임) + pump car (v1 att2 F1 0.57 → v2 WBF 0.53으로 소폭 후퇴, 4 프레임) 2×4 그리드. 여전히 남은 minority-class FN 실제 예시" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>여전히 남은 hard cases</b> &mdash; v1 att2까지 소수 클래스가 대폭 개선됐지만 <b>dump truck F1 0.15</b>은 여전. pump car는 v1 → v2 WBF에서 <b>0.57 → 0.53</b>으로 살짝 후퇴 (앙상블 bias 사례).
+      </p>
+    </div>
   </div>
 
   <!-- ============================================================
@@ -166,8 +200,25 @@
       <li>대응: <b>SAM2 마스크 기반 crop 합성 파이프라인</b> (외형만 흡수, 환경은 PoC) — pre_extracted_bg 오염 77장 중 53장 발견 → 제외.</li>
     </ul>
 
+    <div class="media" style="margin-top:14px;">
+      <img src="../assets/p02/v2_att1_confusion_matrix.png"
+           alt="v2 att1 confusion matrix (row-normalized %) — poc_eval 기준. 대각선 person 63.6 / RMC 57.2 / truck 55.6 / fork lift 64.0 / dump truck 13.2 / pump car 93.5 / window 75.6. dump truck 86.8%가 background로 오분류 (여전한 minority 실패). truck 22.5%가 fork lift로 잘못 분류. bg 열에는 person 21.5·window 39.3·truck 17.0의 FP 분포." />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>v2 att1 confusion matrix (poc_eval, row-normalized %)</b> &mdash; person 회귀는 실제로 대각선 63.6% + background 36.4% FN, dump truck은 <b>86.8% background 오분류</b>로 여전히 실패. 이 진단이 SAM2 crop 합성 대응의 근거가 됐다.
+      </p>
+    </div>
+
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">3. 9 attempt 통제 실험 + LLM-in-the-loop</h3>
-    <div class="card-block" style="margin-top:10px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
+
+    <div class="media" style="margin-top:10px;">
+      <img src="../assets/p02/v2_9attempt_progression.png"
+           alt="v2 progression bar chart — 9 attempts (att2 0.421 · att3 0.455 · ext1 0.589 · tune1 0.524 · tune3 0.592 · hires1 0.554 · rtdetr-x-v1 0.498 · yolo11x-v1 0.615 · antiof1 0.632 파란색 하이라이트). WBF 7-model ensemble mAP@0.5 = 0.670 빨간색 참조선" />
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>v2 9 attempt progression</b> &mdash; att2 baseline 0.421 → antiof1 <b>0.632</b>. WBF 7-model ensemble이 최고 single (antiof1) 대비 <b>+3.8pp</b> 추가 (0.670).
+      </p>
+    </div>
+
+    <div class="card-block" style="margin-top:14px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
       <p style="font-size:0.86rem;color:var(--gray-700);margin-bottom:10px;line-height:1.7;">
         <b>test_poc</b>: 학습에 쓰지 않은 <b>35개 CCTV 비디오 · 5,766 프레임</b>.
         <b>씬 단위 held-out</b> = 같은 비디오 프레임이 train과 test에 절대 섞이지 않음 (프레임 단위 split의 부풀림 방지).
@@ -251,8 +302,8 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
   </div>
 
   <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
-  <div class="card-block">
-    <ul style="padding-left:18px;color:var(--gray-700);">
+  <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
+    <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
       <li><b>정직한 평가 &gt; 화려한 지표.</b> 이전 mAP 95%는 프레임 leakage로 부풀린 수치. 씬 단위 held-out으로 재정립한 0.6대가 실질.</li>
       <li><b>Partial-label의 함정.</b> 외부 데이터 편입 시 라벨 온톨로지 mismatch가 negative supervision을 유도해 오히려 회귀 유발. 합성으로 회피.</li>
       <li><b>데이터 다양성 &gt; 하이퍼파라미터.</b> 씬 다양성 5× (32→155)이 hyperparameter 튜닝 총합보다 큰 편익 (+14pp).</li>
