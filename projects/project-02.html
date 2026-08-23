@@ -279,7 +279,7 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>배포 카메라 = 학습 도메인이므로 held-out 검증 후 <b>train + val + test_poc 모두 편입 재학습</b> (all-data 51K frames).</li>
       <li>산업 표준 pipeline (Kaggle 우승 · Waymo · Amazon SageMaker AutoML): 개발 시 held-out으로 방법 검증 → 배포용은 all data 재학습.</li>
-      <li><b>deploy-v1</b> 후보 · antiof1 승자 설정 (AdamW + lr↓ + aug↓) 유지 · 예상 실배포 성능 <b>0.85+</b>.</li>
+      <li><b>deploy-v1</b> 후보 · antiof1 승자 설정 (AdamW + lr↓ + aug↓) 유지 · 예상 실배포 성능 <b>0.85+</b> <span style="color:var(--sub, #6B7280);">(all-data 재학습 기준, §7 held-out 벤치와 별개)</span>.</li>
     </ul>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. End-to-end Tracking (BOTSORT + ReID)</h3>
@@ -296,7 +296,7 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
       </p>
     </div>
 
-    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">7. Deployment Optimization — 5-runtime export & bench</h3>
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">7. Deployment Optimization — PyTorch baseline + 5 export runtimes bench</h3>
     <p style="color:var(--gray-700);">
       antiof1(YOLO26x, imgsz 1280)을 <b>PyTorch → ONNX → 4 벤더 런타임</b>으로 컴파일하고 정직한
       벤치마크(latency p50/p95/p99 · throughput · mAP retention)를 확보.
@@ -324,6 +324,15 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
         <div class="k-value">16.65 ms</div>
         <div class="k-sub">PyTorch p99 233.53 ms (jitter)</div>
       </div>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/latency_bench.png"
+           alt="antiof1 (YOLO26x, imgsz 1280) 5-runtime latency bench + GPU speedup vs mAP retention scatter — 좌: 6 runtimes p50/p95/p99 log-scale bar (TRT FP16 highlighted). 우: 4 GPU runtimes speedup×retention (TRT FP16 star, INT8 93.10% retention 낙차)."
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>Latency bench + Speedup ↔ Retention</b> &mdash; 좌: 6 runtimes p50/p95/p99 (log scale). 우: GPU 4종 speedup 대 mAP retention. <b>TRT FP16</b>가 유일하게 <b>≥99% retention 라인</b> 위에서 3.9× 지점 확보.
+      </p>
     </div>
 
     <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:20px 0 6px;">Latency · batch=1 · 200 iter · CUDA sync · A6000 (GPU) / EPYC 7763 (CPU)</div>
@@ -435,11 +444,11 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
   <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
-      <li><b>정직한 평가 &gt; 화려한 지표.</b> 이전 mAP 95%는 프레임 leakage로 부풀린 수치. 씬 단위 held-out으로 재정립한 0.6대가 실질.</li>
-      <li><b>Partial-label의 함정.</b> 외부 데이터 편입 시 라벨 온톨로지 mismatch가 negative supervision을 유도해 오히려 회귀 유발. 합성으로 회피.</li>
-      <li><b>데이터 다양성 &gt; 하이퍼파라미터.</b> 씬 다양성 5× (32→155)이 hyperparameter 튜닝 총합보다 큰 편익 (+14pp).</li>
-      <li><b>LLM-in-the-loop MLOps.</b> codex의 파라미터 제안 + regression alarm이 4h 학습 낭비를 방지.</li>
-      <li><b>Held-out은 배포용 모델이 아님.</b> 검증 후 all-data 재학습이 산업 표준. Test-inclusion 재학습은 leakage가 아니라 <b>산업 관행</b>.</li>
+      <li>이전 mAP 95%는 프레임 단위 split으로 leakage가 새서 부풀린 수치였다. 씬 단위 held-out으로 재정립한 0.6대가 실제 성능이었다.</li>
+      <li>외부 데이터를 그대로 편입했더니 라벨 온톨로지가 달라 unlabeled 객체가 background로 학습되면서 person·fork lift가 오히려 회귀했다. SAM2 crop 합성으로 외형만 흡수해서 우회했다.</li>
+      <li>씬 다양성을 5×로 늘린 것(32→155)이 하이퍼파라미터 튜닝 총합보다 큰 편익(+14pp)이었다.</li>
+      <li>codex의 파라미터 제안 + regression alarm 조합이 4h짜리 실패 학습을 자동으로 걸러줬다.</li>
+      <li>Held-out은 방법 검증용이지 배포용 모델이 아니다. 산업 표준대로 검증 후 all-data로 다시 학습해서 배포했다.</li>
     </ul>
   </div>
 </section>
