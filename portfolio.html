@@ -211,7 +211,8 @@
             <div class="bhead">[성과]</div>
             <ul>
               <li><b>v1 (배포본)</b> &mdash; Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>. window는 <b>0.84 → 0.72</b>로 통제 트레이드오프. <b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
-              <li><b>v2 (진행형)</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(453 frames, 5 unique IDs) end-to-end 확립.</li>
+              <li><b>v2</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(451 frames · 2 stable IDs · max_conf 0.97~0.98) end-to-end 확립.</li>
+              <li><b>배포 최적화</b> &mdash; PyTorch baseline + 5 export 벤치 후 <b>TensorRT FP16</b> 채택: <b>3.9× 가속</b>(p50 57.09 → 14.66 ms), <b>mAP retention 99.18%</b>(loss 0.52pp), p99 16.65 ms.</li>
             </ul>
           </div>
         </div>
