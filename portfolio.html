@@ -134,26 +134,12 @@
           </div>
           <div class="entry-org"><b>2026 INHA AI Challenge</b> (Dacon 236736) · Independent Entry</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>첫 프레임과 joint-action 시퀀스가 주어졌을 때 로봇의 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>. 채점식 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO) + 0.3·(1&minus;R3D) + 0.4·act_mae</span> (lower better).</li></ul>
-            <div class="bhead">[기존 문제점]</div>
-            <ul>
-              <li>Cosmos-Predict3-Nano 프리트레인 action distribution과 태스크의 절대 joint-angle 표현 사이의 방향성 mismatch.</li>
-              <li>LoRA 소자 튜닝만으로는 리더보드 유의한 개선 어려움.</li>
-            </ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>Action Injection Module</b> (<code>action_proj_in/out</code> + action-modality embedding) 직접 학습.</li>
-              <li><b>LoRA rank 32</b> — attention (<code>add_q/k/v_proj</code>, <code>to_add_out</code>) + MLP (<code>gate/up/down_proj</code>) 파인튜닝.</li>
-              <li>액션 표현을 <b>End-Effector delta + gripper [0,1]</b> 정규화로 재설계.</li>
-              <li><b>ANCHORED_soft 앙상블</b>로 안전본(v5_base) 방어 + <b>B4 sweep step 6000 도전본</b>으로 개선.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li>Action Injection <b>MAE &minus;43.2%</b>, LoRA <b>&minus;8.6%</b>, EE-Delta <b>&minus;8.5%</b>. Action MAE ↔ LB 상관 <b>r = +0.820</b> 검증.</li>
-              <li>최종 <b>도전본 LB 0.2407</b> (B4 sweep step 6000) / <b>안전본 LB 0.24524</b> (v5_base ANCHORED_soft) — <b>안전본 대비 &minus;0.0045</b> 개선.</li>
-              <li>전체 215명 중 <b>학부생 부문 11위</b>로 마감.</li>
-            </ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> 2026 INHA AI Challenge에 개인 참가해 로봇 팔의 첫 프레임과 액션 시퀀스로 미래 프레임을 예측하는 action-conditioned world model을 다뤘다. Cosmos-Predict3-Nano를 튜닝하고 액션 표현·주입 구조를 재설계했다.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> 최종 리더보드 스코어 <b>0.24524</b> (lower-better) — 전체 215명 중 <b>학부생 부문 11위</b> 마감.
+            </p>
           </div>
         </div>
 
@@ -168,20 +154,12 @@
           </div>
           <div class="entry-org"><b>SW중심대학 사업단</b> 공모전 · Agent Developer</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>온디바이스 개인 지식을 다루는 <b>Agentic RAG 시스템</b>.</li></ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>Corrective-RAG</b> 외부 루프 (LLM retrieval eval → query refinement → 전체 재-ingest 폴백).</li>
-              <li><b>Reflection</b> 내부 루프 (카드별 LLM 1~5 스코어 → 저점만 critique-guided 재생성 → 키워드 기반 폴백).</li>
-              <li><b>Hybrid Retrieval (RRF)</b> BM25 + vector, contextual chunking + MiniLM cross-encoder rerank.</li>
-              <li><b>Query Planning</b> — 문서 타입 라우팅 + LLM relevance 필터.</li>
-              <li>Ollama·LanceDB 없이도 돌아가는 <b>model-free pytest 40+ 케이스</b>.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li>커스텀 30-쿼리 벤치마크에서 single-hop <b>Hit@1 67% → 73%</b>, multi-hop <b>Recall@3 70% → 80%</b>.</li>
-            </ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> 온디바이스 개인 지식을 다루는 Agentic RAG. Corrective-RAG · Reflection 이중 루프와 BM25+벡터 하이브리드 검색을 결합해 검색 실패와 저품질 답변을 자동 보정했다.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> 커스텀 30-쿼리 벤치에서 single-hop <b>Hit@1 67% → 73% (+6%p)</b>, multi-hop <b>Recall@3 70% → 80% (+10%p)</b>.
+            </p>
           </div>
         </div>
 
@@ -196,24 +174,12 @@
           </div>
           <div class="entry-org">with <b>HDC LABS</b> · AI Researcher</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>건설현장 CCTV용 10-class 중장비 / 작업자 검출기 개선 + 사내 세미오토 라벨링 툴 (FastAPI + Docker + SLURM) 배포.</li></ul>
-            <div class="bhead">[기존 문제점]</div>
-            <ul>
-              <li>소수 클래스(pump car, RMC 등) F1이 사실상 무의미한 수준.</li>
-              <li>학습 val-mAP가 실측 성능과 어긋나는 metric–reality 괴리.</li>
-            </ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>v1</b> — Scene-level 3-way split + 소수 클래스 val/test 강제 할당 · 12→10 클래스 · <b>YOLO26x · imgsz 1280</b> + 롱테일 구제 증강 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>) · 배포 판정 지표 <b>poc_eval per-class F1</b>로 이동.</li>
-              <li><b>v2</b> — 씬 단위 3-way held-out (leakage=0) 재정립 · <b>SAM2 crop synth</b>로 AIHub partial-label 회귀 회피 · <b>9 attempt codex LLM-in-the-loop</b> auto-loop (val_cls_loss regression alarm) · <b>WBF 7-model ensemble</b> + TTA/SWA · <b>Test-inclusion 재학습</b> · <b>BOTSORT+ReID</b> tracking.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li><b>v1 (배포본)</b> &mdash; Pump Car F1 <b>0.00 → 0.57</b>, RMC F1 <b>0.20 → 0.72</b>, Person F1 <b>0.50 → 0.75</b>. window는 <b>0.84 → 0.72</b>로 통제 트레이드오프. <b>v1 attempt 2</b>가 배포 가중치로 채택.</li>
-              <li><b>v2</b> &mdash; 씬-홀드아웃 정직 지표로 재정립 후 antiof1 test_poc mAP <b>0.632</b>, <b>WBF 7-model ensemble test_poc mAP@0.5 = 0.670</b> (+3.8pp vs best 개별). truck 0.903 · fork lift 0.869 · car 0.842 · RMC 0.831 · dump truck 0.826. BOTSORT+ReID 데모(451 frames · 2 stable IDs · max_conf 0.97~0.98) end-to-end 확립.</li>
-              <li><b>배포 최적화</b> &mdash; PyTorch baseline + 5 export 벤치 후 <b>TensorRT FP16</b> 채택: <b>3.9× 가속</b>(p50 57.09 → 14.66 ms), <b>mAP retention 99.18%</b>(loss 0.52pp), p99 16.65 ms.</li>
-            </ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> HDC LABS에서 건설현장 CCTV용 10-class 검출기와 사내 세미오토 라벨링 툴을 실배포까지 개선. 소수 클래스 성능과 val–실측 괴리를 씬 단위 held-out 재정립·소수 클래스 보강·7-model WBF 앙상블로 해결했다.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> v1 배포본에서 pump car <b>F1 0.00 → 0.57 (+0.57)</b>로 소수 클래스 회복. 배포는 <b>TensorRT FP16</b>으로 <b>3.9× 가속</b> (mAP@0.5 <b>0.6317 → 0.6265</b>, retention 99.18%).
+            </p>
           </div>
         </div>
 
@@ -228,26 +194,12 @@
           </div>
           <div class="entry-org">with <b>현대엘리베이터</b> · AI Researcher</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>탑뷰(top-down) 4K CCTV 도메인의 학습 데이터 확보를 위한 <b>풀스택 라벨링 툴</b>.</li></ul>
-            <div class="bhead">[기존 문제점]</div>
-            <ul>
-              <li>탑뷰 시점은 COCO pretrained detector가 사실상 무용지물 → 수작업 라벨링 비용 폭증.</li>
-              <li>SAM2의 centroid-point prompting은 초기 마스크가 불안정하면 클립 전체에 드리프트 누적.</li>
-            </ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>YOLO11m-seg 도메인 파인튜닝</b> (19K frames · 241 seqs).</li>
-              <li><b>Polygon-Mask Prompting</b>으로 SAM2 초기 마스크 앵커 재설계.</li>
-              <li><b>Active Learning 루프</b> (저신뢰 프레임 4× oversample + replay).</li>
-              <li>FastAPI + React/Vite + Docker + SLURM + NAS 기반 <b>다중 사용자 웹 툴 배포</b>.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul>
-              <li>YOLO11m-seg <b>Box mAP50 = 0.978 · Mask mAP50 = 0.978</b>.</li>
-              <li>SAM2 tracking IoU <b>+55.4pp</b> (3 × 60-frame clip 평균).</li>
-              <li>Clicks/frame <b>7 → 2</b>, 60-frame clip 라벨링 시간 <b>30 min → 4 min</b>.</li>
-            </ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> 현대엘리베이터 대상 프로젝트로, 탑뷰 4K CCTV 라벨링을 풀스택 웹 툴로 구축. YOLO11m-seg 도메인 파인튜닝과 SAM2 초기 마스크 앵커 재설계(Polygon-Mask Prompting)로 드리프트를 잡고, Active Learning 루프로 저신뢰 프레임을 자동 재샘플링.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> YOLO11m-seg <b>Box/Mask mAP@0.5 = 0.978</b>. 60-frame clip 라벨링 시간 <b>30분 → 4분 (약 7.5×)</b>, 다중 사용자 웹 툴 실배포.
+            </p>
           </div>
         </div>
 
@@ -262,15 +214,12 @@
           </div>
           <div class="entry-org">Qwen3-VL · Zero training · AI Researcher</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>전용 action recognizer 학습 없이 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>(15 categories)로 변환.</li></ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li>Qwen3-VL <b>structured output</b> + constraint-aware 프롬프트 엔지니어링 (액션 정의, 우선순위, 가시성, ≥5s 임계).</li>
-              <li><b>Adaptive ffmpeg downsampling</b> 전처리로 장시간 클립 OOM 방지, SLURM 전 데이터셋 배치 처리.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>학습 없이도 신뢰 가능한 액션 세그먼트를 배치 처리 가능한 파이프라인으로 안착.</li></ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> 전용 recognizer를 학습하지 않고 Qwen3-VL 하나로 원본 MP4를 초 단위 액션 세그먼트(15 categories)로 변환. structured output + 제약 프롬프트 + adaptive ffmpeg downsampling으로 장시간 클립을 SLURM에서 배치 처리.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> 추가 학습·수동 라벨링 없이 배치 파이프라인을 구축, 사내 데이터셋 전체를 자동 세그먼팅.
+            </p>
           </div>
         </div>
 
@@ -285,16 +234,12 @@
           </div>
           <div class="entry-org">Undergraduate Research @ <b>RILS Lab</b> · Team Leader</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>RGB-only imitation policy의 <b>location memorization</b>과 <b>pose hallucination</b>을 완화하는 bi-manipulator VLA 정책.</li></ul>
-            <div class="bhead">[담당 업무]</div>
-            <ul>
-              <li>Teleoperation rig 세팅 · <b>SO-101 시연 데이터 수집</b> · 에피소드 큐레이션 · 정책 학습 · closed-loop 평가.</li>
-              <li>비주얼 경로에 <b>3D Point-Cloud 임베딩</b> 주입 (FPS로 균일 커버리지 확보).</li>
-              <li>top / front / wrist 3-camera + proprioceptive state + <b>프레임-액션 temporal context</b> 융합.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>실기 로봇 데이터 수집 ~ closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간</b>을 end-to-end로 경험.</li></ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> RILS Lab 학부연구생 팀의 리더로, RGB-only imitation policy의 location memorization·pose hallucination을 완화하는 bi-manipulator VLA 정책을 설계. SO-101 teleop 시연 수집부터 3D Point-Cloud 임베딩 주입, 3-camera + proprioception + temporal context 융합까지 파이프라인을 구축·평가했다.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> 실기 롤아웃 성공률 <b>20~30% (10회 중 2~3회)</b>를 기록한 탐색적 파일럿으로, 데이터 수집부터 학습·closed-loop 평가까지 VLA 파이프라인 전 구간을 실기 로봇에서 검증했다.
+            </p>
           </div>
         </div>
 
@@ -309,16 +254,12 @@
           </div>
           <div class="entry-org">인공지능종합설계 팀프로젝트 · UR5e (Gazebo Sim) · 3인 · Team Member</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>Gazebo 상 UR5e에서 <b>동적 장애물이 실행 중인 궤적으로 들어오는 상황</b>을 감지·회피하는 반응형 리플래닝 파이프라인.</li></ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li>Depth camera(Sim) → PointCloud → <b>OctoMap (OccupancyMapUpdater)</b> → Planning Scene 반영.</li>
-              <li>MoveIt 2 + <b>RRT-Connect (OMPL)</b> + <b>Continuous Collision Check</b>로 궤적 수준 미래 충돌 예측.</li>
-              <li><b>지도 데이터량 변화(bytes-diff, τ≈160)</b> 트리거의 <b>Monitor → Detect → Stop → Back-off → Replan → Resume</b> Recovery FSM.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>Perception–Planning–Control–Recovery FSM 4단이 결합된 반응형 리플래닝을 Gazebo UR5e에서 end-to-end 시연 (예: <span style="font-family:'JetBrains Mono',monospace;">14615→14455(Δ160)</span> 감지 → replan SUCCESS, 5회 반복 3/5 성공).</li></ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> Gazebo 시뮬레이션의 UR5e에서 실행 중인 궤적으로 진입하는 동적 장애물을 감지·회피하는 반응형 리플래닝 시스템을 구축. OctoMap 지도 갱신 + MoveIt2 RRT-Connect 궤적 예측 + Recovery FSM(Detect → Stop → Replan → Resume)로 연결.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> Perception–Planning–Control–Recovery 4단이 결합된 반응형 리플래닝을 Gazebo에서 end-to-end 시연. 반복 5회 성공률 <b>60% (3/5)</b>.
+            </p>
           </div>
         </div>
 
@@ -333,16 +274,12 @@
           </div>
           <div class="entry-org">산학협력 · with <b>한국로봇융합연구원 (KIRO)</b> · 참여연구원 (인하대 학사)</div>
           <div class="bracket">
-            <div class="bhead">[프로젝트 소개]</div>
-            <ul><li>자율 예초 로봇용 <b>산길 이미지</b>에서 <b>예초 완료(Mowed) / 미예초(Unmowed) 영역</b>을 학습 없이 픽셀 단위로 자동 라벨링.</li></ul>
-            <div class="bhead">[해결 방안]</div>
-            <ul>
-              <li><b>Stage 1: GPT-4o-mini (OpenRouter)</b>로 이미지별 <b>클래스 목록 동적 추출</b> (예: Road/Mowed/Unmowed/Sky/Tree/Others).</li>
-              <li><b>Stage 2: SAM (vit_h)</b>를 <b>dual-config</b>(세밀 32pt + 큰영역 16pt)로 마스크 생성 후 <b>IoU 0.7 dedup</b>.</li>
-              <li><b>Stage 3-4: GPT-4o-mini per-mask 분류 + DBSCAN (eps=0.1) 병합 + MORPH_CLOSE</b>로 인접 마스크를 하나의 영역으로 통합.</li>
-            </ul>
-            <div class="bhead">[성과]</div>
-            <ul><li>SAM 원본 <b>100개 → 71개(IoU dedup) → 클래스 분류 → DBSCAN 병합</b>으로 이미지당 <b>6~15개 마스크</b>의 사용 가능한 오토라벨을 학습 없이 확보.</li></ul>
+            <p style="margin:0 0 10px 0;">
+              <b>[요약]</b> 한국로봇융합연구원(KIRO) 산학과제로, 자율 예초 로봇용 산길 이미지에서 예초 완료/미예초 영역을 학습 없이 픽셀 단위로 자동 라벨링. GPT-4o-mini로 이미지별 클래스 목록을 동적 추출한 뒤 SAM으로 마스크를 만들고 DBSCAN으로 인접 마스크를 병합.
+            </p>
+            <p style="margin:0;">
+              <b>[성과]</b> 이미지당 원본 100 마스크 → IoU 중복 제거·클래스 분류·DBSCAN 병합을 거쳐 <b>6~15개</b> 사용 가능한 오토라벨 확보. 산길 도메인 초기 라벨 시드로 활용.
+            </p>
           </div>
         </div>
 
