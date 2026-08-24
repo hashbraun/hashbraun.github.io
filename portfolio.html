@@ -88,7 +88,7 @@
           <div class="bracket">
             <ul>
               <li>사내 여러 파이프라인 담당 (프로젝트 섹션 참고).</li>
-              <li>주 1회 <b>논문 리뷰 세미나</b> 참여.</li>
+              <li>AI Lab <b>주간 논문 리뷰 세미나 발표자</b>로 참여 — VLA·World Model 최신 논문(X-VLA, NVIDIA Cosmos 3 등)을 아키텍처·학습·실험까지 정리해 발표. 자세한 내용은 <b>논문 리뷰</b> 섹션 참고.</li>
             </ul>
           </div>
         </div>
@@ -274,6 +274,61 @@
             </p>
             <p style="margin:0;">
               <b>[성과]</b> 이미지당 원본 100 마스크 → IoU 중복 제거·클래스 분류·DBSCAN 병합을 거쳐 <b>6~15개</b> 사용 가능한 오토라벨 확보. 산길 도메인 초기 라벨 시드로 활용.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== PAPER REVIEWS ===== -->
+    <section class="section" id="reviews">
+      <div class="s-label">논문 리뷰</div>
+      <div class="s-body">
+
+        <p style="margin:0 0 14px 0; color:#4a4a4a;">
+          <b>HDC LABS · AI Lab 주간 논문 리뷰 세미나</b>에서 발표자로 참여하고 있습니다.
+          새 논문을 세미나에서 아키텍처·학습·실험까지 정리한 뒤, 다음 프로젝트에 어떤 형태로든 붙여보는 방식으로 학습합니다.
+        </p>
+
+        <!-- Cosmos 3 -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              Cosmos 3: Omnimodal World Models for Physical AI
+              <span class="role">· NVIDIA (2026)</span>
+              <a class="more" href="seminar/seminar_cosmos_nano.html" target="_blank" rel="noopener">슬라이드 →</a>
+            </div>
+            <div class="entry-period">2026.08.21 발표</div>
+          </div>
+          <div class="entry-org">HDC LABS · AI Lab Weekly Paper Review</div>
+          <div class="bracket">
+            <p style="margin:0 0 10px 0;">
+              <b>[정리]</b> WAM(World Action Model)의 세 모드(Forward/Inverse Dynamics · Policy)를 하나의 <b>MoT dual-pathway</b>에서 통합하는 설계, 3단계 학습 파이프라인(Pre-training → Action Mid-training → Specialist Post-training), <b>Iterative Flow Sampling</b> 추론과 Nano-Policy-DROID 실기 결과까지 정리.
+            </p>
+            <p style="margin:0;">
+              <b>[실전 이식]</b> 리뷰 직후 <b>2026 INHA AI Challenge</b>에 Cosmos-Predict3-Nano를 baseline으로 이식 (sample 164, Action MAE 0.144). 실험 결과 <b>action mid-training이 파라미터 스케일보다 우세</b>하다는 관찰이 챌린지 튜닝 우선순위를 결정한 근거가 됨.
+            </p>
+          </div>
+        </div>
+
+        <!-- X-VLA -->
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment Vision-Language-Action Model
+              <span class="role">· ICLR 2026</span>
+              <a class="more" href="seminar/X-VLA_ICLR2026_review.pdf" target="_blank" rel="noopener">슬라이드 →</a>
+            </div>
+            <div class="entry-period">2026.08 발표</div>
+          </div>
+          <div class="entry-org">HDC LABS · AI Lab Weekly Paper Review</div>
+          <div class="bracket">
+            <p style="margin:0 0 10px 0;">
+              <b>[정리]</b> Cross-embodiment 이질성(하드웨어·데이터 불균형·Catastrophic Forgetting)을 domain-specific <b>Soft Prompt</b>(전체 파라미터의 0.04%)로 흡수하는 아이디어. Florence-2 백본 + <b>Flow Matching</b>(OT 기반 velocity 예측) 학습 구조와 2단계 adaptation(prompt warm-up → joint training) 전략 분석.
+            </p>
+            <p style="margin:0;">
+              <b>[관찰]</b> 0.9B 파라미터로 7~9B 규모 모델(OpenVLA · UniVLA · π₀)을 6개 시뮬레이션 벤치마크에서 상회 — <b>구조(Soft Prompt) 설계가 파라미터 규모보다 우세</b>. 실기 3-robot(WidowX · Agilex · AIRBOT) 결과와 논문이 스스로 명시한 한계(Sparse 감독 신호·Plug-and-Play 미달)까지 정리.
             </p>
           </div>
         </div>
@@ -506,6 +561,7 @@
       <a href="#basic">기본 정보</a>
       <a href="#experience">업무 경험</a>
       <a href="#projects">프로젝트</a>
+      <a href="#reviews">논문 리뷰</a>
       <a href="#skills">전문 분야</a>
       <a href="#education">학력</a>
       <a href="#awards">수상 및 활동</a>
