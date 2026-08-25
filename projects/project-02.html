@@ -439,6 +439,99 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
         Export/bench/val 스크립트: <code>scripts/v5_export_pipeline.py</code>, <code>scripts/v5_build_calib_split.py</code>, <code>scripts/v5_bench_all.py</code>, <code>scripts/v5_val_all.py</code>.
       </p>
     </div>
+
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">8. 라벨링 툴 pre-annotate 통합 — Tracking + Rule + Learned Signalman Head</h3>
+    <div class="card-block">
+      <p style="color:var(--gray-700);">
+        deploy-v1 배포 이후 <b>라벨링 툴의 pre-annotate 흐름을 자동화·정밀화</b>. YOLO detection 만으로는 리뷰어가 프레임마다 같은 객체를 반복 편집하고, signalman·check 같은 서브 클래스는 원본 스키마에서 제거된 상태였음. 3-track 통합으로 <b>리뷰 시간 감소 + 서브 클래스 자동 태그</b> 달성.
+      </p>
+
+      <div class="kpi-grid" style="margin-top:12px;">
+        <div class="kpi-tile" style="border-top:3px solid #F97316;">
+          <div class="k-label">Signalman Head val AP</div>
+          <div class="k-value">0.9988</div>
+          <div class="k-sub">ResNet18 last-block fine-tune · 8 epoch · 190K crops</div>
+        </div>
+        <div class="kpi-tile" style="border-top:3px solid #F97316;">
+          <div class="k-label">Signalman 라벨 자동 회수</div>
+          <div class="k-value">100%</div>
+          <div class="k-sub">원본 34,476 bbox → person YOLO bbox IoU 매칭 (임계 0.35)</div>
+        </div>
+        <div class="kpi-tile" style="border-top:3px solid #F97316;">
+          <div class="k-label">Tracking · 통합 지점</div>
+          <div class="k-value">1-line dispatch</div>
+          <div class="k-sub">adapter.predict_video 있으면 tracking, 없으면 기존 predict fallback</div>
+        </div>
+        <div class="kpi-tile" style="border-top:3px solid #F97316;">
+          <div class="k-label">Overlay 시각 안정화</div>
+          <div class="k-value">4단계</div>
+          <div class="k-sub">Kalman fill → EMA → majority vote → cross-track linking</div>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">파이프라인 구조</h4>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.75;color:var(--gray-800);white-space:pre;background:#F8FAFC;padding:12px 16px;border-radius:6px;border:1px solid #E2E8F0;">
+비디오 프레임
+    ↓
+YOLO deploy-v1 (10-class detector)  ── classId, bbox, score
+    ↓
+BoT-SORT + ReID tracking            ── trackId (track_buffer 60, with_reid True)
+    ↓
+apply_class_rules(numpy vectorised)
+  ├─ window bbox → aspect + blue std → subclass: window_confirmed / check / defect_suspect
+  └─ person bbox → learned ResNet18   → subclass: signalman (prob ≥ 0.5)
+    ↓
+Post-processing (v4)
+  ├─ Cross-track linking (Union-Find, 4 conditions) → canonicalId
+  ├─ EMA smoothing (α=0.35, canonicalId 기준)
+  ├─ Subclass majority vote (canonicalId 기준)
+  └─ Kalman gap-fill (canonicalId 사이 최대 60프레임)
+    ↓
+Cache JSON (extended schema)
+  { classId, trackId, canonicalId, subclass, subclass_features, ... }
+      </div>
+
+      <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">Multi-attribute head가 12-class 재학습보다 안전한 이유</h4>
+      <ul style="padding-left:18px;color:var(--gray-700);">
+        <li><b>Detection 안정성 보전</b> — person 검출은 deploy-v1 성능 그대로 유지. signalman 판정은 별도 head 가 담당 → attribute 학습 실패해도 detection 은 살아있음.</li>
+        <li><b>학습 시간 · 데이터 부담 최소</b> — backbone freeze, last-block+FC 만 fine-tune. 원본 signalman 라벨(cls=8)을 IoU 매칭으로 <b>자동 회수</b> — 별도 라벨링 작업 없음.</li>
+        <li><b>v0 12-class 실패의 재발 방지</b> — 예전엔 signalman 소수 클래스 학습 시 person recall 이 같이 하락했음. attribute 방식은 detection 과 attribute 를 loss 상 분리하기 때문에 이 위험이 없음.</li>
+      </ul>
+
+      <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">시각 안정화 4단계 반복 (실패 → 원인 → 대응)</h4>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:0.82rem; background:#FFFFFF; border:1px solid #E2E8F0;">
+          <thead>
+            <tr style="background:#F8FAFC;">
+              <th style="text-align:left; padding:6px 10px; border-bottom:1px solid #E2E8F0;">단계</th>
+              <th style="text-align:left; padding:6px 10px; border-bottom:1px solid #E2E8F0;">해결한 문제</th>
+              <th style="text-align:left; padding:6px 10px; border-bottom:1px solid #E2E8F0;">추가 후처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:6px 10px;">v1</td><td style="padding:6px 10px;">baseline (tracking + rules)</td><td style="padding:6px 10px;">없음</td></tr>
+            <tr style="background:#FAFBFF;"><td style="padding:6px 10px;">v2</td><td style="padding:6px 10px;">짧은 detection dropout → bbox 사라짐</td><td style="padding:6px 10px;">Kalman linear gap-fill (점선 예측 bbox)</td></tr>
+            <tr><td style="padding:6px 10px;">v3</td><td style="padding:6px 10px;">bbox jitter · subclass 라벨 flip</td><td style="padding:6px 10px;">EMA smoothing (α=0.35) + majority vote</td></tr>
+            <tr style="background:#FAFBFF;"><td style="padding:6px 10px;"><b>v4 ★</b></td><td style="padding:6px 10px;"><b>BoT-SORT ID switch → 새 track = 라벨 리셋</b></td><td style="padding:6px 10px;"><b>Cross-track linking (Union-Find, class+time+space+size)</b> → canonicalId 로 통합 재적용</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="color:var(--sub, #6B7280); font-size:0.82rem; margin-top:10px; font-style:italic;">
+        * 각 단계는 이전 단계의 실패 원인을 진단한 결과. Kalman 만으로는 ID switch 로 인한 라벨 리셋이 해결 안 된다는 것이 v3 사용자 리뷰에서 드러남 → v4 로 track linking 추가.
+      </p>
+
+      <div class="card-block" style="margin-top:14px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
+        <p style="font-size:0.86rem;color:var(--gray-700);margin-bottom:6px;line-height:1.7;">
+          <b>산출물 (재현 가능)</b>: <code>app/adapters/yolo_default_tracking.py</code>, <code>app/adapters/botsort_reid.yaml</code>,
+          <code>scripts/v6_build_signalman_attributes.py</code>, <code>scripts/v6_train_signalman_head.py</code>,
+          <code>scripts/v7_generate_tracked_overlays.py</code>, <code>notes/17_project_flow_summary.md</code>.
+        </p>
+        <p style="font-size:0.86rem;color:var(--gray-700);margin:0;line-height:1.7;">
+          <b>남은 과제</b>: (a) 모든 클래스가 등장하는 라벨링 데이터 확보 후 <code>botsort_reid.yaml</code> 진단 기반 tuning, (b) check 도 learned head 로 승격 (signalman 과 동일 패턴), (c) 라벨링 툴 UI 프론트에 trackId·subclass 렌더링 코드 추가 (지금은 JSON 캐시에만 저장).
+        </p>
+      </div>
+    </div>
   </div>
 
   <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
@@ -449,6 +542,8 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
       <li>씬 다양성을 5×로 늘린 것(32→155)이 하이퍼파라미터 튜닝 총합보다 큰 편익(+14pp)이었다.</li>
       <li>codex의 파라미터 제안 + regression alarm 조합이 4h짜리 실패 학습을 자동으로 걸러줬다.</li>
       <li>Held-out은 방법 검증용이지 배포용 모델이 아니다. 산업 표준대로 검증 후 all-data로 다시 학습해서 배포했다.</li>
+      <li>Signalman 처럼 minority attribute 는 detection head 재학습 대신 <b>attribute head 분리 학습</b>이 안전했다. detection 성능 보전 + 학습 실패 시 fallback 명확.</li>
+      <li>Tracking 시각 안정화는 한 번의 처리로 끝나지 않았다. Kalman → EMA → linking 각 단계가 이전 단계의 실패 원인 진단에서 나왔고, 리뷰어 피드백이 다음 개선의 트리거가 되었다.</li>
     </ul>
   </div>
 </section>
