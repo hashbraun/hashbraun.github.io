@@ -531,7 +531,150 @@ Cache JSON (extended schema)
           <b>남은 과제</b>: (a) 모든 클래스가 등장하는 라벨링 데이터 확보 후 <code>botsort_reid.yaml</code> 진단 기반 tuning, (b) check 도 learned head 로 승격 (signalman 과 동일 패턴), (c) 라벨링 툴 UI 프론트에 trackId·subclass 렌더링 코드 추가 (지금은 JSON 캐시에만 저장).
         </p>
       </div>
+
+      <!-- ─── 상황별 검증 갤러리 ─── -->
+      <h4 style="margin-top:22px;font-size:0.95rem;color:var(--gray-900);">상황별 검증 갤러리 — 학습에 사용되지 않은 실제 씬</h4>
+      <p style="font-size:0.88rem;color:var(--gray-700);line-height:1.7;margin-bottom:12px;">
+        Slice C (2026-08-23 촬영, 학습 이후) 152 clip + 20260702_jy 프로젝트 <b>unlabeled 111 clip 중 우선순위 18 clip</b>. 3중 검증(label set 매칭 0 · deploy-v1 dataset 매칭 0 · signalman head 학습 대상 아님)으로 <b>zero-shot 배포 성능</b> 확인. 아래 오버레이 프레임은 실제 배포 파이프라인 <code>predict + apply_class_rules + learned signalman head</code> 결과.
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:14px;margin-bottom:14px;">
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #F97316;">
+          <img src="../assets/p02/situation_gallery/signalman_multi.jpg" alt="신호수배치2 · signalman 100%" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#EA580C;">SIGNALMAN · Multi</b><br>
+            <code>신호수배치2</code> · 229/229 프레임 (100%). 파일명 그대로 신호수 배치 씬. Learned head가 조끼·깃발 특징을 정확히 학습.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #3182F6;">
+          <img src="../assets/p02/situation_gallery/signalman_control.jpg" alt="신호수미배치1 · person only" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#3182F6;">CONTROL · person only</b><br>
+            <code>신호수미배치1</code> · person 227 / <b>signalman 0</b>. 조끼 없는 일반 인부만 있는 씬을 정확히 person 유지 → false positive 0.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #F97316;">
+          <img src="../assets/p02/situation_gallery/signalman_towercrane.jpg" alt="tower crane signalman" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#EA580C;">SIGNALMAN · Tower crane</b><br>
+            <code>tc02_01</code> · person 225 / signalman 202 (90%). 크레인 작업 씬 조끼 색상에도 head 일반화.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #16A34A;">
+          <img src="../assets/p02/situation_gallery/window_confirmed.jpg" alt="window confirmed pure" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#16A34A;">WINDOW · Confirmed pure</b><br>
+            Slice C <code>z040</code> · window_confirmed 4,148 / check 0 / defect 0. conf 높고 aspect 정상 = 완전 확정.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #DC2626;">
+          <img src="../assets/p02/situation_gallery/window_defect_mixed.jpg" alt="window 3-way mix" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#DC2626;">WINDOW · 3-way mixed</b><br>
+            Slice C <code>z045</code> · confirmed 4,820 + check 1,957 + <b>defect_suspect 2,825</b>. 좌 건물(초록 정상) vs 우 건물(빨강 defect_suspect) 한 프레임 대조.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #EAB308;">
+          <img src="../assets/p02/situation_gallery/window_check_dominant.jpg" alt="window check dominant" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#B45309;">WINDOW · Check</b><br>
+            Slice C <code>z034</code> · confirmed 6,473 + check 148. 대부분 정상이나 애매 케이스는 리뷰 큐로.
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #64748B;">
+          <img src="../assets/p02/situation_gallery/vehicle_truck.jpg" alt="truck static tracking" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#334155;">VEHICLE · Truck</b><br>
+            Slice C <code>z049</code> · truck 1 track (전 프레임 유지). deploy-v1 per-class AP50: truck 0.9949 · dump truck 0.9950 · RMC 0.9791 · pump car 0.9949 (모두 개별 학습).
+          </figcaption>
+        </figure>
+        <figure style="margin:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;overflow:hidden;border-left:3px solid #64748B;">
+          <img src="../assets/p02/situation_gallery/person_only.jpg" alt="person only no signalman" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+          <figcaption style="padding:9px 12px;font-size:0.78rem;line-height:1.55;color:var(--gray-700);">
+            <b style="color:#334155;">PERSON · No subclass</b><br>
+            Slice C <code>z037</code> · person 7 tracks · signalman 태그 0. 일반 도보 인부만.
+          </figcaption>
+        </figure>
+      </div>
+
+      <p style="font-size:0.82rem;color:var(--sub, #6B7280);line-height:1.65;font-style:italic;margin-bottom:0;">
+        * 신호수 검출은 오버레이 상단 좌측의 <code>person [signalman@prob]</code> 라벨과 굵은 주황 bbox로 표시. window rule은 confirmed(초록)·check(노랑)·defect_suspect(빨강) 3-color 색상 코드 사용. 상세 인터랙티브 갤러리는 <code>v8c_gallery.html</code> (18 unlabeled clip 오버레이) 및 <code>gallery_v3.html</code> (Slice C 152 clip).
+      </p>
     </div>
+  </div>
+
+  <h2 class="section-title"><span class="num">9 ·</span> deploy-v1 실측 (Phase 2, 60/60 epoch)</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      §5의 예상치 대신 all-data 재학습 <b>60/60 epoch · 40.4h · 3-GPU SLURM</b> 완주 후 실측. antiof1 승자 설정(AdamW + lr↓ + cls 0.8) 그대로 유지.
+    </p>
+    <div class="kpi-grid" style="margin-top:12px;">
+      <div class="kpi-tile" style="border-top:3px solid #059669;">
+        <div class="k-label">deploy-v1 val · mAP@0.5</div>
+        <div class="k-value">0.9932</div>
+        <div class="k-sub">train-inclusive · 60/60 epoch</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #059669;">
+        <div class="k-label">mAP@0.5-95</div>
+        <div class="k-value">0.9447</div>
+        <div class="k-sub">동일 셋 기준</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #059669;">
+        <div class="k-label">TRT FP16 retention</div>
+        <div class="k-value">100.00%</div>
+        <div class="k-sub">loss 0.00 pp · antiof1보다 우수</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #DC2626;">
+        <div class="k-label">TRT INT8 catastrophic</div>
+        <div class="k-value">&minus;34.67 pp</div>
+        <div class="k-sub">all-data → activation sharper → clip 오차 폭증</div>
+      </div>
+    </div>
+    <p style="color:var(--gray-700); margin-top:14px;">
+      <b>Phase 2 auto-trigger</b> — <code>scripts/v5_phase2_autorun.sh</code>가 <code>train.log</code>의 <code>DONE</code> 마커를 감지해 <b>export → bench → val</b>을 자동 실행 (수작업 개입 0). FP32 3종 (torch/ORT/OpenVINO)이 동일 mAP → numerical stability 확인.
+    </p>
+  </div>
+
+  <h2 class="section-title"><span class="num">10 ·</span> Zero-shot 정량 검증 — Slice A upper bound · Slice C 신규 촬영</h2>
+  <div class="card-block">
+    <p style="color:var(--gray-700);">
+      §8 정성 갤러리와 별개로, Model-Compare 도구로 <b>정량</b> 검증까지 진행. Slice A는 학습 데이터라 upper bound sanity, Slice C는 학습 종료 후 촬영해 zero-shot 확인.
+    </p>
+    <div class="kpi-grid" style="margin-top:12px;">
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">Slice A · Precision</div>
+        <div class="k-value">0.955</div>
+        <div class="k-sub">poc_sam2_v3 24,978 frame (학습 데이터)</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">Slice A · Recall</div>
+        <div class="k-value">0.9918</div>
+        <div class="k-sub">upper bound sanity 확인</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #3182F6;">
+        <div class="k-label">Slice A · F1 / F2</div>
+        <div class="k-value">0.9731 / 0.9842</div>
+        <div class="k-sub">Model-Compare 정량 평가</div>
+      </div>
+      <div class="kpi-tile" style="border-top:3px solid #F97316;">
+        <div class="k-label">Slice C · unseen clips</div>
+        <div class="k-value">152</div>
+        <div class="k-sub">2026-08-23 촬영 · 학습 종료 후 수집 · 오버레이 자동 생성</div>
+      </div>
+    </div>
+    <p style="color:var(--gray-700); margin-top:14px; font-size:0.92rem;">
+      Slice C는 라벨 부재라 정량 지표는 산출 불가 — 대신 <b>zero-shot 배포 성능</b>을 오버레이 152개로 시각 검증. SLURM 우회 대응 (gpu-107 pending → 컨테이너 GPU 4에서 <code>inference_worker.py</code> 직접 실행 후 metrics/overlays 하드링크 sync).
+    </p>
+  </div>
+
+  <h2 class="section-title"><span class="num">＋</span> 추가 자료 — 전체 실험 대시보드</h2>
+  <div class="card-block" style="background:#EEF3FF; border:1px solid #D4DEF0; padding:16px 20px;">
+    <p style="color:var(--gray-700); margin:0;">
+      아래 대시보드는 v1 → v2 실험 전 구간의 씬 단위 데이터, attempt별 test_poc mAP 표, deploy-v1 40.4h 학습 곡선, Learned Signalman Head (ResNet18 val AP 0.9988), Overlay 시각 안정화 4단계, Slice C 오버레이 mp4 등 <b>사내 대시보드 원본을 사본 형태로 그대로 실은 자료</b>입니다.
+    </p>
+    <p style="margin:12px 0 0 0;">
+      → <a href="p02_dashboard.html" style="color:#3182F6; font-weight:600; text-decoration:none;">전체 실험 대시보드 열기 (약 33&nbsp;MB · 이미지·GIF·mp4 포함)</a>
+    </p>
   </div>
 
   <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
