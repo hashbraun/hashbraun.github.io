@@ -204,6 +204,15 @@
       </p>
     </div>
 
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/sam2_synth_pipeline.png"
+           alt="AIHub excavator → SAM2 instance mask → PoC 배경 offline 합성 파이프라인 4단계 시각화. 상단 행: AIHub 원본 크롭 → SAM2 마스크(배경 dim) → PoC CCTV 배경 → 최종 합성(빨간 bbox로 삽입 위치 표시). 하단 행: 다양한 area ratio·flip 조건의 합성 예시 4장."
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>SAM2 excavator crop → PoC 배경 offline 합성 파이프라인</b> &mdash; 상단: AIHub 원본에서 SAM2 마스크로 excavator만 분리 → PoC CCTV 배경 위 지정 위치에 합성 (빨간 bbox = 삽입 영역). 하단: <code>synthesized/</code> 100장 중 다양한 area ratio·flip 예시 4장. "외형만 흡수, 환경은 PoC" 원칙으로 partial-label 회귀를 원천 소거.
+      </p>
+    </div>
+
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">3. 9 attempt 통제 실험 + LLM-in-the-loop</h3>
 
     <div class="media" style="margin-top:10px;">
