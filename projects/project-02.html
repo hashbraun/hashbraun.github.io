@@ -29,7 +29,7 @@
   </div>
   <span class="num-badge">PROJECT 02</span>
   <h1>Semi-Auto Labeling Tool with Construction-Safety Detector</h1>
-  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class · v1 deployed → v2 WBF <b>mAP@0.5 0.670</b> → <b>TRT FP16</b> 배포 (3.9× · 99.18% retention)</div>
+  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class · v1 deployed → v2 WBF <b>mAP@0.5 0.670</b> → <b>TRT FP16</b> 배포 (3.9× · deploy-v1 mAP retention <b>100.00%</b>)</div>
   <div class="stack">
     <span class="tech">YOLO26x / YOLOv11x / RT-DETR</span>
     <span class="tech">SAM2</span>
@@ -288,7 +288,7 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>배포 카메라 = 학습 도메인이므로 held-out 검증 후 <b>train + val + test_poc 모두 편입 재학습</b> (all-data 51K frames).</li>
       <li>산업 표준 pipeline (Kaggle 우승 · Waymo · Amazon SageMaker AutoML): 개발 시 held-out으로 방법 검증 → 배포용은 all data 재학습.</li>
-      <li><b>deploy-v1</b> 후보 · antiof1 승자 설정 (AdamW + lr↓ + aug↓) 유지 · 예상 실배포 성능 <b>0.85+</b> <span style="color:var(--sub, #6B7280);">(all-data 재학습 기준, §7 held-out 벤치와 별개)</span>.</li>
+      <li><b>deploy-v1</b> 배포본 · antiof1 승자 설정 (AdamW + lr↓ + cls 0.8) 유지 · 60/60 epoch · 40.4h · 3-GPU SLURM. train-inclusive val <b>mAP50 0.9932 · mAP50-95 0.9447</b> <span style="color:var(--sub, #6B7280);">(sanity 지표 · §7 held-out 정직 지표와 별개)</span>. TRT FP16 export 시 <b>mAP retention 100.00% · loss 0.00 pp</b> — antiof1(99.18%)보다 우수.</li>
     </ul>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. End-to-end Tracking (BOTSORT + ReID)</h3>
@@ -305,11 +305,11 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
       </p>
     </div>
 
-    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">7. Deployment Optimization — PyTorch baseline + 5 export runtimes bench</h3>
+    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">7. Deployment Optimization — PyTorch baseline + 5 export runtimes bench (antiof1, Phase 1)</h3>
     <p style="color:var(--gray-700);">
       antiof1(YOLO26x, imgsz 1280)을 <b>PyTorch → ONNX → 4 벤더 런타임</b>으로 컴파일하고 정직한
-      벤치마크(latency p50/p95/p99 · throughput · mAP retention)를 확보.
-      배포는 <b>TensorRT FP16</b>이 최종 후보 (mAP loss 0.52pp에 3.9× 가속).
+      벤치마크(latency p50/p95/p99 · throughput · mAP retention)를 확보. 배포는 <b>TensorRT FP16</b>이 최종 후보 (mAP loss 0.52 pp에 3.9× 가속).
+      deploy-v1(Phase 2) 재실측·30분 지속 부하·tail 개선은 <b>§9</b> 참조.
     </p>
 
     <div class="kpi-grid" style="margin-top:12px;">
@@ -478,6 +478,24 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
         </div>
       </div>
 
+      <div class="media" style="margin-top:20px;">
+        <img src="../assets/p02/signalman_head_extended.png"
+             alt="Signalman attribute head ResNet18 학습 곡선 — train_loss 8 epoch 수렴, val AP 0.9988 best epoch 2, val acc 0.9866. 190K crops (IoU 100% 자동 회수)."
+             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+        <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+          * <b>Signalman head 학습 곡선</b> &mdash; train_loss(빨강)·val_ap(초록)·val_acc(파랑) · <b>best epoch 2</b>에서 val AP <b>0.9988</b> 도달. 별도 라벨링 없이 원본 34,476 signalman bbox를 person YOLO bbox와 IoU 매칭(threshold 0.35)해 <b>100% 자동 회수</b>한 190K crop 학습.
+        </p>
+      </div>
+
+      <div class="media" style="margin-top:20px;">
+        <img src="../assets/p02/tc02_01_tracking.gif"
+             alt="tc02_01 tracking demo — deploy-v1 BoT-SORT+ReID tracking on manual_tc02_01_20260618_043652 · person #12 → #16 ID switch 관측 (60프레임 초과 occlusion)"
+             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+        <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+          * <b>tc02_01 · BoT-SORT+ReID 실측 (deploy-v1)</b> &mdash; 신호수·굴착기·트럭 다중 객체 트래킹. <b>60프레임(≈4s @15fps) 초과 occlusion 시 ID switch</b> 발생 (예: person <code>#12 → #16</code>). 원인 분리 및 대응은 진행 중인 <b>YOLO11-JDE 확장 계획 Phase 0.4</b> (track_buffer sweep + JDE feasibility spike)에서 다룸.
+        </p>
+      </div>
+
       <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">파이프라인 구조</h4>
       <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.75;color:var(--gray-800);white-space:pre;background:#F8FAFC;padding:12px 16px;border-radius:6px;border:1px solid #E2E8F0;">
 비디오 프레임
@@ -639,6 +657,25 @@ Cache JSON (extended schema)
         <div class="k-sub">all-data → activation sharper → clip 오차 폭증</div>
       </div>
     </div>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/p99_tail_chart.png"
+           alt="Tail latency comparison — antiof1 vs deploy-v1 · 5 runtimes p50/p99 log-scale bar chart. PyTorch antiof1 p99 233.53ms → deploy-v1 53.42ms. TRT FP16 antiof1 16.65ms → deploy-v1 15.12ms (tail 개선). Real-time 25ms 요건 참조선."
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>antiof1(Phase 1) vs deploy-v1(Phase 2) tail 개선</b> &mdash; 동일 아키텍처(YOLO26x, imgsz 1280) 재빌드 후 <b>PyTorch p99 233→53 ms</b> (배타적 자원 확보 효과), <b>TRT FP16 p99 16.65→15.12 ms</b> (컴파일 안정성 재확인). 5개 런타임 모두 실시간 25 ms 요건 대비 여유 확보.
+      </p>
+    </div>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/drift_30min.png"
+           alt="30-min sustained bench thermal drift — TRT FP16 first-window p50 14.92ms → last-window 15.23ms (drift +2.05%), TRT INT8 15.34→15.32ms (-0.18%). 24/7 스트리밍 열적 안정 확인."
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
+        * <b>30분 지속 부하 · 열적 안정</b> &mdash; 60개 30-s 윈도우 실측. TRT FP16 <b>drift +2.05%</b> (14.92→15.23 ms), INT8 <b>&minus;0.18%</b>. A6000 열적 완전 안정 — 실배포 24/7 스트림 안전.
+      </p>
+    </div>
+
     <p style="color:var(--gray-700); margin-top:14px;">
       <b>Phase 2 auto-trigger</b> — <code>scripts/v5_phase2_autorun.sh</code>가 <code>train.log</code>의 <code>DONE</code> 마커를 감지해 <b>export → bench → val</b>을 자동 실행 (수작업 개입 0). FP32 3종 (torch/ORT/OpenVINO)이 동일 mAP → numerical stability 확인.
     </p>
