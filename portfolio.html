@@ -123,11 +123,11 @@
       <div class="s-body">
         <p class="projects-intro">문제 정의부터 실험·검증·구현까지 수행한 프로젝트를 기술 주제별로 정리했습니다. 각 프로젝트는 서로 다른 도메인이지만, 데이터와 입력을 분석해 병목을 찾고 구조를 바꾼 뒤 검증과 실패 대응까지 설계한다는 공통된 문제 해결 방식을 보여줍니다.</p>
         <div class="case-study-summary" style="margin:16px 0 20px;">
-          <h3>프로젝트를 관통하는 R&amp;D 접근</h3>
+          <h3>세 가지 R&amp;D 축과 프로젝트 간 연결</h3>
           <ul>
-            <li><b>CV · 데이터 파이프라인:</b> <a href="projects/project-01.html">스마트 엘리베이터</a>에서 SAM2의 centroid prompting drift를 polygon-mask prompting과 active-learning으로 개선한 경험을, <a href="projects/project-02.html">건설 안전</a> 프로젝트에서는 scene-level split·희소 클래스 보강·반복 재학습을 포함한 데이터 중심 파이프라인으로 확장했습니다. 모델 변경만큼 라벨 품질과 평가 분할이 중요하다는 흐름입니다.</li>
-            <li><b>Physical AI · action grounding:</b> <a href="projects/project-04.html">VLA</a>에서 실기 로봇 시연과 다중 카메라·proprioception·point-cloud를 다뤘다면, <a href="projects/project-03.html">World Model</a>에서는 action-conditioned 미래 예측으로 문제를 확장하고, train/eval action 분포 분석을 바탕으로 Action Injection과 EE-Delta 표현을 설계했습니다. 동일 데이터를 재사용했다는 뜻이 아니라, 로봇의 상태와 행동을 어떻게 표현하고 정렬할지라는 연구 질문이 이어집니다.</li>
-            <li><b>Agent · 실행 신뢰성:</b> <a href="projects/project-08.html">VLM 영상 처리</a>에서 긴 입력으로 인한 OOM을 adaptive ffmpeg downsampling으로 해결해 배치 처리 경로를 만들었고, <a href="projects/project-05.html">SMIM</a>에서는 검색 근거 검증·재생성·keyword fallback을 통해 생성 실패를 통제했습니다. 두 사례 모두 모델 호출 자체보다 입력·검증·실패 처리까지 포함한 파이프라인 설계에 초점을 둡니다.</li>
+            <li><b>Data-centric Vision:</b> <a href="projects/project-01.html">Smart-Elevator</a>에서 SAM2 centroid prompting drift를 polygon-mask prompting과 active learning으로 개선한 경험을 <a href="projects/project-02.html">Construction Safety</a>의 scene-level split·희소 클래스 보강·반복 재학습으로 확장했습니다. <a href="projects/project-08.html">VLM Video Action Recognition</a>에서는 영상 입력을 모델이 처리할 수 있는 형태로 변환하고, 액션 구간을 구조화된 결과로 추출했습니다. 공통 관심은 비정형 영상 데이터를 신뢰할 수 있는 AI 입력과 정보로 바꾸는 과정입니다.</li>
+            <li><b>Physical AI &amp; World Models:</b> <a href="projects/project-04.html">VLA</a>에서 SO-101 실기 시연을 수집하고 정책을 학습한 경험이 데이터 수집 효율성에 대한 질문으로 이어졌습니다. 이후 별도 SO-100 데이터셋을 사용한 <a href="projects/project-03.html">World Model</a>에서 action-conditioned rollout을 생성·관찰하고, train/eval action 분포 분석과 Action Injection·LoRA·EE-Delta 튜닝으로 모델을 적응시켰습니다. 동일 데이터를 재사용한 것은 아니며, 실제 로봇 학습 경험이 후속 연구의 문제의식과 분석 관점에 영향을 준 흐름입니다.</li>
+            <li><b>On-device Agent &amp; Retrieval:</b> <a href="projects/project-05.html">SMIM</a>은 다른 프로젝트와 억지로 연결하기보다 독립적인 Agent 연구 사례로 제시합니다. 문장 유사도와 맥락적 유용성의 차이를 문제로 정의하고, 외부 네트워크·API 없이 동작하는 로컬 환경에서 후보 검색과 LLM 기반 추천 판단의 품질·비용을 함께 고민했습니다.</li>
           </ul>
         </div>
         <div class="project-filters" role="group" aria-label="프로젝트 분야 필터">
