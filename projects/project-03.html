@@ -57,6 +57,11 @@
     </p>
   </div>
 
+  <div class="case-study-summary" style="margin-bottom:20px;">
+    <h3>VLA 경험에서 출발한 데이터 효율성 문제</h3>
+    <p>앞선 RILS Lab 프로젝트에서 SO-101 시연 데이터를 직접 수집하고 VLA 정책을 학습하면서, 실제 로봇 데이터를 확보하는 데 드는 시간과 다양한 상태·행동을 충분히 포함시키는 일이 중요하다는 점을 경험했습니다. 이 경험을 바탕으로 World Model을 활용해 action-conditioned rollout을 생성하고, 로봇 학습에 활용할 수 있는 데이터를 확장하는 방향에 관심을 갖게 되었습니다.</p>
+    <p style="margin-top:8px;">이번 프로젝트에서는 별도의 SO-100 데이터셋으로 생성 영상을 만들고, 생성 결과를 직접 재생·비교해 모델이 어떤 행동 조건에서 안정적이거나 실패하는지 분석했습니다. 영상이 생성된다는 사실만으로 학습 데이터로서 유용하다고 볼 수 없으므로, action MAE와 Good/Bad rollout을 함께 살펴 데이터 선별 및 모델 튜닝의 단서를 찾았습니다.</p>
+  </div>
   <h2 class="section-title"><span class="num">S ·</span> Problem Definition</h2>
   <div class="card-block">
     <p>2026 INHA AI Challenge (Dacon 236736)는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다. 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO_cos) + 0.3·(1&minus;VideoR3D_cos) + 0.4·Action_MAE</span> (lower better).</p>
