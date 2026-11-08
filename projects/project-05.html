@@ -92,10 +92,10 @@
   </div>
 
   <h2 class="section-title"><span class="num">A ·</span> System Design &amp; Implementation</h2>
-  <div class="case-study-summary"><h3>담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 Agent 동작을 맡아, 기능 범위와 품질 기준을 정의하고 검색 엔진·자기 교정 루프를 구현했습니다. 검색 결과를 더 잘 찾는 것뿐 아니라, 생성된 카드가 원문에 근거하는지 검증하고 실패 시 안전하게 보류·재시도하는 흐름에 집중했습니다.</p><ul><li><b>Feature scope:</b> Ambient Recall을 위한 맥락 감지 이후 검색·카드 제안의 경계 정의</li><li><b>Retrieval:</b> BM25 + Vector + RRF + reranking 및 문서 구조 신호 통합</li><li><b>Agentic memory loop:</b> Corrective query refinement, Reflection regeneration, Grounding validation</li><li><b>Quality:</b> 모델 런타임 없이 검증 가능한 150개 pytest 케이스</li></ul></div>
+  <div class="case-study-summary"><h3>담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 추천 Agent 동작을 맡았습니다. 목표는 현재 작성 중인 문장과 비슷한 문서를 찾는 데 그치지 않고, <b>지금의 상황에서 다음 판단이나 행동에 도움이 될 개인 문서</b>를 능동적으로 제안하는 것이었습니다.</p><ul><li><b>Recommendation problem:</b> 문장 유사도와 맥락적 유용성의 차이를 문제로 정의</li><li><b>Candidate retrieval:</b> BM25와 GRANITE Vector Search로 로컬 문서 후보를 탐색하고 RRF·reranking으로 정렬</li><li><b>LLM relevance judgment:</b> 작성 맥락과 문서 내용을 함께 읽고 현재 상황에 도움이 되는지 판단하는 추천 접근을 비교</li><li><b>On-device constraint:</b> 네트워크·외부 API에 의존하지 않는 로컬 환경에서 검색과 추론 비용을 함께 고려</li></ul></div>
   <div class="card-block">
     <p style="color:var(--gray-700);margin-bottom:14px;">
-      전체 시스템은 <b>Electron Application + Native AI Runtime</b> 2-계층으로 나누어 UI 반응성과 AI 성능(CPU · GPU · Neural Engine)을 분리하고, <b>100% 온디바이스</b>로 개인 문서가 기기 밖으로 나가지 않도록 설계했다. 본인은 이 중 파란색으로 강조된 <b>Hybrid Retrieval</b>과 <b>Corrective / Reflection 루프 + Grounding Validator</b>를 담당했다.
+      전체 시스템은 <b>Electron Application + Native AI Runtime</b> 2-계층으로 나누어 UI 반응성과 AI 성능(CPU · GPU · Neural Engine)을 분리하고, <b>100% 온디바이스</b>로 개인 문서가 기기 밖으로 나가지 않도록 설계했다. 외부 네트워크와 API를 사용하지 않는 조건은 프라이버시를 높이는 대신 외부 검색·클라우드 모델·도구 연동을 제한했다. 본인은 이 환경에서 <b>후보 검색과 추천 Agent의 판단 흐름</b>을 담당했다.
     </p>
 
     <div class="media" style="margin-top:16px;">
@@ -105,7 +105,9 @@
 
     <details class="technical-details"><summary>검색·에이전트 아키텍처와 구현 상세 보기</summary>
     <ul style="padding-left:18px;color:var(--gray-700);margin-top:20px;">
-      <li><b>Hybrid Retrieval (담당)</b> — <b>BM25 (키워드 · 수치 · 전문 용어)</b> + <b>Vector search (granite-embedding-311m · 768d)</b>를 <b>RRF (Cormack et al., 2009)</b>로 융합하고, <b>Cross-encoder re-ranker</b>로 Top-K를 최종 정렬. 여기에 <b>tier · recency · view</b> 등 구조 신호를 가중치로 얹어 관련도를 보정.</li>
+      <li><b>Hybrid candidate retrieval (담당)</b> — <b>BM25 (키워드 · 수치 · 전문 용어)</b> + <b>Vector search (granite-embedding-311m · 768d)</b>를 <b>RRF (Cormack et al., 2009)</b>로 융합하고, <b>Cross-encoder re-ranker</b>와 tier · recency · view 구조 신호로 후보 순위를 보정. 이는 LLM이 모든 개인 문서를 매번 읽는 대신 판단 대상을 좁혀 로컬 추론 비용을 통제하기 위한 설계.</li>
+      <li><b>LLM-based contextual recommendation (비교 실험)</b> — 작성 중인 맥락과 문서 내용을 LLM이 함께 읽고, 단순히 주제가 일치하는지를 넘어 현재 상황에 참고가 될 문서인지 판단하는 접근을 BM25·Vector 유사도 검색과 비교. 실제 문서·맥락 표본이 제한적이어서 어느 방식이 더 우수하다고 일반화할 만큼의 평가 데이터는 확보하지 못했으며, 이 경험을 통해 검색 관련도와 맥락적 유용성을 분리해 평가해야 함을 확인.</li>
+      <li><b>On-device trade-off</b> — 외부 API와 검색 도구를 연결하지 않는 로컬 실행 조건에서 모델 호출 횟수·입력 문맥 길이·후보 수가 추론 비용에 직접 영향을 줌. 따라서 로컬 검색으로 후보를 먼저 압축하고 LLM 판단은 제한된 후보에 적용하는 구조를 설계 방향으로 삼음.</li>
       <li><b>Corrective-RAG 외부 루프 (담당)</b> — Query Planning 단계에서 의도를 분해하고, Grounding 근거가 부족하면 <b>low_confidence</b>로 판정해 <b>쿼리 refinement</b>를 자동으로 재실행.</li>
       <li><b>Reflection 내부 루프 (담당)</b> — sLLM이 카드마다 self-critique를 수행하고, 저점 카드는 <b>critique-guided regeneration</b>. 2회 재시도 후에는 keyword-based 카드로 폴백.</li>
       <li><b>Grounding Validator (담당)</b> — 생성된 카드의 각 주장을 <b>원문 청크와 대조</b>해 근거가 없는 문장을 걸러내고, 근거가 약하면 카드를 <b>보류</b> 상태로 유지. Structured output으로 카드 스키마를 강제해 파싱 실패를 원천 차단.</li>
@@ -135,13 +137,13 @@
   <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
-      <b>검색 품질 평가:</b> 19개 문서에서 구성한 40개 청크와 10개 질의를 사용한 자체 벤치에서, vector-only 기준 대비 Hybrid Retrieval(full_current)의 <b>MRR@3는 0.70 → 0.95</b>, <b>Hit@1은 60% → 90%</b>로 개선되었다. BM25와 Vector를 결합한 설정은 검색 후보의 상위권 적중을 높였고, reranking과 문서 구조 신호를 더한 최종 구성은 작은 자체 벤치에서 높은 검색 품질을 보였다.
+      <b>검색 후보 순위 평가:</b> 19개 문서에서 구성한 40개 청크와 10개 질의를 사용한 자체 벤치에서, vector-only 기준 대비 Hybrid Retrieval(full_current)의 <b>MRR@3는 0.70 → 0.95</b>, <b>Hit@1은 60% → 90%</b>로 개선되었다. 다만 이 지표는 사전에 정한 관련 문서를 얼마나 상위에 배치했는지를 측정하며, 현재 상황에 실질적으로 도움이 되는 문서인지까지 평가하지는 않는다.
     </p>
     <p style="color:var(--gray-700); margin-top:10px;">
       <b>생성 파이프라인 평가:</b> 26개 카드 생성 E2E에서 21개(81%)는 sLLM 카드로 생성되었고, 5개(19%)는 keyword 기반 폴백으로 처리되었다. 평균 지연은 <b>17.3초, p95 30.5초</b>였다. 이는 생성 실패를 무조건 오류로 끝내지 않고 대체 경로로 처리하는 동작을 확인한 결과다.
     </p>
     <p style="color:var(--gray-700); margin-top:10px;">
-      <b>해석:</b> 이 결과는 Hybrid Retrieval이 해당 소규모 자체 벤치에서 검색 정확도를 높였고, Grounding·Reflection·폴백을 결합해 카드 생성 실패를 통제하는 구조를 확인했다는 근거다. 10개 질의의 결과이므로 일반적인 검색 성능으로 확대 해석하지 않고, 온디바이스 환경에서의 설계·검증 사례로 제시한다.
+      <b>추천 품질에 대한 한계와 다음 평가:</b> 초기 비교에서는 LLM이 맥락을 읽고 판단한 문서가 항상 BM25·Vector 유사도 검색보다 더 적합하지는 않았다. 그러나 실제 개인 문서와 맥락 표본이 적어 우열을 확정할 수 없었다. 후속 평가는 동일한 작성 맥락에 대해 BM25, Vector, Hybrid, LLM 추천 결과를 익명화해 제시하고, 평가자가 <b>맥락 관련성·실제 유용성·새로운 정보 제공·원문 근거성</b>을 각각 평정하도록 설계할 수 있다. 현재의 MRR@3·Hit@1은 후보 검색 성능의 근거로 한정하고, 추천 유용성의 성과로 해석하지 않는다.
     </p>
 
     <div class="kpi-grid" style="margin-top:16px;">
