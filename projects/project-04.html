@@ -52,6 +52,11 @@
          alt="System Overview — Teleop Rig → SO-101 Bi-arm → Multi-modal Demos → VLA Policy → Closed-loop Rollout" />
   </div>
 
+  <div class="case-study-summary" style="margin-bottom:20px;">
+    <h3>다음 연구 질문으로 이어진 경험</h3>
+    <p>SO-101 실기 로봇의 teleoperation 시연을 직접 수집하고 VLA 정책을 학습·평가하면서, 실제 환경에서 다양한 상태와 행동을 충분히 경험시키는 데이터의 중요성을 체감했습니다. 시연 수집은 시간과 장비가 필요한 과정이므로, 이후에는 <b>World Model로 학습 데이터를 생성·확장할 수 있을까?</b>라는 질문으로 관심을 넓혔습니다.</p>
+    <p style="margin-top:8px;">이후 별도 SO-100 데이터셋을 사용한 World Model 프로젝트에서 action-conditioned rollout을 생성하고, train/eval action 분포와 생성 결과의 Good/Bad case를 분석하며 action 표현과 모델 튜닝을 진행했습니다. 두 프로젝트의 데이터셋을 직접 이어 붙인 것은 아니며, 실제 로봇 학습 경험에서 얻은 데이터 효율성에 대한 문제의식이 후속 연구 질문에 영향을 준 흐름입니다.</p>
+  </div>
   <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
   <div class="card-block">
     <p>RGB만 사용하는 imitation policy는 <b>물체 위치 암기(location memorization)</b>와 <b>포즈 헛발(pose hallucination)</b>에 취약해, 학습 분포에서 벗어난 배치에서 실패가 잦다.</p>
