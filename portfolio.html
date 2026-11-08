@@ -121,7 +121,15 @@
     <section class="section" id="projects">
       <div class="s-label">프로젝트</div>
       <div class="s-body">
-        <p class="projects-intro">문제 정의부터 실험·검증·구현까지 수행한 프로젝트를 기술 주제별로 정리했습니다. 카드를 선택하면 프로젝트의 설계와 실험 과정을 확인할 수 있습니다.</p>
+        <p class="projects-intro">문제 정의부터 실험·검증·구현까지 수행한 프로젝트를 기술 주제별로 정리했습니다. 각 프로젝트는 서로 다른 도메인이지만, 데이터와 입력을 분석해 병목을 찾고 구조를 바꾼 뒤 검증과 실패 대응까지 설계한다는 공통된 문제 해결 방식을 보여줍니다.</p>
+        <div class="case-study-summary" style="margin:16px 0 20px;">
+          <h3>프로젝트를 관통하는 R&amp;D 접근</h3>
+          <ul>
+            <li><b>CV · 데이터 파이프라인:</b> <a href="projects/project-01.html">스마트 엘리베이터</a>에서 SAM2의 centroid prompting drift를 polygon-mask prompting과 active-learning으로 개선한 경험을, <a href="projects/project-02.html">건설 안전</a> 프로젝트에서는 scene-level split·희소 클래스 보강·반복 재학습을 포함한 데이터 중심 파이프라인으로 확장했습니다. 모델 변경만큼 라벨 품질과 평가 분할이 중요하다는 흐름입니다.</li>
+            <li><b>Physical AI · action grounding:</b> <a href="projects/project-04.html">VLA</a>에서 실기 로봇 시연과 다중 카메라·proprioception·point-cloud를 다뤘다면, <a href="projects/project-03.html">World Model</a>에서는 action-conditioned 미래 예측으로 문제를 확장하고, train/eval action 분포 분석을 바탕으로 Action Injection과 EE-Delta 표현을 설계했습니다. 동일 데이터를 재사용했다는 뜻이 아니라, 로봇의 상태와 행동을 어떻게 표현하고 정렬할지라는 연구 질문이 이어집니다.</li>
+            <li><b>Agent · 실행 신뢰성:</b> <a href="projects/project-08.html">VLM 영상 처리</a>에서 긴 입력으로 인한 OOM을 adaptive ffmpeg downsampling으로 해결해 배치 처리 경로를 만들었고, <a href="projects/project-05.html">SMIM</a>에서는 검색 근거 검증·재생성·keyword fallback을 통해 생성 실패를 통제했습니다. 두 사례 모두 모델 호출 자체보다 입력·검증·실패 처리까지 포함한 파이프라인 설계에 초점을 둡니다.</li>
+          </ul>
+        </div>
         <div class="project-filters" role="group" aria-label="프로젝트 분야 필터">
           <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">All</button>
           <button class="filter-btn" type="button" data-filter="cv" aria-pressed="false">CV</button>
@@ -148,11 +156,11 @@
           </a>
           <a class="project-card" data-category="cv agent" href="projects/project-08.html">
             <div class="project-thumb project-thumb-placeholder"><span>VLM</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>CV · AGENT</span><time>2025.07 — 2026.04</time></div><h3>VLM Video Action Recognition</h3><p>Qwen3-VL 기반 장시간 영상의 액션 세그먼트 추출 및 배치 처리.</p><div class="project-foot"><span>HDC LABS · AI Research</span><b>상세 보기 ↗</b></div></div>
+            <div class="project-card-body"><div class="project-meta"><span>CV · AGENT</span><time>2026.03.01 — 2026.08.31</time></div><h3>VLM Video Action Recognition</h3><p>Qwen3-VL 기반 장시간 영상의 액션 세그먼트 추출 및 배치 처리.</p><div class="project-foot"><span>HDC LABS · AI Research</span><b>상세 보기 ↗</b></div></div>
           </a>
           <a class="project-card" data-category="vla" href="projects/project-04.html">
             <div class="project-thumb project-thumb-placeholder"><span>VLA</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>VLA</span><time>2025.07 — 2026.02</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p>SO-101 teleoperation 시연 수집부터 정책 학습과 실기 closed-loop 평가까지.</p><div class="project-foot"><span>RILS Lab · Team Leader</span><b>상세 보기 ↗</b></div></div>
+            <div class="project-card-body"><div class="project-meta"><span>VLA</span><time>2025.07 — 2026.03</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p>SO-101 teleoperation 시연 수집부터 정책 학습과 실기 closed-loop 평가까지.</p><div class="project-foot"><span>RILS Lab · Team Leader</span><b>상세 보기 ↗</b></div></div>
           </a>
           <a class="project-card" data-category="vla" href="projects/project-06.html">
             <div class="project-thumb project-thumb-placeholder"><span>ROBOTICS</span></div>
