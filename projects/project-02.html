@@ -73,11 +73,12 @@
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>데이터 스플릿 재구성</b> — scene-level 3-way split을 만들고, 소수 클래스는 val/test에 강제 할당해 저평가되지 않도록 함.</li>
-      <li><b>클래스 스킴 12→10</b> — <i>signalman</i>은 <i>person</i>으로 병합, <i>check</i>는 신뢰도 기반 후처리 룰로 오프로딩.</li>
+      <li><b>클래스 스킴 12→10</b> — 실제 검출 목표와 라벨 일관성을 기준으로 <i>signalman</i>은 <i>person</i>으로 통합하고, <i>check</i>는 검출 클래스 대신 신뢰도 기반 후처리 판정으로 분리.</li>
       <li><b>YOLO26x · imgsz 1280</b> 백본 채택 + 롱테일 구제용 증강 레시피 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>, <code>close_mosaic=30</code>).</li>
-      <li><b>배포 판정을 poc_eval per-class F1로 이동</b> — scene-held-out val은 본질적으로 어렵기 때문에, 별도의 holdout <code>poc_eval</code> 세트를 acceptance gate로 사용.</li>
+      <li><b>배포 판정을 poc_eval per-class F1로 이동</b> — scene-held-out val과 별도 holdout <code>poc_eval</code>을 구분해, 전체 mAP뿐 아니라 클래스별 실제 운영 오류를 acceptance gate로 사용.</li>
     </ul>
 
+    <p class="note-line"><b>평가 설계의 이유:</b> 같은 영상의 인접 프레임이 train/validation에 나뉘면 장면 정보가 공유되어 성능이 과대평가될 수 있습니다. 따라서 데이터 분할 단위를 frame에서 scene으로 바꿨습니다.</p>
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p02/architecture.png"
            alt="v2 architecture — DATA → SPLIT → 9 attempts → WBF ensemble → deploy + tracking"
@@ -85,6 +86,7 @@
       <div class="cap" style="margin-top:8px;">v2 detection pipeline &middot; scene-level held-out → 9 attempts → 7-model WBF (+3.8pp) → deploy candidate + BOTSORT+ReID tracking.</div>
     </div>
 
+    <p class="note-line"><b>Tracking의 역할 구분:</b> BoT-SORT + ReID는 detector의 mAP/F1을 직접 높이는 기법이 아니라, 가림·재등장 상황에서 동일 객체의 ID 연속성을 보완하는 후처리 계층입니다.</p>
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
         <img src="../assets/p02/demo_pump.gif"
@@ -101,6 +103,17 @@
     </div>
   </div>
 
+    <div class="case-study-summary">
+      <h3>핵심 접근: 모델보다 데이터 파이프라인을 먼저 개선</h3>
+      <p>문제의 핵심은 소수 클래스의 라벨 부족과 프레임 단위 분할로 인한 평가 누수였습니다. 수동 시드 라벨에서 시작해 SAM2 보조 라벨링, 사람 검수, 씬 단위 데이터셋 구성, 학습·오류 분석, 희소 사례 합성, 버전별 재학습으로 이어지는 반복 구조를 정리했습니다.</p>
+      <ol>
+        <li>Seed labeling 및 SAM2 기반 반자동 라벨 생성</li>
+        <li>Human review · 오류/누락 라벨 정리 · scene-level split</li>
+        <li>학습 및 per-class 평가로 데이터 병목과 hard case 진단</li>
+        <li>희소 클래스 보강·합성 데이터를 기존 데이터와 병합</li>
+        <li>데이터셋과 모델 버전을 관리하며 재학습·회귀 검증</li>
+      </ol>
+    </div>
   <h2 class="section-title"><span class="num">R ·</span> Result</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
@@ -179,6 +192,8 @@
   <!-- ============================================================
        v2 확장: 데이터·아키텍처·앙상블·트래킹까지
        ============================================================ -->
+  <details class="technical-details">
+    <summary>실험 로그와 추가 기술 검증 펼쳐보기</summary>
   <h2 class="section-title"><span class="num">v2 ·</span> Progression (Aug 2026)</h2>
   <div class="card-block">
     <p><b>v1 배포 직후</b> 방법론과 데이터셋 규모를 근본적으로 재정비. 씬 단위 held-out 원칙을 세우고, 7개 attempt를 통제 실험으로 비교한 뒤 앙상블·트래킹까지 end-to-end로 확장.</p>
@@ -735,6 +750,7 @@ Cache JSON (extended schema)
       <li>Tracking 시각 안정화는 한 번의 처리로 끝나지 않았다. Kalman → EMA → linking 각 단계가 이전 단계의 실패 원인 진단에서 나왔고, 리뷰어 피드백이 다음 개선의 트리거가 되었다.</li>
     </ul>
   </div>
+  </details>
 </section>
 
 <div class="pager">
