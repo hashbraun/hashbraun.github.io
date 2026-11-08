@@ -42,7 +42,7 @@
   </div>
   <div class="meta-row">
     <div><span class="label">Role</span> Independent Entry</div>
-    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026 (챌린지 마감 2026-08-20)</div>
+    <div><span class="label">Period</span> Jul. 2026 – Aug. 2026</div>
     <div><span class="label">Domain</span> Generative WM · VLA · Diffusion</div>
   </div>
 </div>
@@ -57,7 +57,7 @@
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <h2 class="section-title"><span class="num">S ·</span> Problem Definition</h2>
   <div class="card-block">
     <p>2026 INHA AI Challenge (Dacon 236736)는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다. 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO_cos) + 0.3·(1&minus;VideoR3D_cos) + 0.4·Action_MAE</span> (lower better).</p>
     <p style="margin-top:10px;">기반 모델 Cosmos-Predict3-Nano는 프리트레인 시 사용된 <b>action distribution</b>과 태스크의 절대 joint-angle 표현 사이에 방향성 불일치가 있었고, LoRA 소자 튜닝만으로는 리더보드에서 유의한 개선을 얻기 어려웠다. 또 SO-100 도메인 자체의 <b>train/eval action 분포 편차</b>가 있어 데이터 이해가 사전에 필요했다.</p>
@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title"><span class="num">T ·</span> Technical Objective</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>Cosmos3-Nano에 <b>SO-100 액션 토큰</b>을 흘려 넣을 경로를 만든다.</li>
@@ -80,33 +80,17 @@
     </ul>
   </div>
 
-  <h2 class="section-title">Challenge Context</h2>
+  <h2 class="section-title">핵심 접근</h2>
   <div class="card-block">
-    <p style="color:var(--gray-700);">
-      SO-100 조작 클립 <b>train 5,481 · eval 216</b> 규모. 각 sample은 <b>첫 프레임 + 15-step joint action</b>이 주어지고 <b>16-frame 미래 롤아웃</b>을 생성해야 한다. 채점은 pred/GT 비디오로부터 뽑은 DINOv2 · R3D · action extractor 세 축을 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO_cos) + 0.3·(1&minus;R3D_cos) + 0.4·Action_MAE</span> 로 합산한다 (lower better).
-    </p>
-
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
-      <div style="background:var(--bg-soft, #F9FAFB); border:1px solid var(--line, #E5E7EB); border-radius:8px; padding:14px 16px;">
-        <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin-bottom:6px;">TRAINING CONSTRAINTS</div>
-        <ul style="margin:0; padding-left:18px; color:var(--gray-700); font-size:0.92rem; line-height:1.7;">
-          <li>GPU 1 × <b>RTX PRO 6000 (96 GB VRAM)</b> 기준</li>
-          <li>학습 wall-time 상한 <b>최대 4 일</b></li>
-          <li>본 실측 세팅: 슬럼 라벨 <code>p6000</code> 노드 = 실물 <b>Blackwell sm_120</b> (nvidia-smi 확인)</li>
-        </ul>
-      </div>
-      <div style="background:var(--bg-soft, #F9FAFB); border:1px solid var(--line, #E5E7EB); border-radius:8px; padding:14px 16px;">
-        <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin-bottom:6px;">INFERENCE CONSTRAINTS</div>
-        <ul style="margin:0; padding-left:18px; color:var(--gray-700); font-size:0.92rem; line-height:1.7;">
-          <li>GPU 1 × <b>RTX PRO 6000 (96 GB VRAM)</b> 기준</li>
-          <li>216-sample eval 전체 <b>1 시간 이내</b> 완료</li>
-          <li>즉 <b>sample 당 &lt; 16.6 s</b> 예산 (다중 chunk · guidance sampling 포함)</li>
-        </ul>
-      </div>
-    </div>
+    <ul>
+      <li>SO-100 train/eval action 분포를 EDA로 비교해, 모델 선택과 액션 표현 설계의 기준을 세웠습니다.</li>
+      <li>Cosmos-Predict3-Nano에 Action Injection과 LoRA를 적용하고, 절대 joint 값 대신 EE-Delta 표현으로 액션 입력을 재설계했습니다.</li>
+      <li>학습 loss만으로 checkpoint를 선택하지 않고, 실제 leaderboard 평가와 anchoring 후처리 결과를 비교했습니다.</li>
+    </ul>
   </div>
-
-  <h2 class="section-title"><span class="num">A ·</span> Action &mdash; 모델 튜닝 (가설 → 결과)</h2>
+  <details class="technical-details">
+    <summary>모델 선택·액션 설계·파인튜닝 상세 보기</summary>
+  <h2 class="section-title"><span class="num">A ·</span> Design Decisions &amp; Experiments</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
       최종 최고 성능 모델 (<b>Cosmos3-Nano · v5_base(EE-delta 40k) · LoRA rank 32 · +ANCHORED_soft · B4 sweep step 6000</b>) 기준. 각 방법은 <b>가설(왜 도움 될 것으로 예상했는가) → 결과(어떤 metric이 얼마나 움직였는가)</b> 형식으로 정리.
@@ -121,7 +105,9 @@
     </ul>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  </details>
+
+  <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
   <div class="card-block">
     <div class="kpi-grid">
       <div class="kpi-tile">
@@ -280,28 +266,8 @@
     </ul>
   </div>
 
-  <h2 class="section-title">Paper vs Experience &mdash; Cosmos 3 Nano 논문 주장 vs 내 실측</h2>
-  <div class="card-block">
-    <p style="color:var(--gray-700);">
-      Cosmos 3 Nano technical report (NVIDIA, arXiv:2606.02800v2)의 핵심 주장을 SO-100 튜닝 실측과 대비. <b>일치한 부분</b>과 <b>차이 났던 부분</b>을 나눠 정리한다.
-    </p>
-
-    <h3 style="margin-top:18px; font-size:1.0rem; color:var(--ink);">일치</h3>
-    <ul style="padding-left:18px;color:var(--gray-700);">
-      <li><b>dual-tower MoT의 action 공동 생성 설계</b>는 실전에서도 유효했다 &mdash; Action Injection Module (<code>action_proj_in/out</code> + action-modality embedding)만 base LR로 열어도 <b>action MAE &minus;43.2%</b>, action MAE ↔ LB 상관 <b>r = +0.820</b>이 안정적으로 나옴. AR reasoner → DM generator 단방향 흐름이라는 논문 도식과도 정합.</li>
-      <li><b>omnimodal 통합 구조</b>가 vision·language·audio에서는 실제로 잘 작동. LoRA rank 32만 얹어도 backbone이 무너지지 않고 domain adaptation이 가능했음.</li>
-      <li><b>Nano ~8B가 Edge/Super 대비 학습·추론 비용 효율</b>이라는 리포트 주장은 A6000 Ada 환경에서 <b>DreamZero(14B backbone) 대비 step 당 ~9.6× 빠름</b>으로 실측 확인.</li>
-    </ul>
-
-    <h3 style="margin-top:18px; font-size:1.0rem; color:var(--ink);">차이 / 예상 밖</h3>
-    <ul style="padding-left:18px;color:var(--gray-700);">
-      <li><b>"omnimodal 통합"의 실체는 도메인별 재훈련이 필수</b> &mdash; 논문은 언어·비디오·오디오·<b>action</b> 다섯 modality를 한 net에 통합했다고 명시하지만, SO-100 절대 joint action은 프리트레인 분포와 방향성 mismatch가 커서 그대로 흘려 넣으면 LB 0.300으로 오히려 악화(v1 baseline 0.268 대비). <b>EE-Delta로 재설계</b>해서야 LB 0.2454까지 회복. omnimodal은 modality slot의 존재를 보장할 뿐, 도메인 정렬은 별도 작업.</li>
-      <li><b>"Physical AI 겨냥" 브랜딩 vs 정책 특화 실체</b> &mdash; Cosmos3-Edge-Policy-DROID를 시도했으나 (a) diffusers 0.40.0.dev의 <code>Cosmos3EdgeTransformer</code>가 부재해 112 param(~1.06B)이 meta tensor로 남아 로드 실패, (b) README 명시 <b>"Input action is only supported for the DROID robot platform (8D)"</b>. <code>bridge_orig_lerobot</code>(d7) 슬롯의 <code>action_proj_in.bias</code>는 0.0, <code>fc.weight</code>는 initial-like 값 그대로 &mdash; 즉 <b>SO-100 domain slot이 zero-init 상태로 배포</b>됨. "world model"이라는 라벨과 <b>DROID-only policy specialist</b> 실체의 간극 확인.</li>
-      <li><b>평가 metric의 실전 함정 (논문/벤치마크에 잘 안 나옴)</b> &mdash; 챌린지 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·DINO + 0.3·R3D + 0.4·act_mae</span>지만, act_mae의 실제 스케일(≈2.8)이 dominant해서 <b>R3D 항은 사실상 video naturalness detector</b>로 작동. compositing/warping류 후처리는 자연스러움 지표에서 원천적으로 손해 &mdash; world-model quality 지표를 논할 때 정량적으로 잘 짚어지지 않는 gap. 회귀식 (n=10, R²=0.993)의 계수 <b>2.804·act_mae</b>가 이를 뒷받침.</li>
-      <li><b>Training loss 최저점 ≠ LB 최적점</b> &mdash; 논문 그림의 학습 곡선은 monotonic하게 좋아지지만, step별 sweep 결과 <b>step 6000</b>이 실제 LB 최적. 학습 자체보다 <b>checkpoint selection</b>이 더 큰 지렛대라는 것은 논문 관점에서 언급되지 않는 파인튜닝 실전 지식.</li>
-    </ul>
-  </div>
-
+  <details class="technical-details">
+    <summary>추가 해석: Forward Dynamics의 로봇 시스템 내 활용</summary>
   <h2 class="section-title">Forward Dynamics의 실전 의의 &mdash; 챌린지를 넘어</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
@@ -314,6 +280,7 @@
       <li><b>Cosmos3처럼 대형 VLM에 action modality를 얹은 world model</b>은 이 방향의 <b>zero-shot 커버리지 상한과 도메인 재훈련 경계선</b>을 실측할 대상. 본 챌린지 결과가 그 경계를 부분적으로 확인함 &mdash; Action Injection + EE-Delta 재설계 + LoRA rank 32까지가 <b>216 sample scale에서 zero-shot에 가까운 커버리지를 확보하는 최소 튜닝 조합</b>이라는 empirical 데이터포인트.</li>
     </ul>
   </div>
+  </details>
 </section>
 
 <div class="pager">
