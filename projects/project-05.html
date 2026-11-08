@@ -73,13 +73,13 @@
          alt="System Overview — Ambient Recall: 작성 중 텍스트 → Trigger → Hybrid Retrieval → sLLM 카드 생성 → Grounding-validated 근거 카드" />
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <h2 class="section-title"><span class="num">S ·</span> Problem Definition</h2>
   <div class="card-block">
     <p>지식 노동자는 <b>스치듯 본 자료를 다시 찾기 위해 주 5.3시간</b>을 검색·전환에 소비하고, 그 결과 <b>재생산에 소요되는 시간의 50% 이상</b>이 "이미 본 것을 다시 찾는" 과정에 낭비된다 (McKinsey · IDC).</p>
     <p style="margin-top:10px;">기존 검색·챗 기반 도구는 <b>능동적으로 다시 꺼내주지 못하고</b>, 개인 문서를 클라우드로 올려야 해 <b>프라이버시·규제 리스크</b>가 크다. 필요한 것은 <b>작성 중인 맥락을 감지</b>해서 <b>원문 근거가 붙은 카드</b>를 <b>온디바이스</b>에서 스스로 꺼내주는 에이전트다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title"><span class="num">T ·</span> Scope &amp; Design Goals</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>사용자의 <b>작성 맥락 변화</b>를 감지해 관련 개인 문서를 <b>스스로 꺼내주는</b> Ambient Recall 파이프라인을 설계한다.</li>
@@ -92,7 +92,8 @@
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title"><span class="num">A ·</span> System Design &amp; Implementation</h2>
+  <div class="case-study-summary"><h3>담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 Agent 동작을 맡아, 기능 범위와 품질 기준을 정의하고 검색 엔진·자기 교정 루프를 구현했습니다. 검색 결과를 더 잘 찾는 것뿐 아니라, 생성된 카드가 원문에 근거하는지 검증하고 실패 시 안전하게 보류·재시도하는 흐름에 집중했습니다.</p><ul><li><b>Feature scope:</b> Ambient Recall을 위한 맥락 감지 이후 검색·카드 제안의 경계 정의</li><li><b>Retrieval:</b> BM25 + Vector + RRF + reranking 및 문서 구조 신호 통합</li><li><b>Agentic memory loop:</b> Corrective query refinement, Reflection regeneration, Grounding validation</li><li><b>Quality:</b> 모델 런타임 없이 검증 가능한 150개 pytest 케이스</li></ul></div>
   <div class="card-block">
     <p style="color:var(--gray-700);margin-bottom:14px;">
       전체 시스템은 <b>Electron Application + Native AI Runtime</b> 2-계층으로 나누어 UI 반응성과 AI 성능(CPU · GPU · Neural Engine)을 분리하고, <b>100% 온디바이스</b>로 개인 문서가 기기 밖으로 나가지 않도록 설계했다. 본인은 이 중 파란색으로 강조된 <b>Hybrid Retrieval</b>과 <b>Corrective / Reflection 루프 + Grounding Validator</b>를 담당했다.
@@ -103,6 +104,7 @@
            alt="Architecture — Electron App (UI · Agent Orchestrator · Local Vector DB · pytest) + Native AI Runtime (Hybrid Retrieval · sLLM 카드 생성 · Grounding Validator · Ingest Pipeline). Retrieval + 자기 교정 루프가 본인 담당." />
     </div>
 
+    <details class="technical-details"><summary>검색·에이전트 아키텍처와 구현 상세 보기</summary>
     <ul style="padding-left:18px;color:var(--gray-700);margin-top:20px;">
       <li><b>Hybrid Retrieval (담당)</b> — <b>BM25 (키워드 · 수치 · 전문 용어)</b> + <b>Vector search (granite-embedding-311m · 768d)</b>를 <b>RRF (Cormack et al., 2009)</b>로 융합하고, <b>Cross-encoder re-ranker</b>로 Top-K를 최종 정렬. 여기에 <b>tier · recency · view</b> 등 구조 신호를 가중치로 얹어 관련도를 보정.</li>
       <li><b>Corrective-RAG 외부 루프 (담당)</b> — Query Planning 단계에서 의도를 분해하고, Grounding 근거가 부족하면 <b>low_confidence</b>로 판정해 <b>쿼리 refinement</b>를 자동으로 재실행.</li>
@@ -130,7 +132,9 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  </details>
+
+  <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       본인이 담당한 <b>Hybrid Retrieval + 자기 교정 루프</b>는 자체 벤치(10-query · 40 chunks · 19 docs)에서 <b>vec-only baseline 대비 MRR@3 0.70 → 0.95, Hit@1 60% → 90%</b>로 개선되었다. BM25만 추가해도 (rrf_no_rerank) MRR@3 <b>+0.300</b>이 확보되었고, 여기에 구조 신호까지 얹은 full_current가 안정적인 최상단 점수를 냈다. E2E 파이프라인(26 카드)에서는 <b>81%가 sLLM 카드로 정상 생성</b>되었고 나머지 19%는 keyword 폴백으로 안전하게 처리되었다.
