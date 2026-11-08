@@ -137,7 +137,16 @@
   <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
-      본인이 담당한 <b>Hybrid Retrieval + 자기 교정 루프</b>는 자체 벤치(10-query · 40 chunks · 19 docs)에서 <b>vec-only baseline 대비 MRR@3 0.70 → 0.95, Hit@1 60% → 90%</b>로 개선되었다. BM25만 추가해도 (rrf_no_rerank) MRR@3 <b>+0.300</b>이 확보되었고, 여기에 구조 신호까지 얹은 full_current가 안정적인 최상단 점수를 냈다. E2E 파이프라인(26 카드)에서는 <b>81%가 sLLM 카드로 정상 생성</b>되었고 나머지 19%는 keyword 폴백으로 안전하게 처리되었다.
+      <b>검색 품질 평가:</b> 19개 문서에서 구성한 40개 청크와 10개 질의를 사용한 자체 벤치에서, vector-only 기준 대비 Hybrid Retrieval(full_current)의 <b>MRR@3는 0.70 → 0.95</b>, <b>Hit@1은 60% → 90%</b>로 개선되었다. BM25와 Vector를 결합한 설정은 검색 후보의 상위권 적중을 높였고, reranking과 문서 구조 신호를 더한 최종 구성은 작은 자체 벤치에서 높은 검색 품질을 보였다.
+    </p>
+    <p style="color:var(--gray-700); margin-top:10px;">
+      <b>생성 파이프라인 평가:</b> 26개 카드 생성 E2E에서 21개(81%)는 sLLM 카드로 생성되었고, 5개(19%)는 keyword 기반 폴백으로 처리되었다. 평균 지연은 <b>17.3초, p95 30.5초</b>였다. 이는 생성 실패를 무조건 오류로 끝내지 않고 대체 경로로 처리하는 동작을 확인한 결과다.
+    </p>
+    <p style="color:var(--gray-700); margin-top:10px;">
+      <b>회귀 테스트:</b> RRF 계산, BM25 캐시, Query Planner, Re-ranker, 카드 검증의 5개 모듈에 대해 <b>모델 런타임과 LanceDB 없이 실행되는 pytest 150개</b>를 구성했다. 검색 벤치가 실제 검색 순위 품질을, E2E가 생성·폴백 흐름을 확인한다면, 이 테스트 묶음은 각 모듈의 결정적 로직을 빠르게 반복 검증하기 위한 것이다. 다만 현재 문서에는 pytest의 개별 fixture 데이터셋과 케이스별 통과 결과가 기록되어 있지 않으므로, 150이라는 개수 자체를 모델 품질의 증거로 해석하지 않는다.
+    </p>
+    <p style="color:var(--gray-700); margin-top:10px;">
+      <b>해석:</b> 이 결과는 Hybrid Retrieval이 해당 소규모 자체 벤치에서 검색 정확도를 높였고, Grounding·Reflection·폴백을 결합해 카드 생성 실패를 통제하는 구조를 확인했다는 근거다. 10개 질의의 결과이므로 일반적인 검색 성능으로 확대 해석하지 않고, 온디바이스 환경에서의 설계·검증 사례로 제시한다.
     </p>
 
     <div class="kpi-grid" style="margin-top:16px;">
