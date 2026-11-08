@@ -29,7 +29,10 @@
     <div class="actions">
       <button class="btn-ghost" onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText(location.href)">↗ URL 복사</button>
       <a class="btn-ghost" href="mailto:devilishvoice@inha.edu">✉ Email</a>
-      <a class="btn-ghost" href="https://github.com/hashbraun" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn-ghost github-link" href="https://github.com/hashbraun" target="_blank" rel="noopener" aria-label="GitHub profile">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.54v-2.08c-3.1.67-3.75-1.32-3.75-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.76 2.05 3.72 1.56.1-.72.39-1.21.7-1.49-2.47-.28-5.07-1.24-5.07-5.5 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.12-1.44 3.05-1.14 3.05-1.14.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3.01 0 4.27-2.6 5.21-5.08 5.49.4.35.75 1.02.75 2.06v3.06c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"/></svg>
+        GitHub
+      </a>
     </div>
   </div>
 </header>
@@ -48,22 +51,23 @@
           <div class="photo" style="background-image:url('photo.jpg');"></div>
           <div>
             <div class="name">조윤재</div>
-            <div class="role">AI Engineer · Undergraduate Researcher</div>
+            <div class="role">AI Engineer · R&D / Undergraduate Researcher</div>
             <div class="contact">
               <span class="item">✉ <a href="mailto:devilishvoice@inha.edu">devilishvoice@inha.edu</a></span>
               <span class="item">📱 010-2664-6276</span>
               <span class="item">🐙 <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a></span>
             </div>
             <div class="intro">
+              <p class="hero-statement">현실의 문제를 탐구하고, AI를 활용해 작동하는 시스템으로 구현하는 엔지니어입니다.</p>
               <p>
-                인하대학교 인공지능공학과 학부생으로, 데이터 파이프라인부터 라벨링 툴, 정책 학습, 실기 평가까지 이어지는
-                <b>CV·VLA 시스템</b>을 실제로 굴리는 일에 관심이 많습니다.
+                문제를 데이터와 실험으로 구체화하고, 모델의 선택부터 학습·평가·시스템 통합까지 이어지는
+                <b>Research &amp; Development</b>를 지향합니다. 주요 관심 분야는 <b>Computer Vision, Agentic Systems,
+                Vision-Language-Action, World Models</b>입니다.
               </p>
               <p>
-                현재 <b>HDC LABS (AI LAB)</b>에서 건설현장 안전 검출용 세미오토 라벨링·TTS·모니터링 파이프라인을 담당하고 있고,
-                이전에는 <b>RILS Lab</b>에서 SO-101 기반 bi-manipulator VLA를 실기 로봇 위에서 다뤘습니다.
-                최근 <b>2026 INHA AI Challenge</b>에서 Cosmos-Predict3-Nano를 개인 참가로 튜닝해
-                action-conditioned world model을 실험, <b>전체 215명 중 학부생 부문 11위</b>로 마감했습니다.
+                HDC LABS AI LAB에서 Computer Vision 기반 데이터·모델 파이프라인을 개발했고,
+                RILS Lab에서는 SO-101 로봇을 활용한 VLA imitation learning을 연구했습니다.
+                최근에는 action-conditioned world model의 액션 표현과 모델 적응을 실험했습니다.
               </p>
             </div>
           </div>
@@ -82,7 +86,7 @@
               HDC LABS (AI LAB)
               <span class="role">· AI Researcher</span>
             </div>
-            <div class="entry-period">2026.03 ~ 재직 중</div>
+            <div class="entry-period">2026.03 ~ 2026.08.31</div>
           </div>
           <div class="entry-org">서울, Korea</div>
           <div class="bracket">
@@ -117,167 +121,48 @@
     <section class="section" id="projects">
       <div class="s-label">프로젝트</div>
       <div class="s-body">
-
-        <!-- 1 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              Action-Conditioned Video Generation World Model
-              <a class="more" href="projects/project-03.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2026.07 ~ 2026.08 (챌린지 마감 2026-08-20)</div>
-          </div>
-          <div class="entry-org"><b>2026 INHA AI Challenge</b> (Dacon 236736) · Independent Entry</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> 2026 INHA AI Challenge에 개인 참가해 로봇 팔의 첫 프레임과 액션 시퀀스로 미래 프레임을 예측하는 action-conditioned world model을 다뤘다. Cosmos-Predict3-Nano를 튜닝하고 액션 표현·주입 구조를 재설계했다.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> 최종 리더보드 스코어 <b>0.24524</b> (lower-better) — 전체 215명 중 <b>학부생 부문 11위</b> 마감.
-            </p>
-          </div>
+        <p class="projects-intro">문제 정의부터 실험·검증·구현까지 수행한 프로젝트를 기술 주제별로 정리했습니다. 카드를 선택하면 프로젝트의 설계와 실험 과정을 확인할 수 있습니다.</p>
+        <div class="project-filters" role="group" aria-label="프로젝트 분야 필터">
+          <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-btn" type="button" data-filter="cv" aria-pressed="false">CV</button>
+          <button class="filter-btn" type="button" data-filter="vla" aria-pressed="false">VLA</button>
+          <button class="filter-btn" type="button" data-filter="world-model" aria-pressed="false">World Model</button>
+          <button class="filter-btn" type="button" data-filter="agent" aria-pressed="false">Agent</button>
         </div>
-
-        <!-- 2 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              On-Device Personal Memory Agent
-              <a class="more" href="projects/project-05.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2026.07 ~ 2026.08</div>
-          </div>
-          <div class="entry-org"><b>SW중심대학 사업단</b> 공모전 · Agent Developer</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> 온디바이스 개인 지식을 다루는 Agentic RAG. Corrective-RAG · Reflection 이중 루프와 BM25+벡터 하이브리드 검색을 결합해 검색 실패와 저품질 답변을 자동 보정했다.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> 커스텀 30-쿼리 벤치에서 single-hop <b>Hit@1 67% → 73% (+6%p)</b>, multi-hop <b>Recall@3 70% → 80% (+10%p)</b>.
-            </p>
-          </div>
+        <div class="project-gallery">
+          <a class="project-card" data-category="world-model" href="projects/project-03.html">
+            <div class="project-thumb"><img src="assets/p03/eval_samples.png" alt="SO-100 action-conditioned rollout 데이터 예시"></div>
+            <div class="project-card-body"><div class="project-meta"><span>WORLD MODEL</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p>SO-100 joint-action 기반 미래 프레임 예측. EDA를 바탕으로 액션 표현과 주입 구조를 재설계.</p><div class="project-foot"><span>2026 INHA AI Challenge · Independent</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="agent" href="projects/project-05.html">
+            <div class="project-thumb"><img src="assets/p05/overview.png" alt="SMIM 시스템 개요"></div>
+            <div class="project-card-body"><div class="project-meta"><span>AGENT</span><time>2026.07 — 2026.08</time></div><h3>SMIM · On-Device Personal Memory Agent</h3><p>작성 중인 맥락을 감지해 개인 문서에서 근거가 있는 기억을 검색·제안하는 온디바이스 Agent.</p><div class="project-foot"><span>SW중심대학 디지털 경진대회</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="cv" href="projects/project-02.html">
+            <div class="project-thumb"><img src="assets/p02/overview.png" alt="건설안전 검출 및 세미오토 라벨링 파이프라인"></div>
+            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p>모델보다 데이터가 병목인 롱테일 검출 문제를 데이터셋 재구성과 반복 라벨링 파이프라인으로 개선.</p><div class="project-foot"><span>HDC LABS · AI Researcher</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="cv" href="projects/project-01.html">
+            <div class="project-thumb project-thumb-placeholder"><span>CV</span></div>
+            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2026.03 — 2026.05</time></div><h3>Smart-Elevator CCTV Auto-Labeling</h3><p>4K 탑뷰 영상 라벨링 도구와 segmentation 모델을 결합한 자동화 파이프라인.</p><div class="project-foot"><span>현대엘리베이터 협력</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="cv agent" href="projects/project-08.html">
+            <div class="project-thumb project-thumb-placeholder"><span>VLM</span></div>
+            <div class="project-card-body"><div class="project-meta"><span>CV · AGENT</span><time>2025.07 — 2026.04</time></div><h3>VLM Video Action Recognition</h3><p>Qwen3-VL 기반 장시간 영상의 액션 세그먼트 추출 및 배치 처리.</p><div class="project-foot"><span>HDC LABS · AI Research</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="vla" href="projects/project-04.html">
+            <div class="project-thumb project-thumb-placeholder"><span>VLA</span></div>
+            <div class="project-card-body"><div class="project-meta"><span>VLA</span><time>2025.07 — 2026.02</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p>SO-101 teleoperation 시연 수집부터 정책 학습과 실기 closed-loop 평가까지.</p><div class="project-foot"><span>RILS Lab · Team Leader</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="vla" href="projects/project-06.html">
+            <div class="project-thumb project-thumb-placeholder"><span>ROBOTICS</span></div>
+            <div class="project-card-body"><div class="project-meta"><span>ROBOTICS</span><time>2025.08 — 2025.12</time></div><h3>Dynamic Obstacle-Aware Path Replanning</h3><p>UR5e 시뮬레이션에서 동적 장애물 감지와 궤적 재계획을 연결.</p><div class="project-foot"><span>인공지능종합설계 · Team Member</span><b>상세 보기 ↗</b></div></div>
+          </a>
+          <a class="project-card" data-category="cv" href="projects/project-07.html">
+            <div class="project-thumb project-thumb-placeholder"><span>SEGMENTATION</span></div>
+            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2025.04 — 2025.09</time></div><h3>Image Auto-Labeling · Mowed / Unmowed</h3><p>GPT-4o-mini와 SAM을 활용한 자율 예초 로봇 영상의 픽셀 단위 라벨 생성.</p><div class="project-foot"><span>KIRO 산학협력</span><b>상세 보기 ↗</b></div></div>
+          </a>
         </div>
-
-        <!-- 3 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              건설안전 검출 세미오토 라벨링 툴
-              <a class="more" href="projects/project-02.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2026.06 ~ 2026.08</div>
-          </div>
-          <div class="entry-org">with <b>HDC LABS</b> · AI Researcher</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> HDC LABS에서 건설현장 CCTV용 10-class 검출기와 사내 세미오토 라벨링 툴을 실배포까지 개선. 소수 클래스 성능과 val–실측 괴리를 씬 단위 held-out 재정립·소수 클래스 보강·7-model WBF 앙상블로 해결했다.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> v1 배포본에서 pump car <b>F1 0.00 → 0.57 (+0.57)</b>로 소수 클래스 회복. 배포는 <b>TensorRT FP16</b>으로 <b>3.9× 가속</b> · deploy-v1 <b>정확도 100% 유지</b>.
-            </p>
-          </div>
-        </div>
-
-        <!-- 4 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              Smart-Elevator CCTV 자동 라벨링 시스템
-              <a class="more" href="projects/project-01.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2026.03 ~ 2026.05</div>
-          </div>
-          <div class="entry-org">with <b>현대엘리베이터</b> · AI Researcher</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> 현대엘리베이터 대상 프로젝트로, 탑뷰 4K CCTV 라벨링을 풀스택 웹 툴로 구축. YOLO11m-seg 도메인 파인튜닝과 SAM2 초기 마스크 앵커 재설계(Polygon-Mask Prompting)로 드리프트를 잡고, Active Learning 루프로 저신뢰 프레임을 자동 재샘플링.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> YOLO11m-seg <b>Box/Mask mAP@0.5 = 0.978</b>. 60-frame clip 라벨링 시간 <b>30분 → 4분 (약 7.5×)</b>, 다중 사용자 웹 툴 실배포.
-            </p>
-          </div>
-        </div>
-
-        <!-- 5 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              CV AI Agent · VLM Video Action Recognition
-              <a class="more" href="projects/project-08.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.07 ~ 2026.04</div>
-          </div>
-          <div class="entry-org">Qwen3-VL · Zero training · AI Researcher</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> 전용 recognizer를 학습하지 않고 Qwen3-VL 하나로 원본 MP4를 초 단위 액션 세그먼트(15 categories)로 변환. structured output + 제약 프롬프트 + adaptive ffmpeg downsampling으로 장시간 클립을 SLURM에서 배치 처리.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> 추가 학습·수동 라벨링 없이 배치 파이프라인을 구축, 사내 데이터셋 전체를 자동 세그먼팅.
-            </p>
-          </div>
-        </div>
-
-        <!-- 6 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              VLA Imitation Learning Bi-manipulator
-              <a class="more" href="projects/project-04.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.07 ~ 2026.02</div>
-          </div>
-          <div class="entry-org">Undergraduate Research @ <b>RILS Lab</b> · Team Leader</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> RILS Lab 학부연구생 팀의 리더로, RGB-only imitation policy의 location memorization·pose hallucination을 완화하는 bi-manipulator VLA 정책을 설계. SO-101 teleop 시연 수집부터 3D Point-Cloud 임베딩 주입, 3-camera + proprioception + temporal context 융합까지 파이프라인을 구축·평가했다.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> 실기 롤아웃 성공률 <b>20~30% (10회 중 2~3회)</b>를 기록한 탐색적 파일럿으로, 데이터 수집부터 학습·closed-loop 평가까지 VLA 파이프라인 전 구간을 실기 로봇에서 검증했다.
-            </p>
-          </div>
-        </div>
-
-        <!-- 7 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              6-DOF Robot Arm · Dynamic Obstacle-Aware Path Replanning
-              <a class="more" href="projects/project-06.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.08 ~ 2025.12</div>
-          </div>
-          <div class="entry-org">인공지능종합설계 팀프로젝트 · UR5e (Gazebo Sim) · 3인 · Team Member</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> Gazebo 시뮬레이션의 UR5e에서 실행 중인 궤적으로 진입하는 동적 장애물을 감지·회피하는 반응형 리플래닝 시스템을 구축. OctoMap 지도 갱신 + MoveIt2 RRT-Connect 궤적 예측 + Recovery FSM(Detect → Stop → Replan → Resume)로 연결.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> Perception–Planning–Control–Recovery 4단이 결합된 반응형 리플래닝을 Gazebo에서 end-to-end 시연. 반복 5회 성공률 <b>60% (3/5)</b>.
-            </p>
-          </div>
-        </div>
-
-        <!-- 8 -->
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">
-              AGI을 활용한 영상 데이터 오토라벨링 (Mowed / Unmowed)
-              <a class="more" href="projects/project-07.html">상세 보기 →</a>
-            </div>
-            <div class="entry-period">2025.04 ~ 2025.09</div>
-          </div>
-          <div class="entry-org">산학협력 · with <b>한국로봇융합연구원 (KIRO)</b> · 참여연구원 (인하대 학사)</div>
-          <div class="bracket">
-            <p style="margin:0 0 10px 0;">
-              <b>[요약]</b> 한국로봇융합연구원(KIRO) 산학과제로, 자율 예초 로봇용 산길 이미지에서 예초 완료/미예초 영역을 학습 없이 픽셀 단위로 자동 라벨링. GPT-4o-mini로 이미지별 클래스 목록을 동적 추출한 뒤 SAM으로 마스크를 만들고 DBSCAN으로 인접 마스크를 병합.
-            </p>
-            <p style="margin:0;">
-              <b>[성과]</b> 이미지당 원본 100 마스크 → IoU 중복 제거·클래스 분류·DBSCAN 병합을 거쳐 <b>6~15개</b> 사용 가능한 오토라벨 확보. 산길 도메인 초기 라벨 시드로 활용.
-            </p>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -417,9 +302,9 @@
               인하대학교
               <span class="role">· 인공지능공학과 학사</span>
             </div>
-            <div class="entry-period">2021.03 ~ 2027.02 (예정)</div>
+            <div class="entry-period">2021.03 ~ 2027.02 (졸업 예정)</div>
           </div>
-          <div class="entry-org">인천, Korea</div>
+          <div class="entry-org">인천, Korea · 2021학번 · 현재 재학 중</div>
         </div>
       </div>
     </section>
@@ -606,5 +491,21 @@
   })();
 </script>
 
+<script>
+document.querySelectorAll('.project-filters .filter-btn').forEach((button) => {
+  button.addEventListener('click', () => {
+    const filter = button.dataset.filter;
+    document.querySelectorAll('.project-filters .filter-btn').forEach((item) => {
+      const active = item === button;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-pressed', String(active));
+    });
+    document.querySelectorAll('.project-card').forEach((card) => {
+      const categories = card.dataset.category.split(' ');
+      card.hidden = filter !== 'all' && !categories.includes(filter);
+    });
+  });
+});
+</script>
 </body>
 </html>
