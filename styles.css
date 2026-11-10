@@ -1690,3 +1690,7 @@ section {
   .additional-project-gallery .project-card,
   .additional-project-gallery .project-thumb img { transition:none; }
 }
+
+/* Portfolio project pages: show examples at full article width, after their explanation. */
+.media-grid-2 { grid-template-columns: 1fr; }
+.media-grid-2 .media { margin: 12px 0 24px; }
