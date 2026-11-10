@@ -147,11 +147,7 @@
     <p style="color:var(--gray-700); margin-top:10px;">
       <b>생성 파이프라인 평가:</b> 26개 카드 생성 E2E에서 21개(81%)는 sLLM 카드로 생성되었고, 5개(19%)는 keyword 기반 폴백으로 처리되었다. 평균 지연은 <b>17.3초, p95 30.5초</b>였다. 이는 생성 실패를 무조건 오류로 끝내지 않고 대체 경로로 처리하는 동작을 확인한 결과다.
     </p>
-    <p style="color:var(--gray-700); margin-top:10px;">
-      <b>추천 품질에 대한 한계와 다음 평가:</b> 초기 비교에서는 LLM이 맥락을 읽고 판단한 문서가 항상 BM25·Vector 유사도 검색보다 더 적합하지는 않았다. 그러나 실제 개인 문서와 맥락 표본이 적어 우열을 확정할 수 없었다. 후속 평가는 동일한 작성 맥락에 대해 BM25, Vector, Hybrid, LLM 추천 결과를 익명화해 제시하고, 평가자가 <b>맥락 관련성·실제 유용성·새로운 정보 제공·원문 근거성</b>을 각각 평정하도록 설계할 수 있습니다. 현재의 MRR@3·Hit@1은 후보 검색 성능의 근거로 한정하고, 추천 유용성의 성과로 해석하지 않습니다.
-    </p>
-
-    <div class="kpi-grid" style="margin-top:16px;">
+        <div class="kpi-grid" style="margin-top:16px;">
       <div class="kpi-tile">
         <div class="k-label">MRR@3 (10-query bench)</div>
         <div class="k-value">0.70 → 1.00 → 0.95</div>
