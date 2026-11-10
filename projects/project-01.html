@@ -56,8 +56,11 @@
          alt="System Overview — CCTV → YOLO11m-seg → SAM2 → Labeling UI (with Active-Learning feedback loop)" />
   </div>
 
+  <div class="article-intro"><strong>요약.</strong> 탑뷰 4K 엘리베이터 CCTV에서 발생한 도메인 차이와 SAM2 마스크 전파 drift를 해결하기 위해, YOLO11m-seg·Polygon-Mask Prompting·Active Learning·웹 라벨링 도구를 연결한 데이터 구축 파이프라인을 개발했습니다.</div>
+  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#requirements">시스템 요구사항</a><a href="#method">핵심 방법</a><a href="#evaluation">평가 결과</a></nav>
+  <div class="article-section">
   <!-- STAR: SITUATION -->
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <h2 class="section-title" id="problem">01 · Problem Definition — 탑뷰 도메인과 라벨링 병목</h2>
   <div class="card-block">
     <p>스마트 엘리베이터 프로젝트에서 요구되는 학습 데이터는 <b>탑뷰(top-down) 시점의 4K CCTV 영상</b>이었다.
     이 도메인은 COCO 계열 pretrained detector가 가정하는 시점(정면·측면)과 완전히 달라 <b>기성 모델의 검출 성능이 심각하게 떨어지고</b>, 그에 따라 수작업 라벨링 비용이 폭발적으로 증가하는 구조적 병목이 있었다.</p>
@@ -65,7 +68,7 @@
   </div>
 
   <!-- STAR: TASK -->
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title" id="requirements">02 · System Requirements</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>탑뷰 도메인에 특화된 <b>세그멘테이션 검출기</b>를 확보한다.</li>
@@ -76,7 +79,7 @@
   </div>
 
   <!-- STAR: ACTION (with architecture + demo placeholders) -->
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title" id="method">03 · Method — Segmentation, Prompting &amp; Active Learning</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>YOLO11m-seg 파인튜닝</b> — 4K 탑뷰 엘리베이터 영상 <b>19K 프레임 · 241 시퀀스</b>에 대해 탑뷰 도메인 적응.</li>
@@ -108,7 +111,7 @@
   </div>
 
   <!-- STAR: RESULT -->
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <h2 class="section-title" id="evaluation">04 · Evaluation &amp; Operational Impact</h2>
   <div class="card-block">
     <div class="kpi-grid">
       <div class="kpi-tile">
@@ -142,6 +145,8 @@
       최종적으로 사내 <b>다중 사용자 웹 라벨링 툴</b>로 배포되어, 탑뷰 CCTV 도메인에 대한 학습 데이터 확보 파이프라인의 인력 병목을 실질적으로 완화하였다.
     </p>
   </div>
+  <div class="article-callout"><strong>평가 해석.</strong> 본문에 기재된 0.978은 Box mAP50과 Mask mAP50 항목에 함께 표시되어 있습니다. 두 값이 각각 동일한 실측값인지, 하나의 지표를 중복 표기한 것인지는 원본 평가 로그 확인 후 분리 표기하는 것이 좋습니다. SAM2 Tracking IoU 개선은 3개 × 60프레임 테스트 클립 평균으로 범위를 한정해 해석해야 합니다.</div>
+</div>
 </section>
 
 <!-- Prev / Next -->
