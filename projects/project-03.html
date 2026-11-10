@@ -69,7 +69,7 @@
   <div class="article-section">
   <h2 class="section-title" id="problem">01 · Problem &amp; Data Analysis</h2>
   <div class="card-block">
-    <p>2026 INHA AI Challenge(Dacon 236736)의 과제는 로봇의 <b>초기 관측 프레임과 액션 시퀀스</b>를 입력받아 이후 15개 프레임을 예측하는 것이었습니다. 따라서 일반적인 텍스트-비디오 생성과 달리, 생성된 영상이 초기 장면을 유지하면서 주어진 로봇 액션에 맞춰 변화해야 했습니다.</p>
+    <p>2026 INHA AI Challenge(Dacon 236736)의 과제는 로봇의 <b>초기 관측 프레임과 액션 시퀀스</b>를 입력받아 이후 15개 프레임을 예측하는 것이었습니다. 따라서 일반적인 텍스트-비디오 생성과 달리, 생성된 영상이 초기 장면을 유지하면서 주어진 로봇 액션에 맞춰 변화해야 했습니다. 평가 점수는 <code>0.3 × (1 − DINO cosine similarity) + 0.3 × (1 − VideoR3D cosine similarity) + 0.4 × Action MAE</code>로 구성되며, 낮을수록 좋은 결과입니다.</p>
     <p style="margin-top:10px;">평가 점수는 DINO 이미지 특징 유사도, VideoR3D 동영상 특징 유사도, Action MAE를 결합하며 낮을수록 좋습니다. 이 구조에서는 영상이 시각적으로 자연스러운지만으로는 충분하지 않고, 예측된 액션 값이 정답 액션과 얼마나 가까운지도 중요했습니다. 초기 분석에서 사전학습 모델의 액션 입력 분포와 대회 데이터의 절대 관절 각도 표현이 잘 맞지 않는 문제를 확인했습니다.</p>
 
     <div class="media" style="margin-top:16px;">
@@ -84,14 +84,15 @@
   <h2 class="section-title" id="objective">02 · Baseline &amp; Model Selection</h2>
   <div class="card-block">
     <p>기반 모델 후보를 고를 때는 생성 품질뿐 아니라 액션 조건을 모델 내부에 연결할 수 있는지, 학습 자원과 추론 시간이 과제 규모에 적합한지를 함께 고려했습니다. Cosmos-Predict3-Nano는 비교 대상인 DreamZero(Wan2.1-I2V-14B)보다 작은 8B급 백본을 사용하고, 액션과 영상 정보를 함께 다루는 구조여서 제한된 실험 자원 안에서 액션 조건부 예측을 검증하기에 적합하다고 판단했습니다.</p>
-    <p style="margin-top:10px;">동일한 A6000 Ada 환경에서 비교한 기록상 Cosmos3-Nano는 10k step 환산 학습 시간이 약 1.25시간이었고, DreamZero는 약 12시간이었습니다. DreamZero의 216개 샘플 추론은 33분 48초(샘플당 약 9.4초)가 소요됐습니다. 이 비교를 통해 Cosmos3-Nano를 주 실험 모델로 선택하고, 이후에는 모델 전체를 바꾸기보다 액션 입력 경로와 표현을 개선하는 데 실험을 집중했습니다.</p>
+    <h3 class="article-subtitle">학습·추론 경로와 모델 선택</h3>
+    <p>동일한 A6000 Ada 환경에서 비교한 기록상 Cosmos3-Nano는 10k step 환산 학습 시간이 약 1.25시간이었고, DreamZero는 약 12시간이었습니다. DreamZero의 216개 샘플 추론은 33분 48초(샘플당 약 9.4초)가 소요됐습니다. Cosmos3-Nano는 latent 공간에서 액션과 영상 생성을 함께 처리하는 구조이며, DreamZero는 Wan2.1-I2V-14B 백본을 사용해 여러 chunk를 순차 생성하는 경로였습니다. 실험 예산과 전체 샘플 평가 시간을 함께 고려해 Cosmos3-Nano를 주 실험 모델로 선택하고, 이후에는 백본 교체보다 액션 입력 경로와 표현을 개선하는 데 집중했습니다.</p>
   </div>
 
   <h2 class="section-title" id="conditioning">03 · Action Conditioning</h2>
   <div class="card-block">
     <h3 class="article-subtitle">액션 정보가 모델 내부로 들어가는 경로 추가</h3>
     <p>기반 모델은 이미지와 텍스트 등 사전학습 모달리티를 처리할 수 있었지만, 이번 과제의 SO-100 6차원 액션 시퀀스를 동일한 방식으로 입력할 경로는 준비되어 있지 않았습니다. 따라서 액션 값을 단순히 프롬프트에 덧붙이는 대신, 액션 전용 투영층인 <code>action_proj_in</code>과 <code>action_proj_out</code>, 액션 모달리티 임베딩을 추가해 액션 특징이 영상 생성 과정에 전달되도록 구성했습니다.</p>
-    <p style="margin-top:10px;">새로 추가한 액션 입력 경로는 기본 학습률로 학습하고, 기존 백본은 LoRA 중심으로 조정했습니다. 이 단계에서 Action MAE가 초기 설정 대비 43.2% 감소했습니다. 이는 액션 값을 모델이 더 정확하게 예측하도록 입력 경로를 학습시킨 결과이며, 생성 영상의 물리적 정확성이 같은 비율로 향상됐다는 의미는 아닙니다.</p>
+    <p style="margin-top:10px;">새로 추가한 액션 입력 경로는 기본 학습률로 학습하고, 기존 백본은 LoRA 중심으로 조정했습니다. 이 단계에서 Action MAE가 초기 설정 대비 43.2% 감소했습니다. 다만 이 수치만으로 액션 입력이 미래 프레임에 의도한 움직임을 실제로 반영했다고 단정할 수는 없습니다. 현재 확인 가능한 근거는 액션 예측 오차의 감소와 생성 rollout의 정성적 비교이며, 동일한 초기 프레임에서 액션만 바꾸어 생성 결과가 어떻게 달라지는지 확인하는 통제 실험은 별도로 제시하지 않았습니다.</p>
   </div>
   <h2 class="section-title" id="representation">04 · Action Representation</h2>
   <div class="card-block">
@@ -151,6 +152,9 @@
       전체 215명 중 <b>학부생 부문 11위</b>로 마감.
     </p>
 
+    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">체크포인트 선택과 회귀 검증</h3>
+    <p>학습 손실이 가장 낮은 체크포인트가 대회 평가 점수까지 가장 낮게 만든다고 가정하지 않았습니다. B4 학습 과정에서 여러 step의 체크포인트를 추출해 실제 평가 점수를 비교했고, 그중 step 6000을 최종 도전본으로 선택했습니다. 이 선택으로 안전본 0.24524에서 0.2407로 점수가 낮아졌습니다. 따라서 최종 선택은 학습 loss만으로 결정한 것이 아니라, 대회 평가 지표를 기준으로 한 체크포인트 비교 결과입니다.</p>
+    <p style="margin-top:10px;">회귀 분석은 초기 튜닝 단계의 10개 측정값에서 Action MAE가 리더보드 점수와 함께 움직이는 경향을 확인하는 데 사용했습니다. 표본 수가 적고 특정 실험 범위에 한정된 분석이므로, 일반적인 성능 법칙이나 실제 로봇 행동의 정확성을 증명하는 결과로 확대 해석하지 않았습니다.</p>
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Ablation &mdash; base → total (실측 리더보드)</h3>
     <div style="overflow-x:auto; margin-top:10px;">
       <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
@@ -252,18 +256,21 @@
         <img src="../assets/p03/good_sample_085.gif"
              alt="Good case rollout 1 — sample_000085 (MAE 0.332). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
              style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <p class="media-caption">낮은 Action MAE를 기록한 첫 번째 rollout입니다. 초기 프레임의 로봇 팔과 물체 위치가 예측 구간에서 비교적 안정적으로 유지되는 사례입니다.</p>
         <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000085 &middot; MAE = 0.332</div>
       </div>
       <div>
         <img src="../assets/p03/good_sample_086.gif"
              alt="Good case rollout 2 — sample_000086 (MAE 0.357). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
              style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <p class="media-caption">두 번째 양호 사례입니다. 샘플별 액션 오차가 낮았으며, 생성된 프레임에서 로봇 팔의 움직임과 배경이 큰 흔들림 없이 이어집니다.</p>
         <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000086 &middot; MAE = 0.357</div>
       </div>
       <div>
         <img src="../assets/p03/good_sample_052.gif"
              alt="Good case rollout 3 — sample_000052 (MAE 0.366). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
              style="width:100%; display:block; border-radius:8px; border:1px solid var(--line, #E5E7EB);" />
+        <p class="media-caption">세 번째 양호 사례입니다. Action MAE 0.366을 기록했으며, 예측 구간에서 주요 물체와 로봇 팔의 상대적 배치가 유지되는 모습을 확인할 수 있습니다.</p>
         <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000052 &middot; MAE = 0.366</div>
       </div>
     </div>
