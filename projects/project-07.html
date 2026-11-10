@@ -163,7 +163,7 @@
       <li>Notes &mdash; 학습 없는 파이프라인이라 <b>Stage 3 LLM 분류 편차</b>와 <b>DBSCAN eps</b> 튜닝이 다음 반복의 개선 포인트</li>
     </ul>
   
-  <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
+  <h2 class="section-title" id="reflection">05 · Technical Issues &amp; Improvements</h2>
   
     <p>주요 한계는 GPT-4o-mini의 마스크별 클래스 선택 편차와 DBSCAN의 거리 임계값에 결과가 민감할 수 있다는 점입니다. 특히 경계가 모호한 Mowed·Unmowed 영역은 crop 범위와 장면 맥락에 따라 분류가 달라질 수 있습니다. 다음 단계에서는 사람 검수 라벨을 기준으로 클래스별 오류와 경계 품질을 측정하고, DBSCAN eps 및 SAM 생성 설정을 검증 세트에서 조정해야 합니다.</p>
     <h3 class="article-subtitle">후속 연구 방향 · Geometry-aware Robust Labeling</h3>
