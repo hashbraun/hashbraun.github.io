@@ -47,7 +47,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#goal">Solution Goals</a><a href="#pipeline">Implementation</a><a href="#results">Evaluation Results</a><a href="#deployment">Deployment &amp; Optimization</a><a href="#tracking">객체 추적</a><a href="#conclusion">결론과 남은 과제</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#goal">Solution Goals</a><a href="#pipeline">Implementation</a><a href="#results">Results &amp; Deployment</a><a href="#deployment">Deployment &amp; Optimization</a><a href="#tracking">객체 추적</a><a href="#conclusion">결론과 남은 과제</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -59,7 +59,7 @@
 
   <div class="article-intro"><strong>프로젝트 개요.</strong> 소량의 초기 라벨에서 출발해 SAM2 기반 반자동 라벨링 도구를 직접 구현했습니다. 초기 라벨로 학습한 모델이 놓치거나 불확실하게 판단한 장면을 자동으로 검수 후보에 등록하고, 사람이 수정하거나 필요한 데이터를 추가·증강한 뒤 다시 학습하는 과정을 연결했습니다.</div>
   <div class="article-section">
-  <h2 class="section-title" id="problem">01 · 문제 정의 — 희소 객체와 데이터 구축 병목</h2>
+  <h2 class="section-title" id="problem">01 · Problem Definition — 희소 객체와 데이터 구축 병목</h2>
   <div class="card-block">
     <p>건설현장 CCTV에는 작업자와 여러 종류의 중장비가 함께 등장하지만, 펌프카·레미콘 운반차(RMC)·덤프트럭처럼 등장 빈도가 낮은 객체는 학습 데이터가 충분하지 않았습니다. 전체 정확도만 보면 문제가 작아 보이더라도, 실제 현장에서 중요한 소수 클래스는 놓치거나 다른 객체로 잘못 분류하는 경우가 있었습니다.</p>
     <p style="margin-top:10px;">이 문제를 모델 구조만 바꿔 해결하기는 어렵다고 판단했습니다. 먼저 적은 수의 초기 라벨로 학습을 시작하고, 모델이 놓치기 쉬운 장면을 다시 검수해 데이터셋에 추가할 수 있어야 했습니다. 이를 위해 <b>SAM2를 활용한 반자동 라벨링 도구를 직접 구현</b>하고, 검수·수정·재학습이 이어지는 데이터 구축 과정을 만들었습니다.</p>
@@ -73,7 +73,7 @@
   <h2 class="section-title" id="pipeline">03 · Implementation — 라벨링부터 모델 개선까지</h2>
   <div class="card-block">
     <h3 class="article-subtitle">Zero-shot 자동 라벨링에서 도메인 특화 학습으로</h3>
-    <p>이전 산학협력 프로젝트에서는 GPT-4o-mini와 SAM을 결합해 별도 학습 없이 이미지의 객체를 분류하고 마스크를 생성하는 Zero-shot 자동 라벨링 도구를 구현했습니다. 당시 데이터는 일반적인 화각이었고, 기본 모델도 객체 종류를 비교적 쉽게 구분할 수 있어 이미지 전체를 멀티모달 모델에 전달하는 접근이 유효했습니다.</p>
+    <p>이전 산학협력 프로젝트([Zero-shot 자동 라벨링](project-07.html))에서는 GPT-4o-mini와 SAM을 결합해 별도 학습 없이 이미지의 객체를 분류하고 마스크를 생성하는 도구를 구현했습니다. 당시 데이터는 일반적인 화각이었고, 기본 모델도 객체 종류를 비교적 쉽게 구분할 수 있어 이미지 전체를 멀티모달 모델에 전달하는 접근이 유효했습니다.</p>
     <p>그러나 건설현장 CCTV는 높은 위치에서 내려다보거나 멀리 떨어진 객체를 촬영하는 등 시점과 크기 조건이 달랐습니다. 이 환경에서는 멀티모달 LLM도 중장비의 종류와 경계를 안정적으로 구분하지 못했습니다. 이미지 전체를 반복해서 멀티모달 모델에 전달하면 처리 시간과 입력 토큰 비용도 커졌습니다. 따라서 이번에는 LLM 호출을 반복하는 대신, 현장 영상으로 객체 검출 모델을 파인튜닝하고 자동 예측을 반복 활용하는 편이 정확도와 운영 비용 측면에서 더 적합하다고 판단했습니다.</p>
     <p>이 선택은 단순히 자동 라벨러를 교체한 것이 아니라, <b>데이터 수집 → 초기 데이터셋 구축 → 검출 모델 학습 → 취약 장면 선별 → 사람의 검수와 추가 라벨링 → 재학습</b>을 반복하는 능동학습(Active Learning) 방식의 데이터 구축 체계로 이어졌습니다. 모델이 낮은 신뢰도로 예측하거나 오류가 잦은 장면을 검수 후보로 모으고, 작업자가 수정한 결과를 다음 학습에 반영해 데이터가 부족한 영역부터 보완하도록 설계했습니다.</p>
     <div class="media" style="margin:18px 0 24px;">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <h2 class="section-title" id="results">04 · Evaluation Results — 운영 모델과 후속 실험 비교</h2>
+  <h2 class="section-title" id="results">04 · Results &amp; Deployment — 운영 모델과 후속 실험 비교</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:14px;">이 프로젝트에는 평가 목적이 다른 세 가지 모델 단계가 있습니다. 아래 결과를 읽을 때는 각 모델이 어떤 데이터로 평가됐는지 함께 봐야 합니다.</p>
     <div class="result-context">
