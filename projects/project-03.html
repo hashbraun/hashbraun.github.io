@@ -220,7 +220,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title" id="retrospective">08 · Technical Issues &amp; Improvements — 액션 표현과 생성 결과의 정렬</h2>
+  <h2 class="section-title" id="reflection">08 · Technical Issues &amp; Improvements — 액션 표현과 생성 결과의 정렬</h2>
   <div class="card-block">
     <p>Action Injection을 추가한 뒤에도 액션 조건이 생성 결과에 충분히 반영되지 않는 문제가 있었습니다. 처음에는 절대 관절 각도를 입력했지만, 사전학습 모델이 기대하는 액션 표현과 데이터의 관절 값 범위가 맞지 않아 초기 모델보다 결과가 나빠졌습니다. 이를 확인한 뒤 End-Effector Delta와 Gripper 값을 정규화해 입력 표현을 바꾸었고, 액션 입력의 스케일과 의미를 모델의 학습 경로에 맞추는 방향으로 수정했습니다.</p>
     <p style="margin-top:10px;">샘플별 결과를 비교했을 때 큰 Gripper 이동이 포함되거나 배경 물체가 많은 장면에서 Action MAE가 높아지고, rollout 후반부에 로봇 팔의 형상이나 물체 위치가 흐트러지는 사례가 나타났습니다. 현재는 제한된 평가 샘플에서 실패 조건을 확인한 단계이므로, 이후에는 액션 변화량과 장면 복잡도에 따른 데이터 분포를 나누어 분석하고, 특히 큰 동작이 포함된 시연을 보강할 예정입니다.</p>
