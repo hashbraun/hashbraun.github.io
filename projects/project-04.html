@@ -57,13 +57,15 @@
     <p>SO-101 실기 로봇의 teleoperation 시연을 직접 수집하고 VLA 정책을 학습·평가하면서, 실제 환경에서 다양한 상태와 행동을 충분히 경험시키는 데이터의 중요성을 체감했습니다. 시연 수집은 시간과 장비가 필요한 과정이므로, 이후에는 <b>World Model로 학습 데이터를 생성·확장할 수 있을까?</b>라는 질문으로 관심을 넓혔습니다.</p>
     <p style="margin-top:8px;">이후 별도 SO-100 데이터셋을 사용한 World Model 프로젝트에서 action-conditioned rollout을 생성하고, train/eval action 분포와 생성 결과의 Good/Bad case를 분석하며 action 표현과 모델 튜닝을 진행했습니다. 두 프로젝트의 데이터셋을 직접 이어 붙인 것은 아니며, 실제 로봇 학습 경험에서 얻은 데이터 효율성에 대한 문제의식이 후속 연구 질문에 영향을 준 흐름입니다.</p>
   </div>
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="article-intro"><strong>요약.</strong> SO-101 양팔 로봇에서 teleoperation 시연 수집과 VLA 정책 학습·실기 평가를 수행했습니다. 이 페이지는 시연 데이터 수집 파이프라인과 다중 모달 입력 구조를 중심으로 구현 내용을 설명하며, Point-Cloud 및 Multi-camera 융합의 성능 효과는 정량 비교가 필요한 항목으로 구분합니다.</div>
+  <nav class="article-toc" aria-label="본문 목차"><a href="#research-context">연구 배경</a><a href="#system">시스템·데이터</a><a href="#method">모델 입력 구조</a><a href="#evaluation">평가와 한계</a><a href="#next-question">후속 연구</a></nav>
+  <div class="article-section">
+  <h2 class="section-title" id="research-context">01 · Research Context — Real-Robot Demonstration</h2>
   <div class="card-block">
-    <p>RGB만 사용하는 imitation policy는 <b>물체 위치 암기(location memorization)</b>와 <b>포즈 헛발(pose hallucination)</b>에 취약해, 학습 분포에서 벗어난 배치에서 실패가 잦다.</p>
-    <p style="margin-top:10px;">Bi-manipulator 세팅에서는 두 팔의 협조가 필요해 이 문제가 더 뚜렷해진다.</p>
+    <p>양팔 조작 정책은 물체와 두 로봇 팔의 상대적 위치, 카메라 시점, 로봇의 proprioceptive state를 함께 다뤄야 합니다. 본 프로젝트에서는 이 관찰 정보를 정책 입력으로 구성하는 방법을 탐색했습니다. RGB-only 입력의 공간적 모호성은 설계 동기이며, 이 페이지의 결과만으로 특정 실패 유형이 실제로 감소했다고 단정하지 않습니다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title" id="system">02 · System Setup &amp; Demonstration Data</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>실기 <b>teleoperation rig 구축</b>과 SO-101 시연 데이터 수집·큐레이션 파이프라인을 세운다.</li>
@@ -72,7 +74,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title" id="method">03 · Method — Multi-modal Observation &amp; Policy Learning</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>Teleop rig & 데이터 수집</b> — 리그 세팅, on-robot SO-101 시연 수집, 에피소드 큐레이션, 정책 학습, closed-loop 평가까지 end-to-end 담당.</li>
@@ -102,10 +104,10 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <h2 class="section-title" id="evaluation">04 · Evaluation, Evidence &amp; Limitations</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
-      실기 로봇 데이터 수집부터 정책 학습·closed-loop 평가까지 <b>VLA 학습 파이프라인 전 구간을 end-to-end로 경험</b>한 것이 이 프로젝트의 성과이다. Point-Cloud (FPS) 기반 grounding과 3-camera + proprioception fusion을 통해 RGB-only 대비 <b>location memorization / pose hallucination 완화 방향의 구조적 설계</b>를 검증하였다.
+      실기 로봇 데이터 수집부터 정책 학습·closed-loop 평가까지의 파이프라인을 수행했습니다. Point-Cloud (FPS) 기반 입력과 3-camera + proprioception fusion 구조를 구현·적용했습니다. 다만 현재 정량 벤치마크와 통제된 RGB-only ablation이 없으므로, location memorization이나 pose hallucination이 개선됐다고 결론 내리지는 않습니다.
     </p>
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p04/perf_qual.png"
@@ -115,6 +117,10 @@
         정량 벤치마크(성공률·궤적 오차 등)는 실기 롤아웃 데이터가 확보되는 대로 별도 보고 예정.
       </p>
     </div>
+  </div>
+  <div class="article-callout"><strong>검증 범위.</strong> 현재 제시된 비교 이미지는 구조적 설계 의도를 설명하기 위한 일러스트레이션입니다. 입력 모달리티별 기여도를 주장하려면 동일한 데이터·정책·평가 조건에서 RGB-only와 Point-Cloud/FPS 및 Multi-camera 융합을 비교하는 ablation이 필요합니다.</div>
+  <h2 class="section-title" id="next-question">05 · Follow-up Research Question — Data Efficiency</h2>
+  <div class="card-block"><p>실기 시연 수집에서 경험한 데이터 확보 비용과 행동 분포의 제한은 이후 World Model 프로젝트의 문제의식으로 이어졌습니다. 후속 프로젝트는 별도의 SO-100 데이터셋으로 수행했으며, 본 프로젝트의 SO-101 시연 데이터를 직접 재사용하지 않았습니다.</p></div>
   </div>
 </section>
 
