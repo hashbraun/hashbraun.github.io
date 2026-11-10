@@ -143,7 +143,7 @@
   </ol>
 
   <h2 class="section-title" id="results">05 · Experiments &amp; Results</h2>
-  <div class="card-block">
+  
     <p style="color:var(--gray-700);">
       <b>검색 후보 순위 평가:</b> 19개 문서에서 구성한 40개 청크와 10개 질의를 사용한 자체 벤치에서 Vector-only는 MRR@3 0.70, BM25+Vector를 RRF로 결합한 구성은 1.00, 재랭킹과 구조 신호까지 추가한 전체 구성은 0.95를 기록했습니다. BM25를 결합한 단계에서 순위 지표가 가장 높았고, 재랭킹을 추가한 최종 구성에서는 1.00을 넘지 못했습니다. 
     </p>
@@ -183,12 +183,12 @@
            alt="Phase 3 Ablation — 10-query 자체 벤치. semantic_only(vec-only) MRR@3 0.70 → rrf_no_rerank(BM25+vec) 1.00 → full_current(BM25+vec+rerank+구조신호) 0.95. BM25 기여 MRR@3 +0.300." />
       <p class="media-caption">10개 질의로 수행한 자체 검색 실험 결과입니다. 벡터 검색 단독, BM25와 벡터 검색의 결합, 재랭킹과 구조 신호를 추가한 전체 구성을 비교했습니다. 이 결과에서는 BM25를 추가한 구성이 가장 높은 MRR@3를 기록했으며, 재랭킹을 포함한 최종 구성은 별도의 trade-off가 있음을 보여줍니다.</p>
     </div>
-  </div>
+  
   <h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
-  <div class="card-block">
+  
     <p>검색 벤치는 19개 문서에서 구성한 40개 청크와 10개 질의로 제한되어 실제 장기 사용자의 다양한 작성 맥락을 대표하기 어렵습니다. LLM 단독 추천과의 비교 역시 소수 사례에서 관찰한 결과이므로, 문서 유형과 작성 상황을 넓힌 평가가 필요합니다.</p>
     <p style="margin-top:10px;">E2E 26회 중 21회는 sLLM 카드, 5회는 keyword fallback으로 완료되었으며 평균 17.3초, p95 30.5초가 소요되었습니다. 따라서 현재 구조는 근거가 부족한 생성을 폴백으로 처리하는 경로까지 확인했지만, 즉각적인 글쓰기 보조 경험을 제공하기에는 지연과 폴백 비율을 더 낮출 필요가 있습니다. 다음 평가에서는 문서 유형과 작성 상황을 확장하고, 추천 카드의 실제 활용 여부를 사람 평가로 확인하는 한편 지연과 폴백률을 함께 추적할 필요가 있습니다.</p>
-  </div>
+  
     </div>
       </div>
 </main>
