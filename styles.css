@@ -1694,3 +1694,9 @@ section {
 /* Portfolio project pages: show examples at full article width, after their explanation. */
 .media-grid-2 { grid-template-columns: 1fr; }
 .media-grid-2 .media { margin: 12px 0 24px; }
+
+/* Project examples: keep each figure independent and readable below its context. */
+.media-grid-2 { display: block; }
+.media { width: 100%; margin: 22px 0 30px; }
+.media img, .media video { display: block; width: 100%; max-width: 100%; height: auto; }
+.media .media-caption { margin: 0 0 12px; color: var(--gray-700, var(--sub)); font-size: .9rem; line-height: 1.8; }
