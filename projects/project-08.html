@@ -46,7 +46,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">Solution Goals</a><a href="#decisions">Design Decisions</a><a href="#implementation">Implementation</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">Scope &amp; Design Goals</a><a href="#implementation">Design &amp; Implementation</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -56,26 +56,26 @@
   </div>
 
   <h2 class="section-title" id="problem">01 · Problem Definition</h2>
-  <div class="card-block">
+  
     <p>15개 행동 카테고리에 대해 시작·종료 시점을 초 단위로 표시한 액션 세그먼트가 필요했습니다. 그러나 전용 행동 인식 모델을 새로 학습할 데이터와 시간이 충분하지 않아, 사전학습된 비전-언어 모델(VLM)을 활용하는 접근을 검토했습니다.</p>
     <p style="margin-top:10px;">원본 영상은 길이가 길어 모든 프레임을 그대로 입력하면 GPU 메모리 부족(OOM)이 발생했습니다. 따라서 모델 선택뿐 아니라 영상 길이와 프레임 수를 조절해 전체 데이터셋을 안정적으로 처리하는 전처리 과정도 필요했습니다.</p>
-  </div>
+  
 
-  <h2 class="section-title" id="scope">02 · Solution Goals</h2>
-  <div class="card-block">
+  <h2 class="section-title" id="scope">02 · Scope &amp; Design Goals</h2>
+  
     <p>별도의 행동 인식 모델을 학습하지 않고도 Qwen3-VL을 이용해 영상의 행동 구간과 타임스탬프를 추출하고, 출력 형식을 검증해 일관된 JSON 결과로 저장하는 파이프라인을 구축하는 것을 목표로 삼았습니다. 또한 FFmpeg 전처리와 SLURM 배치 실행을 연결해 긴 영상이 포함된 전체 데이터셋을 처리할 수 있도록 했습니다.</p>
-  </div>
+  
 
-  <h2 class="section-title" id="decisions">03 · Design Decisions</h2>
-  <div class="card-block">
+  <h2 class="section-title" id="implementation">03 · Design &amp; Implementation</h2>
+  
     <h3 class="article-subtitle">별도 행동 인식 모델 학습 대신 사전학습 VLM 활용</h3>
     <p>15개 행동 카테고리의 시작·종료 시점을 추출해야 했지만, 전용 행동 인식 모델을 학습할 데이터와 시간이 충분하지 않았습니다. 이에 Qwen3-VL을 사용하고, 자유 서술형 답변 대신 행동 정의·우선순위·화면 내 가시성 조건을 명시한 프롬프트와 JSON 출력 형식으로 문제를 제한했습니다. 이는 별도 학습을 대체하는 zero-training 접근이며, 정답 행동 구간에 대한 정확도를 보장하는 방식은 아닙니다.</p>
     <h3 class="article-subtitle">영상 길이에 따라 입력 프레임 수를 제어</h3>
     <p>모든 프레임을 같은 간격으로 입력하면 긴 영상에서 GPU 메모리 부족이 발생했습니다. 영상 길이에 따라 샘플링 빈도를 낮추고 입력 너비를 제한하는 FFmpeg 전처리를 두어, 모델의 시각 입력량과 배치 처리 가능성을 함께 관리했습니다. 샘플링을 줄이면 계산량은 낮아지지만 짧게 발생하는 행동이나 전환 시점을 놓칠 수 있다는 trade-off가 있습니다.</p>
-  </div>
+  
 
-  <h2 class="section-title" id="implementation">04 · Implementation</h2>
-  <div class="card-block">
+  <h3 class="article-subtitle">구조화된 액션 타임라인 생성</h3>
+  
     <h3 class="article-subtitle">행동 정의와 시간 조건을 포함한 구조화 출력</h3>
     <p>Qwen3-VL이 임의의 문장으로 행동을 설명하지 않고 정해진 15개 카테고리와 시간 구간을 반환하도록 프롬프트를 구성했습니다. 행동별 정의와 우선순위, 화면에서 확인할 수 있어야 하는 가시성 조건을 명시하고, 최소 지속 시간은 5초 이상으로 제한했습니다. 출력은 행동 카테고리와 시작·종료 시각(MM:SS)을 포함하는 JSON 구조로 받도록 해 후속 검증과 데이터 저장 과정에서 일관되게 처리할 수 있도록 했습니다. 이 단계에서 모델의 자연어 판단을 허용된 행동 목록과 시간 제약으로 제한했습니다.</p>
     <h3 class="article-subtitle">영상 길이에 따른 적응형 프레임 샘플링</h3>
@@ -99,12 +99,12 @@
         <p class="media-caption">Qwen3-VL이 15개 허용 카테고리 중 행동 라벨을 선택하고 시작·종료 시각을 JSON으로 반환하는 예시입니다. 구조화 출력은 결과를 타임라인으로 변환하고 후속 검증·저장 단계에 전달하기 위한 형식이며, 그 자체가 행동 인식 정확도를 의미하지는 않습니다.</p>
       </div>
     </div>
-  </div>
+  
 
-  <h2 class="section-title" id="results">05 · Experiments &amp; Results</h2>
-  <div class="card-block">
+  <h2 class="section-title" id="results">04 · Experiments &amp; Results</h2>
+  
     <p style="color:var(--gray-700);">
-      전용 행동 인식 모델을 새로 학습하지 않고도 Qwen3-VL, 구조화 출력, 적응형 FFmpeg 전처리를 결합해 원본 MP4를 초 단위 액션 세그먼트로 변환하는 파이프라인을 구축했습니다. 또한 SLURM 배치 실행을 연결해 전체 데이터셋을 처리할 수 있는 작업 흐름을 마련했습니다.
+      Qwen3-VL의 행동 구간 추론, JSON 구조화 출력, FFmpeg 전처리와 검증·수정 단계를 연결해 원본 MP4에서 타임스탬프가 포함된 액션 세그먼트를 생성하는 파이프라인을 구성했습니다. SLURM 배치 실행을 연결해 다수의 영상을 순차 처리할 수 있는 작업 흐름을 마련했습니다. 시각화 예시에서는 행동 라벨과 시작·종료 시각이 타임라인 및 샘플 프레임에 연결되는 것을 확인했습니다. 정답 구간 라벨과 대조한 인식 성능은 별도로 측정하지 않았습니다.
     </p>
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p08/perf_timeline.png"
@@ -117,12 +117,12 @@
            alt="VLM 실제 예시 — 실제 추론 결과 (Bp_free17 / Hyeyoung_Lee / room01, 9개 프레임) · using phone / watching tv / getting up from bed / walking / sitting on sofa / drinking 등 15개 카테고리에 대한 MM:SS 타임스탬프 라벨" />
       <p class="media-caption">Bp_free17 / Hyeyoung_Lee / room01 세션에서 추출한 9개 샘플 프레임입니다. Qwen3-VL이 예측한 각 행동의 <b>시작·종료 시각(MM:SS)과 액션 라벨</b>을 프레임에 표시해, 시간 구간 분류 결과를 원본 장면과 대조할 수 있도록 했습니다.</p>
     </div>
-  </div>
-  <h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
-  <div class="card-block">
+  
+  <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
+  
     <p>현재 결과는 Qwen3-VL이 생성한 행동 구간을 JSON과 타임라인으로 정리하고, 샘플 영상 프레임과 대조해 출력 흐름을 확인한 사례입니다. 정답 구간 라벨을 이용한 temporal IoU, segment-level precision/recall, action classification accuracy 또는 사람 검수 일치율은 제시하지 않았습니다. 따라서 이 프로젝트의 검증 범위는 구조화 출력과 배치 처리 파이프라인의 동작 확인이며, 행동 인식 모델의 정량 성능 검증과는 구분됩니다.</p>
     <p style="margin-top:10px;">적응형 샘플링은 긴 영상의 입력량과 OOM 위험을 줄이는 대신, 낮은 fps에서 짧은 행동이나 경계 시점을 놓칠 수 있습니다. 또한 프롬프트의 행동 정의·우선순위·최소 5초 조건은 출력 범위를 안정화하지만, 애매한 장면에서 모델이 잘못된 카테고리를 선택하거나 시간 경계를 부정확하게 추정하는 문제를 제거하지는 못합니다. 다음 단계에서는 정답 타임라인이 있는 검증 세트로 샘플링 간격과 해상도를 비교하고, JSON 유효성뿐 아니라 시간 경계·행동 라벨의 정확도를 별도로 평가해야 합니다.</p>
-  </div>
+  
 </main>
   </div>
 </section>
