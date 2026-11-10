@@ -70,7 +70,13 @@
 
   <h2 class="section-title" id="system">02 · System Setup &amp; Demonstration Data</h2>
   <div class="card-block">
-    <p>실기 SO-101 양팔 로봇에서 리더-팔로워 방식의 원격 조작 환경을 구성하고, 시연 데이터를 수집·정리한 뒤 VLA 정책 학습과 폐루프 실행까지 연결하는 것을 목표로 삼았습니다. 또한 RGB 영상에 Point Cloud와 관절 상태를 추가해 시각 정보와 기하학적 정보를 함께 활용하는 입력 구조를 구현했습니다.</p>
+    <p>SO-101 양팔 로봇과 리더-팔로워 teleoperation 환경을 구성하고, 작업자가 리더 로봇을 조작하는 동안 팔로워 로봇의 동작과 카메라 관측, 로봇 상태, 액션을 에피소드 단위로 기록했습니다. 수집한 시연은 Hugging Face LeRobot 데이터 형식으로 정리해 정책 학습과 실제 로봇 평가에 사용했습니다.</p>
+    <p style="margin-top:10px;">관측 장치는 Top·Front·Wrist 시점의 RGB 카메라와 RealSense 깊이 카메라로 구성했습니다. Top·Front 시점은 작업 공간과 물체의 배치를 넓게 관찰하고, Wrist 시점은 말단부 주변의 조작 상황을 가까이서 관찰합니다. 깊이 영상에서는 Point Cloud를 복원할 수 있으며, 로봇 관절 상태(proprioception)와 액션 정보도 시각 관측의 시점에 맞춰 정렬해 기록했습니다.</p>
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p04/architecture.png"
+           alt="System input-output overview — Top, Front and Wrist RGB, Point Cloud/FPS and proprioceptive state to policy, then dual-arm actions" />
+      <p class="media-caption">정책 학습에 사용한 관측·액션 데이터의 전체 구조입니다. Top·Front·Wrist RGB 영상과 Point Cloud/FPS, 로봇 상태 정보를 시점에 맞춰 구성하고, 정책이 양팔 로봇의 액션을 예측하는 흐름을 나타냅니다. 세부 입력 조합은 정책별 실험 단계에 따라 확장했습니다.</p>
+    </div>
   </div>
 
   <h2 class="section-title" id="method">03 · Design Decisions &amp; Implementation</h2>
@@ -112,22 +118,33 @@
     </div>
   </div>
 
-  <h2 class="section-title" id="evaluation">04 · Experiments &amp; Evaluation</h2>
+  <h2 class="section-title" id="evaluation">04 · Experiments &amp; Results</h2>
   <div class="card-block">
-    <p style="color:var(--gray-700);">
-      실기 로봇의 시연 데이터 수집부터 정책 학습과 폐루프 평가까지 이어지는 파이프라인을 수행했습니다. Point Cloud에 Farthest Point Sampling(FPS)을 적용하고, 3개 카메라 영상과 로봇 상태 정보를 함께 사용하는 입력 구조를 구현했습니다. 다만 현재 정량 벤치마크와 RGB-only 대조 실험은 확보하지 못했으므로, 이 입력 구성이 위치 기억 오류나 자세 추정 오류를 개선했다고 단정하지 않습니다.
-    </p>
-    <div class="media" style="margin-top:20px;">
-      <img src="../assets/p04/perf_qual.png"
-           alt="Qualitative Results (illustrative) — RGB-only baseline vs Ours (+PC/FPS) phase별 롤아웃 스냅샷" />
-      <p class="media-caption">RGB-only 입력과 Point Cloud/FPS 입력의 차이를 설명하기 위해 구성한 개념도입니다. 실제 성능 비교 결과가 아니라 입력 구조의 설계 의도를 보여주는 자료이며, 성공률과 궤적 오차를 이용한 정량 비교는 별도 실험이 필요한 상태입니다.</p>
-    </div>
+    <p>실험은 ACT를 이용한 초기 실기 모방학습에서 출발해, 카메라 관측을 확장한 SmolVLA 적용으로 이어졌습니다. 각 단계는 정책 구조와 관측 구성이 달라 동일한 조건의 모델 성능 비교라기보다, 실제 로봇 시연을 정책 학습과 실행으로 연결하고 후속 VLA 적응을 시도한 순차적 실험으로 해석해야 합니다.</p>
+
+    <h3 class="article-subtitle">Experiment 1 · ACT 기반 실기 모방학습</h3>
+    <ul style="padding-left:20px;color:var(--gray-700);line-height:1.8;">
+      <li><b>데이터:</b> SO-101 양팔 로봇의 리더-팔로워 teleoperation으로 수집한 제한된 시연 에피소드</li>
+      <li><b>학습:</b> LeRobot 파이프라인에서 관측과 액션 시퀀스를 사용해 ACT 정책 학습</li>
+      <li><b>실행 시나리오:</b> 학습 정책을 실제 양팔 로봇에 배포하고 컵을 집어 이동하는 조작 동작을 폐루프 방식으로 실행</li>
+      <li><b>확인 결과:</b> 시연 데이터 수집부터 정책 학습, 실제 로봇 액션 실행까지 이어지는 모방학습 경로를 확인</li>
+    </ul>
+
+    <h3 class="article-subtitle">Experiment 2 · 다중 카메라 확장과 SmolVLA 적응</h3>
+    <ul style="padding-left:20px;color:var(--gray-700);line-height:1.8;">
+      <li><b>변경점:</b> ACT 기반 초기 실험 이후 카메라 관측 구성을 확장하고 SmolVLA 정책을 적용</li>
+      <li><b>데이터·학습:</b> 공개 OXE 데이터와 제한된 SO-101 시연을 활용한 학습·적응을 시도하고, action expert에 LoRA 적용</li>
+      <li><b>확인 결과:</b> 사전학습 VLA 정책을 로봇 시연에 적응시키는 실험 경로와 파라미터 효율적 미세조정 방식을 확인</li>
+    </ul>
+
+    <h3 class="article-subtitle">결과 해석</h3>
+    <p>현재 확인 가능한 성과는 ACT 정책의 실제 양팔 로봇 폐루프 실행과, 관측 구성을 확장한 SmolVLA·LoRA 적응 실험을 수행했다는 점입니다. 다만 ACT와 SmolVLA는 데이터 구성과 카메라 입력, 정책 구조가 동일하게 통제된 비교 실험이 아니며, 정책별 성공률·반복 횟수·궤적 오차를 비교한 정량 벤치마크도 확보하지 않았습니다. 따라서 어느 정책이 더 높은 성능을 보였거나 카메라 추가가 성공률을 개선했다고 결론 내리지는 않습니다.</p>
   </div>
-  <div class="article-callout"><strong>검증 범위.</strong> 현재 제시된 비교 이미지는 구조적 설계 의도를 설명하기 위한 일러스트레이션입니다. 입력 모달리티별 기여도를 주장하려면 동일한 데이터·정책·평가 조건에서 RGB-only와 Point-Cloud/FPS 및 Multi-camera 융합을 비교하는 ablation이 필요합니다.</div>
   <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
   <div class="card-block">
-    <p>이 프로젝트에서 확인한 것은 SO-101 양팔 로봇의 teleoperation 시연 수집, 다중 모달 관측 구성, LeRobot 기반 정책 학습, 실제 로봇 rollout까지 이어지는 실험 경로입니다. 반면 제한된 시연 수와 실제 로봇 실험 비용으로 인해 카메라 수, Point Cloud/FPS, proprioception, 정책 종류별 기여도를 분리해 평가하지 못했습니다. 따라서 입력 모달리티를 추가한 설계 자체와 그 입력이 정책 성능을 개선했다는 주장은 구분해야 합니다.</p>
-    <p style="margin-top:10px;">팀 리더로서 시연 수집부터 정책 학습·실기 평가까지의 실험 흐름을 연결했습니다. 후속 실험에서는 동일한 데이터 분할과 정책 조건을 고정한 뒤 RGB-only, RGB+Point Cloud, 카메라 조합, proprioception을 단계적으로 제거·추가하는 ablation과 task별 성공률·실패 유형 기록이 필요합니다. 현재 페이지의 비교 이미지는 성능 결과가 아니라 입력 설계의 설명 자료입니다.</p>
+    <p>이 프로젝트를 통해 SO-101 양팔 로봇의 시연 수집, LeRobot 데이터 구성, ACT 정책 학습, 실제 로봇 롤아웃까지 연결하는 모방학습 실험 경로를 구성했습니다. 이후 카메라 관측을 확장하고 SmolVLA와 action expert LoRA를 적용해 사전학습 VLA 정책의 로봇 적응 가능성도 탐색했습니다.</p>
+    <p style="margin-top:10px;">반면 시연 데이터의 규모가 제한적이고 실제 로봇 실험에 반복 비용이 들어, 카메라 수·Point Cloud/FPS·proprioception의 기여도와 ACT·SmolVLA 정책 차이를 분리해 검증하지 못했습니다. 따라서 현재 결과는 특정 입력 구성이 위치 추정이나 조작 성공률을 개선했다는 증거가 아니라, 서로 다른 정책과 관측 구성을 실제 로봇 학습·실행 경로에 적용해 본 실험 기록으로 해석합니다.</p>
+    <p style="margin-top:10px;">후속 실험에서는 동일한 시연 데이터 분할과 태스크, 평가 횟수를 고정하고 ACT와 SmolVLA를 비교해야 합니다. 또한 RGB-only, 다중 카메라, Point Cloud/FPS, proprioception을 단계적으로 추가·제거하는 ablation을 설계하고, 태스크 성공률·실패 유형·실행 안정성을 함께 기록해야 각 구성 요소의 기여도를 판단할 수 있습니다.</p>
   </div>
   <h2 class="section-title" id="next-question">06 · Follow-up Research Question — Data Efficiency</h2>
   <div class="card-block"><p>실기 시연 수집에서 경험한 데이터 확보 비용과 행동 분포의 제한은 이후 World Model 프로젝트의 문제의식으로 이어졌습니다. 후속 프로젝트는 별도의 SO-100 데이터셋으로 수행했으며, 본 프로젝트의 SO-101 시연 데이터를 직접 재사용하지 않았습니다.</p></div>
