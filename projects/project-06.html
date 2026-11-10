@@ -64,7 +64,7 @@
     <p style="margin-top:10px;">팀 프로젝트의 개발 범위를 고려해 별도의 장애물 인식 모델을 학습하기보다, 지도 갱신 정보를 이용해 <b>장애물 감지 → 정지 → 후퇴 → 재계획 → 재개</b>가 연결되도록 시스템을 단순화했습니다.</p>
   
 
-  <h2 class="section-title" id="scope">02 · Solution Goals</h2>
+  <h2 class="section-title" id="scope">02 · System Setup &amp; Goals</h2>
   <ul style="padding-left:20px;color:var(--gray-700);">
     <li>깊이 카메라 관측을 OctoMap으로 변환해 MoveIt2 Planning Scene에 반영함.</li>
     <li>OMPL RRT-Connect와 연속 충돌 검사를 연결해 관절 공간 경로를 생성함.</li>
@@ -101,7 +101,7 @@
     <p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
   </div>
 
-  <h2 class="section-title" id="results">05 · Experiments &amp; Results</h2>
+  <h2 class="section-title" id="results">04 · Experiments &amp; Results</h2>
   
     <p style="color:var(--gray-700);">
       Gazebo의 UR5e 시뮬레이션에서 Perception–Planning–Control–Recovery FSM이 연결된 반응형 재계획을 end-to-end로 동작시켰습니다. 지도 데이터량 변화(bytes-diff, τ ≈ 160)를 기준으로 동적 장애물 진입을 감지하고, 별도 인식기 없이 <b>정지 → 후퇴 → 재계획 → 재개</b>가 이어지는 것을 로그와 RViz에서 확인했습니다 (예: <span style="font-family:'JetBrains Mono',monospace;">14615 → 14455 (Δ160)</span> 감지 → replan SUCCESS).
@@ -133,7 +133,7 @@
       <li>Team &mdash; 양태훈 (데이터사이언스) · 오상민 (AI) · 조윤재 (AI) — 인공지능종합설계 팀프로젝트</li>
     </ul>
   
-  <h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
+  <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
   
     <p>이 프로젝트를 통해 센서 관측을 Planning Scene에 반영하는 단계부터 경로 생성, 실행 중단, 복구와 재계획까지 하나의 ROS 2 시스템으로 연결했습니다. 다만 구현의 핵심은 학습 기반 World Model이나 객체 추적이 아니라, 점유 지도 갱신과 휴리스틱 이벤트 감지를 이용한 반응형 모션 플래닝입니다.</p>
     <p style="margin-top:10px;">후속 개선에서는 bytes-diff 임계값만으로 이벤트를 판단하지 않고, 변경된 복셀의 공간 위치와 현재 계획 궤적의 충돌 구간을 함께 비교하는 방식이 필요합니다. 또한 임계값별 오탐·미탐과 정지·후퇴·재계획 지연을 측정하고, 실제 UR5e와 깊이 센서에서 정지 거리 및 재계획 성공률을 시뮬레이션 결과와 분리해 검증해야 합니다.</p>
