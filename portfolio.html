@@ -58,11 +58,7 @@
               <span class="item">🐙 <a href="https://github.com/hashbraun" target="_blank" rel="noopener">github.com/hashbraun</a></span>
             </div>
             <div class="intro">
-              <p class="hero-statement">현실의 문제를 탐구하고, 데이터와 AI 기술로 문제 해결 가설을 세우고 검증하는 엔지니어입니다. 모델 성능 개선에 그치지 않고 실제 환경에서 작동하는 시스템으로 구현하는 과정에 관심이 있습니다.</p>
-              <p>
-                문제를 데이터와 실험으로 구체화하고, 모델 선택부터 학습·평가·시스템 통합까지 이어지는
-                <b>Research &amp; Development</b>를 지향합니다.
-              </p>
+              <p class="hero-statement"><strong>현실의 문제</strong>를 탐구하고, <strong>데이터와 AI 기술</strong>로 문제 해결 가설을 세우고 검증하는 엔지니어입니다. 모델 성능 개선에 그치지 않고 <strong>실제 환경에서 작동하는 시스템</strong>으로 구현하는 과정에 관심이 있습니다.</p>
               <div class="research-interests" aria-label="Research Interests">
                 <b>Research Interests</b>
                 <ul>
@@ -147,45 +143,25 @@
             <article class="showcase-slide" data-project="01">
               <a class="showcase-visual" href="projects/project-01.html"><img src="assets/p01/overview.png" alt="Smart-Elevator CCTV 자동 라벨링 시스템 아키텍처"><span class="showcase-visual-caption">COMPUTER VISION · SEGMENTATION</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 01</span><time>2026.03 — 2026.05</time></div><h3>Smart-Elevator CCTV Auto-Labeling</h3><p class="showcase-lead">탑뷰 4K CCTV의 도메인 차이와 SAM2 propagation drift를 해결하기 위해, 세그멘테이션 모델·마스크 프롬프팅·웹 라벨링 도구를 하나의 파이프라인으로 연결했습니다.</p>
-                <ul class="showcase-points">
-                  <li>탑뷰 4K CCTV와 사전학습 데이터 간 도메인 차이, SAM2 propagation drift를 병목으로 정의</li>
-                  <li>YOLO11m-seg 파인튜닝과 Polygon-Mask Prompting으로 검출·마스크 전파 흐름 개선</li>
-                  <li>Active Learning과 FastAPI·React 라벨링 도구를 연결해 검수–재학습 루프 구현</li>
-                  <li>Tracking IoU +55.4pp, 클릭 7→2회/프레임, 60프레임 라벨링 30→4분</li>
-                </ul><a class="showcase-detail-link" href="projects/project-01.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+                <a class="showcase-detail-link" href="projects/project-01.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="02">
               <a class="showcase-visual" href="projects/project-02.html"><img src="assets/p02/overview.png" alt="건설현장 안전 검출 및 반자동 라벨링 파이프라인"><span class="showcase-visual-caption">COMPUTER VISION · LONG-TAIL DETECTION</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 02</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p class="showcase-lead">소수 클래스 성능 저하와 프레임 단위 평가 누수를 진단하고, 데이터 구성부터 모델 앙상블·배포 최적화까지 반복 개선한 건설현장 CCTV 파이프라인입니다.</p>
-                <ul class="showcase-points">
-                  <li>프레임 단위 split의 평가 누수를 진단하고 scene-level held-out 평가로 재설계</li>
-                  <li>12→10 클래스 스킴, SAM2 기반 데이터 보강, YOLO 실험과 WBF 앙상블 반복</li>
-                  <li>BOTSORT + ReID로 가림 이후 ID 재연결을 검증하고 TensorRT 배포 경로 비교</li>
-                  <li>test_poc 35개 CCTV 비디오·5,766프레임에서 WBF mAP@0.5 0.670, TRT FP16 3.9×</li>
-                </ul><a class="showcase-detail-link" href="projects/project-02.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+                <a class="showcase-detail-link" href="projects/project-02.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="03">
               <a class="showcase-visual" href="projects/project-03.html"><img src="assets/p03/eval_samples.png" alt="SO-100 첫 프레임과 action 시퀀스 데이터 예시"><span class="showcase-visual-caption">PHYSICAL AI · WORLD MODEL</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 03</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p class="showcase-lead">SO-100의 초기 프레임과 액션 시퀀스로 미래 프레임을 예측하기 위해 Cosmos-Predict3-Nano의 액션 입력 경로와 표현을 재설계했습니다.</p>
-                <ul class="showcase-points">
-                  <li>SO-100 액션 분포와 기반 모델 표현의 mismatch, train/eval 분포 차이를 데이터 분석으로 확인</li>
-                  <li>Cosmos-Predict3-Nano에 Action Injection 경로를 추가하고 LoRA rank 32로 파인튜닝</li>
-                  <li>Joint Action을 EE-Delta + gripper 표현으로 재설계하고 anchoring·checkpoint sweep 수행</li>
-                  <li>최종 리더보드 0.2407, 안전본 0.24524; 생성 영상의 정책 학습 효용은 후속 검증 과제</li>
-                </ul><a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+                <a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="04">
               <a class="showcase-visual" href="projects/project-04.html"><img src="assets/p04/overview.png" alt="SO-101 양팔 로봇 teleoperation 및 VLA 파이프라인"><span class="showcase-visual-caption">PHYSICAL AI · VLA IMITATION LEARNING</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 04</span><time>2025.07 — 2026.03</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p class="showcase-lead">SO-101 양팔 로봇에서 teleoperation 시연 수집과 정책 학습·실기 평가를 경험하고, 시각·기하·로봇 상태 정보를 함께 다루는 입력 구조를 탐색했습니다.</p>
-                <ul class="showcase-points">
-                  <li>SO-101 양팔 로봇의 leader–follower teleoperation으로 실제 조작 시연 수집</li>
-                  <li>다중 카메라 관측과 proprioception을 결합하는 VLA 입력·학습 흐름 구성</li>
-                  <li>Point-Cloud/FPS 기반 기하 입력 구조를 탐색하고 ACT·SmolVLA 계열 실험 수행</li>
-                  <li>시연 수집부터 정책 학습·closed-loop 평가까지 실기 파이프라인 경험; 입력 구조별 정량 ablation은 미완료</li>
-                </ul><a class="showcase-detail-link" href="projects/project-04.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+                <a class="showcase-detail-link" href="projects/project-04.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
           </div>
