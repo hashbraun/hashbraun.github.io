@@ -91,7 +91,7 @@
     <h3 class="article-subtitle">마스크별 클래스 분류와 영역 병합</h3>
     <p>마스크별 분류 단계에서는 각 마스크의 바운딩 박스 영역을 crop해 GPT-4o-mini에 전달하고, 앞 단계에서 추출한 클래스 중 하나만 선택하도록 제한했습니다. 즉, 전체 이미지 입력은 장면의 클래스 후보를 찾는 데 사용하고, crop 입력은 개별 영역의 세부 클래스를 판별하는 데 사용했습니다. 이후 같은 클래스에 속한 마스크 중심점을 기준으로 DBSCAN 군집화를 수행하고, 군집 안의 마스크를 합친 뒤 10×10 타원형 커널의 형태학적 닫힘 연산으로 작은 구멍을 정리했습니다.</p>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; align-items:start;">
+    <div style="display:grid; grid-template-columns:1fr; gap:24px; margin-top:24px;">
       <div>
         <div style="font-size:0.82rem; color:var(--mute, #6B7280); margin-bottom:6px; letter-spacing:0.02em;">STAGE 1 · GPT-4o-mini 프롬프트 (핵심 발췌)</div>
         <pre style="background:var(--bg-soft, #F9FAFB); border:1px solid var(--line, #E5E7EB); border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono', ui-monospace, monospace; font-size:0.78rem; line-height:1.55; color:var(--ink, #111827); white-space:pre-wrap; word-break:keep-all; overflow-x:auto; margin:0;">이 산길 이미지에서 간단한 segmentation을
