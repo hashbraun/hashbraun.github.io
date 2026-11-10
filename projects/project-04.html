@@ -111,15 +111,12 @@
   <h2 class="section-title" id="evaluation">04 · Evaluation, Evidence &amp; Limitations</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
-      실기 로봇 데이터 수집부터 정책 학습·closed-loop 평가까지의 파이프라인을 수행했습니다. Point-Cloud (FPS) 기반 입력과 3-camera + proprioception fusion 구조를 구현·적용했습니다. 다만 현재 정량 벤치마크와 통제된 RGB-only ablation이 없으므로, location memorization이나 pose hallucination이 개선됐다고 결론 내리지는 않습니다.
+      실기 로봇의 시연 데이터 수집부터 정책 학습과 폐루프 평가까지 이어지는 파이프라인을 수행했습니다. Point Cloud에 Farthest Point Sampling(FPS)을 적용하고, 3개 카메라 영상과 로봇 상태 정보를 함께 사용하는 입력 구조를 구현했습니다. 다만 현재 정량 벤치마크와 RGB-only 대조 실험은 확보하지 못했으므로, 이 입력 구성이 위치 기억 오류나 자세 추정 오류를 개선했다고 단정하지 않습니다.
     </p>
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p04/perf_qual.png"
            alt="Qualitative Results (illustrative) — RGB-only baseline vs Ours (+PC/FPS) phase별 롤아웃 스냅샷" />
-      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
-        * 위 비교 이미지는 구조적 설계 의도를 전달하기 위한 <b>일러스트레이션</b>이다.
-        정량 벤치마크(성공률·궤적 오차 등)는 실기 롤아웃 데이터가 확보되는 대로 별도 보고 예정.
-      </p>
+      <p class="media-caption">RGB-only 입력과 Point Cloud/FPS 입력의 차이를 설명하기 위해 구성한 개념도입니다. 실제 성능 비교 결과가 아니라 입력 구조의 설계 의도를 보여주는 자료이며, 성공률과 궤적 오차를 이용한 정량 비교는 별도 실험이 필요한 상태입니다.</p>
     </div>
   </div>
   <div class="article-callout"><strong>검증 범위.</strong> 현재 제시된 비교 이미지는 구조적 설계 의도를 설명하기 위한 일러스트레이션입니다. 입력 모달리티별 기여도를 주장하려면 동일한 데이터·정책·평가 조건에서 RGB-only와 Point-Cloud/FPS 및 Multi-camera 융합을 비교하는 ablation이 필요합니다.</div>
