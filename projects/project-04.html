@@ -47,7 +47,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#research-context">Problem Definition</a><a href="#system">System Setup &amp; Data</a><a href="#method">Method &amp; Policy Learning</a><a href="#evaluation">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a><a href="#next-question">Future Research</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#research-context">Problem Definition</a><a href="#system">System Setup &amp; Data</a><a href="#method">Method &amp; Policy Learning</a><a href="#evaluation">Experiments &amp; Results</a><a href="#reflection">Policy Analysis &amp; Reflection</a><a href="#next-question">Future Research</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -145,7 +145,7 @@
     <p>ACT는 수집한 시연으로부터 다음 한 시점의 동작만 예측하는 대신 여러 시점의 액션을 하나의 chunk로 예측합니다. 원 논문은 action chunking으로 유효한 예측 horizon을 줄이고, 겹치는 chunk의 temporal ensembling으로 동작을 부드럽게 연결해 모방학습에서 발생하는 오차 누적을 완화하는 접근을 제시합니다. 태스크별 시연으로 정책을 학습하는 구조이므로, 정해진 조작 과제를 빠르게 학습하고 실제 로봇에 연결하는 기준선으로 활용하기 좋습니다. 반면 정책이 학습한 시연 분포에 크게 의존하기 때문에 물체 위치·초기 상태·조작 방식이 달라지면 학습 데이터 밖의 상태로 벗어나 성능이 저하될 수 있습니다. <a href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">ACT 원 논문</a></p>
 
     <h3 class="article-subtitle">SmolVLA — 사전학습 표현을 활용하는 Vision-Language-Action 정책</h3>
-    <p>SmolVLA는 여러 카메라 영상, 로봇의 sensorimotor state, 자연어 지시를 함께 입력받고 action expert가 연속적인 액션 chunk를 생성하는 VLA 구조입니다. ACT가 특정 태스크의 시연을 중심으로 정책을 학습하는 접근이라면, SmolVLA는 공개 로봇 데이터로 사전학습한 시각·언어 표현을 태스크별 시연으로 적응시키는 방향입니다. 따라서 다양한 태스크와 지시를 공유하는 표현을 활용할 가능성이 있지만, 사전학습만으로 새로운 로봇·카메라·작업 조건에 자동으로 적응하는 것은 아닙니다. Hugging Face의 공식 가이드도 자체 환경에 맞는 fine-tuning과 작업 변형별 시연 데이터 확보를 권장하며, 공개 예시에서는 50개 에피소드로 여러 물체 위치 변형을 수집한 반면 25개 에피소드만 사용한 데이터는 성능이 부족했다고 설명합니다. 이 수치는 보편적인 최소 요구량이 아니라 해당 예시에서 관찰한 데이터 규모·다양성의 중요성을 보여주는 사례입니다. <a href="https://huggingface.co/blog/smolvla" target="_blank" rel="noopener">SmolVLA 소개 및 실험 결과</a> · <a href="https://github.com/huggingface/lerobot/blob/main/docs/source/smolvla.mdx" target="_blank" rel="noopener">LeRobot fine-tuning 가이드</a></p>
+    <p>SmolVLA는 여러 카메라 영상, 로봇의 sensorimotor state, 자연어 지시를 함께 입력받고 action expert가 연속적인 액션 chunk를 생성하는 VLA 구조입니다. ACT가 특정 태스크의 시연을 중심으로 정책을 학습하는 접근이라면, SmolVLA는 공개 로봇 데이터로 사전학습한 시각·언어 표현을 태스크별 시연으로 적응시키는 방향입니다. 따라서 다양한 태스크와 지시를 공유하는 표현을 활용할 가능성이 있지만, 사전학습만으로 새로운 로봇·카메라·작업 조건에 자동으로 적응하는 것은 아닙니다. Hugging Face의 공식 가이드도 자체 환경에 맞는 fine-tuning과 작업 변형별 시연 데이터 확보를 권장하며, 공개 예시에서는 50개 에피소드로 여러 물체 위치 변형을 수집한 반면 25개 에피소드만 사용한 데이터는 성능이 부족했다고 설명합니다. 이 수치는 보편적인 최소 요구량이 아니라 해당 예시에서 관찰한 데이터 규모·다양성의 중요성을 보여주는 사례입니다. <a href="https://huggingface.co/papers/2506.01844" target="_blank" rel="noopener">SmolVLA 논문</a> · <a href="https://huggingface.co/blog/smolvla" target="_blank" rel="noopener">SmolVLA 기술 소개 및 벤치마크</a> · <a href="https://github.com/huggingface/lerobot/blob/main/docs/source/smolvla.mdx" target="_blank" rel="noopener">LeRobot fine-tuning 가이드</a></p>
 
     <h3 class="article-subtitle">두 접근의 차이와 본 프로젝트에서의 해석</h3>
     <p>두 정책은 단순히 모델 크기나 성공률로 우열을 나누기보다, 학습에 활용하는 사전 지식과 적용하려는 문제 범위가 다릅니다. ACT는 태스크별 시연을 직접 학습해 동작을 예측하는 구조로, 데이터와 태스크가 명확한 조건에서 구현·검증 경로가 비교적 단순합니다. SmolVLA는 사전학습된 VLA 표현과 언어 조건을 활용해 태스크 적응과 다중 작업 확장 가능성을 제공하지만, 로봇별 관측 스키마 정합성, 태스크별 시연의 다양성, 미세조정 및 추론 자원까지 함께 고려해야 합니다.</p>
