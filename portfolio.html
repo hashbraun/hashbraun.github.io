@@ -129,7 +129,7 @@
         <div class="case-study-summary" style="margin:16px 0 20px;">
           <h3>세 가지 R&amp;D 축과 프로젝트 간 연결</h3>
           <ul>
-            <li><b>Data-centric Vision:</b> <a href="projects/project-01.html">Smart-Elevator</a>에서 SAM2 centroid prompting drift를 polygon-mask prompting과 active learning으로 개선한 경험을 <a href="projects/project-02.html">Construction Safety</a>의 scene-level split·희소 클래스 보강·반복 재학습으로 확장했습니다. <a href="projects/project-08.html">VLM Video Action Recognition</a>에서는 영상 입력을 모델이 처리할 수 있는 형태로 변환하고, 액션 구간을 구조화된 결과로 추출했습니다. 공통 관심은 비정형 영상 데이터를 신뢰할 수 있는 AI 입력과 정보로 바꾸는 과정입니다.</li>
+            <li><b>Data-centric Vision:</b> <a href="projects/project-01.html">Smart-Elevator</a>에서는 폴리곤 마스크 프롬프팅과 저신뢰 프레임 검수·재학습을 연결한 Active Learning 루프를 구현했습니다. <a href="projects/project-02.html">Construction Safety</a>에서는 건설현장 CCTV의 희소 객체와 미검출 환경을 분석하고, scene-level split·데이터 보강·모델 앙상블로 검출 성능을 개선했습니다. 두 프로젝트는 서로 다른 현장과 요구사항에 맞춰 독립적으로 개발한 사례입니다. <a href="projects/project-08.html">VLM Video Action Recognition</a>에서는 영상 입력을 모델이 처리할 수 있는 형태로 변환하고, 액션 구간을 구조화된 결과로 추출했습니다.</li>
             <li><b>Physical AI &amp; World Models:</b> <a href="projects/project-04.html">VLA</a>에서 SO-101 실기 시연을 수집하고 정책을 학습한 경험이 데이터 수집 효율성에 대한 질문으로 이어졌습니다. 이후 별도 SO-100 데이터셋을 사용한 <a href="projects/project-03.html">World Model</a>에서 action-conditioned rollout을 생성·관찰하고, train/eval action 분포 분석과 Action Injection·LoRA·EE-Delta 튜닝으로 모델을 적응시켰습니다. 동일 데이터를 재사용한 것은 아니며, 실제 로봇 학습 경험이 후속 연구의 문제의식과 분석 관점에 영향을 준 흐름입니다.</li>
             <li><b>On-device Agent &amp; Retrieval:</b> <a href="projects/project-05.html">SMIM</a>은 다른 프로젝트와 억지로 연결하기보다 독립적인 Agent 연구 사례로 제시합니다. 문장 유사도와 맥락적 유용성의 차이를 문제로 정의하고, 외부 네트워크·API 없이 동작하는 로컬 환경에서 후보 검색과 LLM 기반 추천 판단의 품질·비용을 함께 고민했습니다.</li>
           </ul>
@@ -150,7 +150,7 @@
             <article class="showcase-slide" data-project="02">
               <a class="showcase-visual" href="projects/project-02.html"><img src="assets/p02/overview.png" alt="건설현장 안전 검출 및 반자동 라벨링 파이프라인"><span class="showcase-visual-caption">COMPUTER VISION · LONG-TAIL DETECTION</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 02</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p class="showcase-lead">SAM2 기반 반자동 라벨링 도구를 직접 만들고, 소수 클래스 성능과 같은 영상이 학습·평가에 섞이는 문제를 데이터 구성부터 모델 앙상블·배포 최적화까지 개선한 건설현장 CCTV 파이프라인입니다.</p>
-                <ul class="showcase-points"><li>현장 CCTV 데이터로 YOLO 검출 모델을 학습하고 반자동 라벨링 흐름 구현</li><li>동일 영상의 train/test 혼입을 막기 위해 scene/video 단위 데이터 분할 적용</li><li>희소 클래스 보강, 모델 앙상블 및 BoT-SORT·ReID 추적 실험</li><li>TensorRT FP16 변환으로 평균 추론 지연 57.09ms → 14.66ms 단축</li></ul>
+                <ul class="showcase-points"><li>건설현장 CCTV에 특화된 SAM2 기반 반자동 라벨링 도구 독립 개발</li><li>FN 취약 장면 갤러리와 Model-Compare 대시보드로 실패 환경 및 클래스별 성능 분석</li><li>scene/video 단위 데이터 분할과 희소 클래스 데이터 보강, 모델 앙상블</li><li>TensorRT FP16 변환으로 평균 추론 지연 57.09ms → 14.66ms 단축</li></ul>
                 <a class="showcase-detail-link" href="projects/project-02.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
@@ -158,7 +158,7 @@
               <a class="showcase-visual" href="projects/project-03.html"><img src="assets/p03/eval_samples.png" alt="SO-100 첫 프레임과 action 시퀀스 데이터 예시"><span class="showcase-visual-caption">PHYSICAL AI · WORLD MODEL</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 03</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p class="showcase-lead">SO-100의 초기 프레임과 액션 시퀀스로 미래 프레임을 예측하기 위해 Cosmos-Predict3-Nano의 액션 입력 경로와 표현을 재설계했습니다.</p>
                 <ul class="showcase-points"><li>Cosmos-Predict3-Nano에 action projection과 modality embedding을 추가</li><li>Joint Angle 입력의 성능 저하를 확인하고 EE-Delta·정규화 Gripper 표현으로 전환</li><li>LoRA rank 32와 학습 체크포인트 비교로 모델 적응</li><li>216개 생성 샘플의 Action MAE와 Good/Bad rollout을 분석해 최종 step 6000 모델 선정</li></ul>
-                <a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+                <a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a> · <a href="https://github.com/hashbraun/inha2026" target="_blank" rel="noopener">GitHub Repository ↗</a>
               </div>
             </article>
             <article class="showcase-slide" data-project="04">
