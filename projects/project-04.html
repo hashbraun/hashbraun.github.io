@@ -46,6 +46,9 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#research-context">연구 배경</a><a href="#system">시스템·데이터</a><a href="#method">모델 입력 구조</a><a href="#evaluation">평가와 한계</a><a href="#next-question">후속 연구</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p04/overview.png"
@@ -58,7 +61,6 @@
     <p style="margin-top:8px;">이후 별도 SO-100 데이터셋을 사용한 World Model 프로젝트에서 action-conditioned rollout을 생성하고, train/eval action 분포와 생성 결과의 Good/Bad case를 분석하며 action 표현과 모델 튜닝을 진행했습니다. 두 프로젝트의 데이터셋을 직접 이어 붙인 것은 아니며, 실제 로봇 학습 경험에서 얻은 데이터 효율성에 대한 문제의식이 후속 연구 질문에 영향을 준 흐름입니다.</p>
   </div>
   <div class="article-intro"><strong>요약.</strong> SO-101 양팔 로봇에서 teleoperation 시연 수집과 VLA 정책 학습·실기 평가를 수행했습니다. 이 페이지는 시연 데이터 수집 파이프라인과 다중 모달 입력 구조를 중심으로 구현 내용을 설명하며, Point-Cloud 및 Multi-camera 융합의 성능 효과는 정량 비교가 필요한 항목으로 구분합니다.</div>
-  <nav class="article-toc" aria-label="본문 목차"><a href="#research-context">연구 배경</a><a href="#system">시스템·데이터</a><a href="#method">모델 입력 구조</a><a href="#evaluation">평가와 한계</a><a href="#next-question">후속 연구</a></nav>
   <div class="article-section">
   <h2 class="section-title" id="research-context">01 · Research Context — Real-Robot Demonstration</h2>
   <div class="card-block">
@@ -121,6 +123,8 @@
   <div class="article-callout"><strong>검증 범위.</strong> 현재 제시된 비교 이미지는 구조적 설계 의도를 설명하기 위한 일러스트레이션입니다. 입력 모달리티별 기여도를 주장하려면 동일한 데이터·정책·평가 조건에서 RGB-only와 Point-Cloud/FPS 및 Multi-camera 융합을 비교하는 ablation이 필요합니다.</div>
   <h2 class="section-title" id="next-question">05 · Follow-up Research Question — Data Efficiency</h2>
   <div class="card-block"><p>실기 시연 수집에서 경험한 데이터 확보 비용과 행동 분포의 제한은 이후 World Model 프로젝트의 문제의식으로 이어졌습니다. 후속 프로젝트는 별도의 SO-100 데이터셋으로 수행했으며, 본 프로젝트의 SO-101 시연 데이터를 직접 재사용하지 않았습니다.</p></div>
+  </div>
+</main>
   </div>
 </section>
 
