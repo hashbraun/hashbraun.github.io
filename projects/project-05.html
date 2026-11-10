@@ -69,6 +69,7 @@
   <div class="detail-article-layout">
     <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">Scope &amp; Design Goals</a><a href="#implementation">System Design &amp; Implementation</a><a href="#decisions">Design Decisions</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
     <main class="article-main">
+      <div class="article-section">
 
   <div class="media">
     <img src="../assets/p05/overview.png"
@@ -96,7 +97,7 @@
   </div>
 
   <h2 class="section-title" id="implementation">03 · System Design &amp; Implementation</h2>
-  <div class="case-study-summary"><h3>담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 추천 Agent 동작을 맡았습니다. 목표는 현재 작성 중인 문장과 비슷한 문서를 찾는 데 그치지 않고, <b>지금의 상황에서 다음 판단이나 행동에 도움이 될 개인 문서</b>를 능동적으로 제안하는 것이었습니다.</p><ul><li><b>Recommendation problem:</b> 문장 유사도와 맥락적 유용성의 차이를 문제로 정의</li><li><b>Candidate retrieval:</b> BM25와 GRANITE Vector Search로 로컬 문서 후보를 탐색하고 RRF·reranking으로 정렬</li><li><b>LLM relevance judgment:</b> 작성 맥락과 문서 내용을 함께 읽고 현재 상황에 도움이 되는지 판단하는 추천 접근을 비교</li><li><b>On-device constraint:</b> 네트워크·외부 API에 의존하지 않는 로컬 환경에서 검색과 추론 비용을 함께 고려</li></ul></div>
+  <h3 class="article-subtitle">담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 추천 Agent 동작을 맡았습니다. 목표는 현재 작성 중인 문장과 비슷한 문서를 찾는 데 그치지 않고, <b>지금의 상황에서 다음 판단이나 행동에 도움이 될 개인 문서</b>를 능동적으로 제안하는 것이었습니다.</p><ul style="padding-left:20px;color:var(--gray-700);"><li><b>Recommendation problem:</b> 문장 유사도와 맥락적 유용성의 차이를 문제로 정의</li><li><b>Candidate retrieval:</b> BM25와 GRANITE Vector Search로 로컬 문서 후보를 탐색하고 RRF·reranking으로 정렬</li><li><b>LLM relevance judgment:</b> 작성 맥락과 문서 내용을 함께 읽고 현재 상황에 도움이 되는지 판단하는 추천 접근을 비교</li><li><b>On-device constraint:</b> 네트워크·외부 API에 의존하지 않는 로컬 환경에서 검색과 추론 비용을 함께 고려</li></ul>
   <div class="card-block">
     <p style="color:var(--gray-700);margin-bottom:14px;">
       전체 시스템은 <b>Electron Application + Native AI Runtime</b> 2-계층으로 나누어 UI 반응성과 AI 성능(CPU · GPU · Neural Engine)을 분리하고, <b>100% 온디바이스</b>로 개인 문서가 기기 밖으로 나가지 않도록 설계했습니다. 외부 네트워크와 API를 사용하지 않는 조건은 프라이버시를 높이는 대신 외부 검색·클라우드 모델·도구 연동을 제한했습니다. 이 환경에서 <b>후보 검색과 추천 Agent의 판단 흐름</b>을 담당했습니다.
@@ -203,6 +204,7 @@
     <p style="margin-top:10px;">E2E 26회 중 21회는 sLLM 카드, 5회는 keyword fallback으로 완료되었으며 평균 17.3초, p95 30.5초가 소요되었습니다. 따라서 현재 구조는 근거가 부족한 생성을 폴백으로 처리하는 경로까지 확인했지만, 즉각적인 글쓰기 보조 경험을 제공하기에는 지연과 폴백 비율을 더 낮출 필요가 있습니다. 다음 평가에서는 질의·문서 규모를 늘리고, 추천 적합성에 대한 사람 평가와 지연·폴백률을 함께 측정해야 합니다.</p>
   </div>
     </div>
+      </div>
 </main>
   </div>
 </section>
