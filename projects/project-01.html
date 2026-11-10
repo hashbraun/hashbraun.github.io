@@ -53,11 +53,17 @@
   <!-- OVERVIEW MEDIA -->
   <div class="media">
     <img src="../assets/p01/overview.png"
-         alt="System Overview — CCTV → YOLO11m-seg → SAM2 → Labeling UI (with Active-Learning feedback loop)" />
+         alt="CCTV 영상 입력부터 YOLO 세그멘테이션, SAM2 마스크 전파, 검수 도구와 재학습까지 이어지는 시스템 개요" />
+    <p class="media-caption">전체 시스템 흐름입니다. CCTV 프레임에서 객체 후보와 마스크를 생성하고, SAM2로 영상 구간에 전파한 뒤, 검수가 필요한 결과를 웹 도구로 전달해 수정 데이터가 다음 학습에 반영되도록 구성했습니다.</p>
   </div>
 
-  <div class="article-intro"><strong>요약.</strong> 탑뷰 4K 엘리베이터 CCTV에서 발생한 도메인 차이와 SAM2 마스크 전파 drift를 해결하기 위해, YOLO11m-seg·Polygon-Mask Prompting·Active Learning·웹 라벨링 도구를 연결한 데이터 구축 파이프라인을 개발했습니다.</div>
-  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#requirements">시스템 요구사항</a><a href="#method">핵심 방법</a><a href="#evaluation">평가 결과</a></nav>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar">
+      <div class="article-sidebar-title">이 페이지에서</div>
+      <nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#requirements">해결 목표</a><a href="#method">핵심 구현</a><a href="#evaluation">결과와 적용</a></nav>
+    </aside>
+    <main class="article-main">
+  <div class="article-intro"><strong>프로젝트 개요.</strong> 탑뷰 4K 엘리베이터 CCTV에서 발생한 도메인 차이와 SAM2 마스크 전파 오류를 해결하기 위해, 검출 모델·마스크 프롬프팅·Active Learning·웹 라벨링 도구를 연결한 데이터 구축 파이프라인을 개발했습니다.</div>
   <div class="article-section">
   <!-- STAR: SITUATION -->
   <h2 class="section-title" id="problem">01 · Problem Definition — 탑뷰 도메인과 라벨링 병목</h2>
@@ -68,7 +74,7 @@
   </div>
 
   <!-- STAR: TASK -->
-  <h2 class="section-title" id="requirements">02 · System Requirements</h2>
+  <h2 class="section-title" id="requirements">02 · 해결 목표</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>탑뷰 도메인에 특화된 <b>세그멘테이션 검출기</b>를 확보한다.</li>
@@ -79,7 +85,7 @@
   </div>
 
   <!-- STAR: ACTION (with architecture + demo placeholders) -->
-  <h2 class="section-title" id="method">03 · Method — Segmentation, Prompting &amp; Active Learning</h2>
+  <h2 class="section-title" id="method">03 · 핵심 구현 — 검출, 마스크 전파, 반복 라벨링</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>YOLO11m-seg 파인튜닝</b> — 4K 탑뷰 엘리베이터 영상 <b>19K 프레임 · 241 시퀀스</b>에 대해 탑뷰 도메인 적응.</li>
@@ -90,35 +96,34 @@
 
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p01/architecture.png"
-           alt="Architecture — YOLO11m-seg → Polygon Prompt Builder → SAM2 Propagation → Active-Learning Queue" />
+           alt="YOLO11m-seg 검출 결과를 폴리곤 프롬프트로 변환하고 SAM2 전파와 검수 후보 큐로 연결하는 구조" />
+      <p class="media-caption">세부 처리 구조입니다. YOLO11m-seg가 객체 영역을 찾으면 폴리곤 마스크를 SAM2 입력으로 전달합니다. SAM2는 이를 기준으로 후속 프레임의 마스크를 추적하고, 신뢰도가 낮거나 수정이 필요한 프레임은 검수 후보로 모읍니다.</p>
     </div>
 
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
         <img src="../assets/p01/demo_centroid.gif"
-             alt="Centroid Prompt (baseline) — drift over 60 frames" />
+             alt="중심점 프롬프트를 사용했을 때 60프레임 동안 마스크가 객체에서 벗어나는 예시" />
+        <p class="media-caption">기존 중심점 프롬프트 방식입니다. 초기 마스크가 부정확하면 중심점 하나만으로 객체의 형태와 경계를 충분히 전달하지 못해, 프레임이 진행될수록 마스크가 주변 영역으로 벗어나는 현상이 나타납니다.</p>
       </div>
       <div class="media">
         <img src="../assets/p01/demo_polygon.gif"
-             alt="Polygon-Mask Prompt (ours) — stable propagation" />
+             alt="폴리곤 마스크 프롬프트를 사용해 객체 경계를 유지하는 예시" />
+        <p class="media-caption">개선한 폴리곤 마스크 프롬프트 방식입니다. 점 하나가 아니라 객체의 영역과 경계를 함께 전달해, 초기 마스크를 기준으로 후속 프레임에서도 형태가 더 안정적으로 유지되도록 했습니다.</p>
       </div>
     </div>
 
     <div class="media" style="margin-top:16px;">
       <img src="../assets/p01/tool_ux.gif"
-           alt="Web Labeling Tool UX — 7 clicks/frame → 2 clicks/frame" />
+           alt="웹 라벨링 도구에서 자동 생성된 마스크를 검수하고 수정하는 작업 흐름" />
+      <p class="media-caption">웹 라벨링 도구 사용 화면입니다. 자동 생성된 마스크를 검수하고 필요한 부분만 수정할 수 있도록 구성해, 프레임마다 반복하던 수동 입력을 줄였습니다.</p>
     </div>
   </div>
 
   <!-- STAR: RESULT -->
-  <h2 class="section-title" id="evaluation">04 · Evaluation &amp; Operational Impact</h2>
+  <h2 class="section-title" id="evaluation">04 · 결과와 현장 적용</h2>
   <div class="card-block">
     <div class="kpi-grid">
-      <div class="kpi-tile">
-        <div class="k-label">YOLO11m-seg</div>
-        <div class="k-value">0.978</div>
-        <div class="k-sub">Box mAP50 · Mask mAP50</div>
-      </div>
       <div class="kpi-tile">
         <div class="k-label">SAM2 Tracking IoU</div>
         <div class="k-value">+55.4 pp</div>
@@ -138,15 +143,17 @@
 
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p01/perf_iou.png"
-           alt="Tracking IoU — Centroid vs Polygon-Mask Prompt (avg +55.4pp)" />
+           alt="중심점 프롬프트와 폴리곤 마스크 프롬프트의 3개 테스트 클립 평균 Tracking IoU 비교" />
+      <p class="media-caption">3개 테스트 클립(각 60프레임)에서 두 프롬프트 방식의 Tracking IoU를 비교한 결과입니다. 폴리곤 마스크 프롬프트가 평균 55.4%p 높아, 마스크 전파의 안정성이 개선됐음을 보여줍니다.</p>
     </div>
 
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
       최종적으로 사내 <b>다중 사용자 웹 라벨링 툴</b>로 배포되어, 탑뷰 CCTV 도메인에 대한 학습 데이터 확보 파이프라인의 인력 병목을 실질적으로 완화하였다.
     </p>
   </div>
-  <div class="article-callout"><strong>평가 해석.</strong> 본문에 기재된 0.978은 Box mAP50과 Mask mAP50 항목에 함께 표시되어 있습니다. 두 값이 각각 동일한 실측값인지, 하나의 지표를 중복 표기한 것인지는 원본 평가 로그 확인 후 분리 표기하는 것이 좋습니다. SAM2 Tracking IoU 개선은 3개 × 60프레임 테스트 클립 평균으로 범위를 한정해 해석해야 합니다.</div>
-</div>
+  <div class="article-callout"><strong>결과.</strong> 폴리곤 마스크 프롬프트를 적용해 3개 테스트 클립 평균 Tracking IoU를 55.4%p 개선했습니다. 웹 라벨링 도구에서는 프레임당 클릭 수를 7회에서 2회로 줄였고, 60프레임 클립의 라벨링 시간은 30분에서 4분으로 단축했습니다. 이를 바탕으로 탑뷰 CCTV 데이터의 검수와 재학습을 반복할 수 있는 다중 사용자 웹 라벨링 시스템을 사내에 배포했습니다.</div>
+    </main>
+  </div>
 </section>
 
 <!-- Prev / Next -->
