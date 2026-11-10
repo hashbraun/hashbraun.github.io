@@ -66,19 +66,22 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#scope">목표와 범위</a><a href="#implementation">핵심 구현</a><a href="#results">결과</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p05/overview.png"
          alt="System Overview — Ambient Recall: 작성 중 텍스트 → Trigger → Hybrid Retrieval → sLLM 카드 생성 → Grounding-validated 근거 카드" />
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Problem Definition</h2>
+  <h2 class="section-title" id="problem"><span class="num">S ·</span> Problem Definition</h2>
   <div class="card-block">
     <p>지식 노동자는 <b>스치듯 본 자료를 다시 찾기 위해 주 5.3시간</b>을 검색·전환에 소비하고, 그 결과 <b>재생산에 소요되는 시간의 50% 이상</b>이 "이미 본 것을 다시 찾는" 과정에 낭비된다 (McKinsey · IDC).</p>
     <p style="margin-top:10px;">기존 검색·챗 기반 도구는 <b>능동적으로 다시 꺼내주지 못하고</b>, 개인 문서를 클라우드로 올려야 해 <b>프라이버시·규제 리스크</b>가 크다. 필요한 것은 <b>작성 중인 맥락을 감지</b>해서 <b>원문 근거가 붙은 카드</b>를 <b>온디바이스</b>에서 스스로 꺼내주는 에이전트다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Scope &amp; Design Goals</h2>
+  <h2 class="section-title" id="scope"><span class="num">T ·</span> Scope &amp; Design Goals</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>사용자의 <b>작성 맥락 변화</b>를 감지해 관련 개인 문서를 <b>스스로 꺼내주는</b> Ambient Recall 파이프라인을 설계한다.</li>
@@ -91,7 +94,7 @@
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> System Design &amp; Implementation</h2>
+  <h2 class="section-title" id="implementation"><span class="num">A ·</span> System Design &amp; Implementation</h2>
   <div class="case-study-summary"><h3>담당 영역과 설계 방향</h3><p>팀 내에서 Retrieval과 추천 Agent 동작을 맡았습니다. 목표는 현재 작성 중인 문장과 비슷한 문서를 찾는 데 그치지 않고, <b>지금의 상황에서 다음 판단이나 행동에 도움이 될 개인 문서</b>를 능동적으로 제안하는 것이었습니다.</p><ul><li><b>Recommendation problem:</b> 문장 유사도와 맥락적 유용성의 차이를 문제로 정의</li><li><b>Candidate retrieval:</b> BM25와 GRANITE Vector Search로 로컬 문서 후보를 탐색하고 RRF·reranking으로 정렬</li><li><b>LLM relevance judgment:</b> 작성 맥락과 문서 내용을 함께 읽고 현재 상황에 도움이 되는지 판단하는 추천 접근을 비교</li><li><b>On-device constraint:</b> 네트워크·외부 API에 의존하지 않는 로컬 환경에서 검색과 추론 비용을 함께 고려</li></ul></div>
   <div class="card-block">
     <p style="color:var(--gray-700);margin-bottom:14px;">
@@ -134,7 +137,7 @@
 
   </details>
 
-  <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
+  <h2 class="section-title" id="results"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       <b>검색 후보 순위 평가:</b> 19개 문서에서 구성한 40개 청크와 10개 질의를 사용한 자체 벤치에서, vector-only 기준 대비 Hybrid Retrieval(full_current)의 <b>MRR@3는 0.70 → 0.95</b>, <b>Hit@1은 60% → 90%</b>로 개선되었다. 다만 이 지표는 사전에 정한 관련 문서를 얼마나 상위에 배치했는지를 측정하며, 현재 상황에 실질적으로 도움이 되는 문서인지까지 평가하지는 않는다.
@@ -178,6 +181,8 @@
       <img src="../assets/p05/perf_ablation.png"
            alt="Phase 3 Ablation — 10-query 자체 벤치. semantic_only(vec-only) MRR@3 0.70 → rrf_no_rerank(BM25+vec) 1.00 → full_current(BM25+vec+rerank+구조신호) 0.95. BM25 기여 MRR@3 +0.300." />
     </div>
+  </div>
+</main>
   </div>
 </section>
 
