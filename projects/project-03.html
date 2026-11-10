@@ -275,7 +275,7 @@
       </div>
     </div>
     <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-      * Good case 3개 rollout을 원본 6 fps로 loop 재생. Cosmos3-Nano B4 step 6000 pred, 16 frame, 320px 다운스케일. 로봇 팔 궤적과 물체 위치가 부드럽게 유지되는 것이 확인된다.
+      * Good case 3개 rollout을 원본 6 fps로 loop 재생. Cosmos3-Nano B4 step 6000 pred, 16 frame, 320px 다운스케일. 로봇 팔 궤적과 물체 위치가 부드럽게 유지되는 것을 확인할 수 있습니다.
     </p>
 
     <ul style="padding-left:18px;color:var(--gray-700); margin-top:24px;">
@@ -295,8 +295,8 @@
     </p>
     <ul style="padding-left:18px;color:var(--gray-700); margin-top:10px;">
       <li><b>Rollout-based planning</b> &mdash; 로봇이 다음 행동을 결정할 때 후보 액션 궤적을 World Model로 미리 생성하고, 목표 도달 비용을 비교해 선택할 수 있습니다. 이 경우 forward dynamics는 MPC나 MCTS에서 미래 상태를 예측하는 시뮬레이터 역할을 합니다.</li>
-      <li><b>실행 전 안전 검증</b> &mdash; 실물 로봇이 조작을 시작하기 전에 <b>outcome을 시뮬레이션</b>해서 위험한 후보(예: 물체 낙하, 자기 충돌)를 사전에 걸러낼 수 있다. 특히 재시도 비용이 큰 실기 환경에서 필수.</li>
-      <li><b>Model-based RL의 기반</b> &mdash; 정확한 forward dynamics가 있으면 <b>실환경 interaction 없이 policy를 개선</b>할 수 있다 (Dyna-style). data-efficient RL·offline RL 파이프라인의 핵심 인프라.</li>
+      <li><b>실행 전 안전 검증</b> &mdash; 실물 로봇이 조작을 시작하기 전에 <b>outcome을 시뮬레이션</b>해서 위험한 후보(예: 물체 낙하, 자기 충돌)를 사전에 걸러낼 수 있습니다. 특히 재시도 비용이 큰 실기 환경에서 유용할 수 있습니다.</li>
+      <li><b>Model-based RL의 기반</b> &mdash; 정확한 forward dynamics가 있으면 <b>실환경 interaction 없이 policy를 개선</b>할 수 있다 (Dyna-style). data-efficient RL과 offline RL 파이프라인의 핵심 인프라가 될 수 있습니다.</li>
       <li><b>Cosmos3처럼 대형 VLM에 action modality를 얹은 world model</b>은 이 방향의 <b>zero-shot 커버리지 상한과 도메인 재훈련 경계선</b>을 실측할 대상. 본 챌린지 결과가 그 경계를 부분적으로 확인함 &mdash; Action Injection + EE-Delta 재설계 + LoRA rank 32까지가 <b>216 sample scale에서 zero-shot에 가까운 커버리지를 확보하는 최소 튜닝 조합</b>이라는 empirical 데이터포인트.</li>
     </ul>
   </div>
