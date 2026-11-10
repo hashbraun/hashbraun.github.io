@@ -81,41 +81,40 @@
 
   <h2 class="section-title" id="method">03 · Method — Policy Learning &amp; Multi-modal Observation</h2>
   <div class="card-block">
-    <h3 class="article-subtitle">리더-팔로워 방식의 실기 시연 수집</h3>
-    <p>먼저 SO-101 양팔 로봇의 리더-팔로워 teleoperation 환경을 구성했습니다. 작업자가 리더 로봇을 조작하면 팔로워 로봇이 같은 동작을 수행하도록 연결하고, 카메라 관측과 로봇 상태, 액션을 에피소드 단위로 기록했습니다. 수집한 시연은 정책 학습에 사용할 수 있도록 정리했으며, 이후 실제 로봇에서 정책을 실행하는 폐루프 평가까지 이어갔습니다.</p>
-    <h3 class="article-subtitle">RGB 관측에 3차원 기하 정보 추가</h3>
-    <p>RGB 영상만 사용하는 방식과 비교해, 깊이 카메라에서 얻은 Point Cloud를 비전 입력 경로에 추가하는 구조를 구현했습니다. Point Cloud는 물체와 로봇 팔 사이의 공간적 관계를 3차원 좌표로 표현할 수 있다는 장점이 있습니다. 점을 무작위로 추출하면 특정 영역에 표본이 몰릴 수 있어, 공간적으로 고른 점을 선택하는 Farthest Point Sampling(FPS)을 적용했습니다.</p>
+    <h3 class="article-subtitle">ACT를 이용한 초기 모방학습</h3>
+    <p>초기 정책은 LeRobot에서 지원하는 ACT(Action Chunking with Transformers)로 구성했습니다. ACT는 관측으로부터 일정 구간의 액션 시퀀스를 청크 단위로 예측하는 모방학습 정책입니다. 시연 에피소드에 기록된 관측과 액션의 시간적 대응 관계를 학습하고, 학습한 정책을 SO-101 양팔 로봇에서 실행하는 초기 기준선으로 사용했습니다.</p>
+
+    <h3 class="article-subtitle">카메라 관측 확장과 SmolVLA 적용</h3>
+    <p>ACT 기반 실기 모방학습 경로를 구성한 뒤, 관측 범위를 넓힌 조건에서 사전학습 VLA 정책을 활용할 수 있는지 확인하기 위해 카메라 구성을 확장하고 SmolVLA를 적용했습니다. SmolVLA는 사전학습된 vision-language-action 정책이라는 점에서, 제한된 로봇 시연을 활용해 정책을 적응시키는 별도의 실험 경로를 탐색할 수 있었습니다.</p>
+    <p style="margin-top:10px;">SmolVLA 실험에서는 전체 모델을 모두 업데이트하는 대신 action expert에 LoRA를 적용했습니다. 이는 제한된 시연 데이터로 정책을 적응시키는 과정에서 학습 가능한 파라미터를 줄이는 접근입니다. 공개 OXE 데이터와 SO-101에서 수집한 시연을 활용한 학습·적응 흐름을 실험했으며, ACT와 SmolVLA의 결과를 동일 조건의 정량 비교로 해석하지 않았습니다.</p>
+
+    <h3 class="article-subtitle">RGB·Point Cloud·FPS의 역할</h3>
+    <p>RGB 영상은 물체의 외관과 장면 맥락을 제공하고, Point Cloud는 깊이 영상에서 복원한 3차원 좌표를 통해 공간 구조를 표현합니다. 점군은 원본 상태에서 밀집되거나 특정 영역에 편중될 수 있어 Farthest Point Sampling(FPS)을 적용해 공간적으로 분포된 점을 선택했습니다. 이는 3차원 기하 정보를 관측에 포함하기 위한 입력 구성으로, 성능 향상을 입증한 결과와는 구분합니다.</p>
+
     <h3 class="article-subtitle">다중 카메라와 로봇 상태의 시간 정렬</h3>
-    <p>Top·Front·Wrist 카메라 3개 시점과 로봇의 proprioceptive state를 함께 사용하도록 입력 구조를 구성했습니다. Top·Front 영상은 작업 공간과 물체의 상대적 배치를 넓게 관찰하고, Wrist 영상은 말단부 주변의 접촉·조작 상황을 보완합니다. 관절 상태와 액션을 각 카메라 관측의 시점에 맞춰 정렬해, 시각 관측만으로 드러나지 않는 로봇 자체의 자세·관절 정보를 함께 전달하도록 했습니다. 다만 카메라별 입력의 독립적인 기여도는 통제된 ablation으로 검증하지 않았습니다.</p>
-    <h3 class="article-subtitle">정책 베이스라인과 제한된 데이터 적응</h3>
-    <p>Hugging Face LeRobot 파이프라인에서 ACT와 SmolVLA를 비교 대상으로 두고, 공개 OXE 데이터와 SO-101에서 수집한 제한된 teleoperation 시연을 활용해 정책 학습·적응 흐름을 실험했습니다. SmolVLA에서는 전체 모델을 다시 학습하는 대신 action expert에 LoRA를 적용해 제한된 시연 데이터로 적응하는 방법을 탐색했습니다. 이 페이지에서는 모델별 성공률이나 LoRA의 정량적 개선 폭을 제시할 만큼 통제된 반복 평가가 확보되지 않았으므로, 해당 선택을 성능 우위로 해석하지 않습니다.</p>
-    <h3 class="article-subtitle">개인 기여 범위</h3>
-    <p>팀 리더로서 리더-팔로워 teleoperation을 통한 SO-101 시연 수집, LeRobot 데이터·학습 파이프라인 구성, ACT·SmolVLA 비교 실험, Point Cloud/FPS 및 다중 카메라·proprioceptive 입력 구성, SmolVLA action expert LoRA 적용 실험, 실제 로봇 rollout 평가를 연결했습니다. 기구 설계나 별도 perception 모델을 새로 학습한 것으로 범위를 넓히지 않으며, 입력 모달리티별 성능 기여도는 아직 검증되지 않은 항목으로 남겨두었습니다.</p>
+    <p>Top·Front·Wrist 카메라는 서로 다른 시점과 관측 범위를 제공합니다. 한 시점에서 가려진 물체나 말단부 주변의 상황을 다른 시점으로 보완하도록 구성했습니다. proprioceptive state는 관절 위치 등 로봇 자체의 상태를 나타내며, 시각 관측과 함께 사용하면 정책이 장면뿐 아니라 로봇의 현재 상태도 참조할 수 있습니다. 카메라별 입력과 로봇 상태는 액션 시점에 맞춰 정렬하는 것이 중요합니다.</p>
 
-    <div class="media" style="margin-top:20px;">
-      <img src="../assets/p04/architecture.png"
-           alt="Architecture — (RGB×3 + Point-Cloud/FPS + Proprio) → Multi-modal Fusion → VLA Policy Head → Dual-arm Actions" />
-      <p class="media-caption">정책 입력과 출력의 전체 구조입니다. Top·Front·Wrist RGB 영상, FPS로 샘플링한 Point Cloud, 로봇 상태 정보를 융합해 VLA 정책에 전달하고 양팔 액션을 출력합니다.</p>
-    </div>
-
-    <div class="media-grid-2" style="margin-top:16px;">
+    <div class="media-grid-2" style="margin-top:20px;">
       <div class="media">
         <img src="../assets/p04/demo_teleop.gif"
-             alt="Teleoperation demo collection — 리더-팔로워 방식 SO-101 시연 수집" />
-        <p class="media-caption">리더-팔로워 방식의 시연 수집 장면입니다. 작업자의 조작을 팔로워 로봇의 동작과 함께 기록해 학습용 에피소드를 확보합니다.</p>
+             alt="Teleoperation demo collection — leader-follower SO-101 demonstration collection" />
+        <p class="media-caption">리더-팔로워 방식의 실기 시연 수집 장면입니다. 작업자의 리더 로봇 조작에 따라 팔로워 로봇이 동작하며, 이때의 관측과 액션을 학습용 에피소드로 기록합니다.</p>
       </div>
       <div class="media">
         <img src="../assets/p04/demo_rollout.gif"
-             alt="Closed-loop bi-manipulation rollout — 컵 pick-and-place" />
-        <p class="media-caption">학습한 정책을 실제 양팔 로봇에서 실행한 폐루프 롤아웃 예시입니다. 컵을 집고 이동하는 동작을 통해 관측과 액션이 실제 로봇 제어로 연결되는지 확인했습니다.</p>
+             alt="Closed-loop bi-manipulation rollout — cup pick-and-place" />
+        <p class="media-caption">학습한 정책을 실제 SO-101 양팔 로봇에서 실행한 폐루프 롤아웃 예시입니다. 컵을 집고 이동하는 동작을 통해 정책의 액션 출력이 실제 로봇 제어로 이어지는 과정을 확인했습니다.</p>
       </div>
     </div>
 
     <div class="media" style="margin-top:16px;">
       <img src="../assets/p04/pointcloud.png"
-           alt="RealSense Depth → FPS-sampled Point Cloud — RealSense Viewer 컬러 depth cloud와 FPS로 균일 샘플링한 bi-arm point cloud" />
-      <p class="media-caption">RealSense 깊이 영상에서 복원한 Point Cloud와 FPS 샘플링 결과입니다. 원본 점군의 밀집 분포를 줄이면서 공간 전체를 고르게 표현하도록 점을 선택했습니다.</p>
+           alt="RealSense depth image converted to Point Cloud and FPS-sampled bi-arm point cloud" />
+      <p class="media-caption">RealSense 깊이 영상에서 복원한 Point Cloud와 FPS 샘플링 결과입니다. FPS는 원본 점군의 밀집도를 줄이고 공간 전반에 분포한 점을 선택해 3차원 기하 정보를 일정한 크기의 입력으로 구성하는 데 사용했습니다.</p>
     </div>
+
+    <h3 class="article-subtitle">개인 기여 범위</h3>
+    <p>팀 리더로서 SO-101 리더-팔로워 teleoperation과 시연 수집, LeRobot 데이터·학습 파이프라인 구성, ACT 기반 초기 정책 학습과 실기 롤아웃, 카메라 관측 확장 후 SmolVLA 적용 및 action expert LoRA 실험을 연결했습니다. Point Cloud/FPS와 proprioceptive state를 포함한 관측 구성도 함께 다뤘습니다. 기구 설계나 별도 perception 모델의 신규 학습, 정책별 성능 우위를 입증한 통제 실험까지 수행한 것으로 범위를 확대하지 않습니다.</p>
   </div>
 
   <h2 class="section-title" id="evaluation">04 · Experiments &amp; Results</h2>
