@@ -51,10 +51,10 @@
     <main class="article-main">
 
   <div class="media">
-<p class="media-caption">반자동 라벨링 도구의 전체 작업 흐름입니다. ① 모델이 객체와 마스크를 미리 생성하고(Pre-annotate), ② 작업자가 누락·오분류·경계 오류를 검수하고 수정하며(Human Review &amp; Fix), ③ 확정한 라벨을 데이터셋에 반영해 SLURM 학습 작업으로 연결합니다(Apply &amp; Retrain). Codex는 학습·실험 코드를 정리하고 반복 실행하는 개발 흐름에 활용했습니다.</p>
 <img src="../assets/p02/overview.png"
          alt="System overview — Seed → Detector → Semi-Auto Tool → Human Review → Retrain"
          style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">반자동 라벨링 도구의 전체 작업 흐름입니다. ① 모델이 객체와 마스크를 미리 생성하고(Pre-annotate), ② 작업자가 누락·오분류·경계 오류를 검수하고 수정하며(Human Review &amp; Fix), ③ 확정한 라벨을 데이터셋에 반영해 SLURM 학습 작업으로 연결합니다(Apply &amp; Retrain). Codex는 학습·실험 코드를 정리하고 반복 실행하는 개발 흐름에 활용했습니다.</p>
   </div>
 
   <div class="article-intro"><strong>프로젝트 개요.</strong> 건설현장 CCTV에 특화된 SAM2 기반 반자동 라벨링 도구와 객체 검출 파이프라인을 독립적으로 개발했습니다. 초기 라벨로 학습한 모델의 예측을 작업자가 검수·수정하고, 취약 환경의 데이터를 추가 수집·보강해 모델을 반복 개선했습니다.</div>
@@ -77,8 +77,8 @@
     <p>건설현장 CCTV는 탑다운·원거리 시점, 작은 객체 크기, 가림과 배경 복잡도 등 도메인 조건이 달랐습니다. Zero-shot VLM 기반 자동 라벨링만으로는 중장비 종류와 경계를 안정적으로 구분하기 어려웠고, 이미지 전체를 반복해서 멀티모달 모델에 전달하면 처리 시간과 입력 토큰 비용도 커졌습니다. 따라서 기존 Active Learning의 데이터 피드백 구조를 가져오되, 검출 모델 자체는 건설현장 영상으로 파인튜닝하는 도메인 특화 접근을 선택했습니다.</p>
     <p>즉, 이 프로젝트의 핵심은 이전 탑다운 CCTV 프로젝트에서 구현한 검수·재학습 루프를 건설현장 도메인에 맞게 확장하고, Zero-shot 자동 라벨링의 범용성만으로 해결하기 어려운 데이터 분포 차이를 현장 데이터로 보완한 것입니다. <b>초기 데이터셋 구축 → 검출 모델 학습 → 취약 환경 분석 → 추가 데이터 수집·라벨링 → 모델 재학습</b>을 반복하며 건설현장 CCTV에 맞는 데이터와 모델을 개선했습니다. 특히 안전사고로 이어질 수 있는 객체를 놓치는 미검출(False Negative)을 우선 확인하고, 어떤 촬영 조건에서 누락이 발생하는지 장면별로 비교했습니다.</p>
     <div class="media" style="margin:18px 0 24px;">
-<p class="media-caption">반자동 라벨링 도구의 사용자 흐름입니다. 초기 라벨을 바탕으로 모델이 객체와 마스크를 미리 생성하면, 작업자가 누락·오분류·경계 오류를 수정하고 확정한 라벨을 다음 학습에 반영합니다. 이후 모델이 취약한 장면을 다시 검수 후보로 등록해 데이터셋을 반복적으로 확장합니다.</p>
 <img src="../assets/p02/demo_tool_flow.png" alt="초기 라벨과 모델 예측을 검수하고 수정한 뒤 학습 데이터로 되돌리는 반자동 라벨링 도구의 작업 흐름" style="width:100%;border:1px solid var(--line,#E5E7EB);border-radius:12px;">
+<p class="media-caption">반자동 라벨링 도구의 사용자 흐름입니다. 초기 라벨을 바탕으로 모델이 객체와 마스크를 미리 생성하면, 작업자가 누락·오분류·경계 오류를 수정하고 확정한 라벨을 다음 학습에 반영합니다. 이후 모델이 취약한 장면을 다시 검수 후보로 등록해 데이터셋을 반복적으로 확장합니다.</p>
     </div>
     <h3 class="article-subtitle">영상 단위 데이터 분리와 평가 기준 재설계</h3>
     
@@ -96,10 +96,10 @@
     <h3 class="article-subtitle">모델 비교와 예측 결합</h3>
     <p>평가 기준과 클래스 구성을 정리한 뒤, 모델 종류·입력 해상도·데이터 확장 방식을 바꿔가며 9개 실험을 진행했습니다. 단일 모델의 성능만으로는 클래스별 미검출을 충분히 줄이기 어려워, 서로 다른 모델의 예측을 결합하는 앙상블도 함께 검토했습니다.</p>
     <div class="media" style="margin-top:20px;">
-<p class="media-caption">검출 모델 개선 파이프라인입니다. 먼저 서로 다른 CCTV 영상을 학습과 평가에 나눠 넣고, 9개 설정·모델 조합을 같은 평가 데이터로 비교했습니다. 이후 개별 모델의 예측을 7개 모델 가중 박스 융합(WBF)으로 결합해 가장 좋은 단일 모델보다 mAP@0.5를 3.8%p 높였습니다. 마지막으로 검출 결과에 객체 추적을 연결해 영상 안에서 같은 장비가 같은 ID로 이어지는지 확인했습니다.</p>
 <img src="../assets/p02/architecture.png"
            alt="영상 단위 데이터 분리, 9개 모델 실험, 7개 모델 예측 결합, 객체 추적을 연결한 검출 개선 파이프라인"
            style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">검출 모델 개선 파이프라인입니다. 먼저 서로 다른 CCTV 영상을 학습과 평가에 나눠 넣고, 9개 설정·모델 조합을 같은 평가 데이터로 비교했습니다. 이후 개별 모델의 예측을 7개 모델 가중 박스 융합(WBF)으로 결합해 가장 좋은 단일 모델보다 mAP@0.5를 3.8%p 높였습니다. 마지막으로 검출 결과에 객체 추적을 연결해 영상 안에서 같은 장비가 같은 ID로 이어지는지 확인했습니다.</p>
     </div>
 
     <p class="note-line">모델 선택에서는 더 큰 모델이나 높은 입력 해상도만을 기준으로 삼지 않았습니다. YOLO26x·YOLO11x와 RT-DETR, 입력 해상도 1280·1536, 데이터 확장과 학습 설정을 바꾼 9개 실험을 같은 평가 영상에서 비교했습니다. 소수 클래스 성능, 과적합 징후, 전체 검출 성능과 추론 속도를 함께 고려했고, 단일 모델만으로 놓치는 사례를 보완하기 위해 예측 결과가 서로 다른 모델들을 가중 박스 융합(WBF)으로 결합했습니다.</p>
@@ -107,16 +107,16 @@
     <h3 class="article-subtitle">외부 데이터의 활용과 실패 원인 분석</h3>
     <p>외부 데이터는 양을 늘리는 것만으로 성능을 높이지 못했습니다. 예를 들어 AIHub 자료에는 굴착기만 라벨링되어 있는데 같은 이미지에 작업자가 함께 등장하면, 라벨이 없는 작업자 영역이 배경으로 학습되어 person 검출 성능이 떨어질 수 있었습니다. 이 문제를 줄이기 위해 SAM2로 굴착기 영역만 분리하고, 실제 CCTV 배경에 합성해 객체 외형은 활용하되 배경 도메인 차이는 줄였습니다.</p>
     <div class="media">
-<p class="media-caption">오류 수정 사례입니다. 기존 모델은 건물 창문을 펌프카로 잘못 분류했습니다. 데이터와 학습 설정을 조정한 후속 모델은 같은 영역을 창문으로 분류해 해당 혼동을 줄였습니다.</p>
 <img src="../assets/p02/demo_pump.gif"
              alt="기존 모델에서 창문을 펌프카로 오인한 장면과 개선 모델에서 창문으로 분류한 결과 비교"
              style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">오류 수정 사례입니다. 기존 모델은 건물 창문을 펌프카로 잘못 분류했습니다. 데이터와 학습 설정을 조정한 후속 모델은 같은 영역을 창문으로 분류해 해당 혼동을 줄였습니다.</p>
       </div>
       <div class="media">
-<p class="media-caption">희소 객체 데이터 보강 예시입니다. 외부 데이터에서 굴착기 영역만 SAM2 마스크로 분리한 뒤, 실제 CCTV 배경에 합성해 객체의 외형 정보는 활용하면서 배경 도메인 차이는 줄였습니다.</p>
 <img src="../assets/p02/sam2_synth_pipeline.png"
              alt="SAM2로 굴착기 영역을 분리해 건설현장 CCTV 배경에 합성하는 데이터 보강 예시"
              style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">희소 객체 데이터 보강 예시입니다. 외부 데이터에서 굴착기 영역만 SAM2 마스크로 분리한 뒤, 실제 CCTV 배경에 합성해 객체의 외형 정보는 활용하면서 배경 도메인 차이는 줄였습니다.</p>
       </div>
   </div>
 
@@ -189,9 +189,9 @@
     <h3 class="article-subtitle">FN 중심 취약 환경 분석 — 갤러리와 정량 비교</h3>
     <p style="color:var(--gray-700);">검출 성능을 확인할 때는 False Positive보다 <b>실제 객체를 놓치는 False Negative(FN)</b>를 더 치명적인 실패로 판단했습니다. 안전 모니터링에서는 객체가 존재하는데 검출하지 못하는 상황이 위험 요소를 인지하지 못하는 결과로 이어질 수 있기 때문입니다. 이에 미검출 사례를 갤러리로 모아 객체 크기, 원거리 촬영, 가림 등 실패가 반복되는 환경을 분류하고, Model-Compare 대시보드의 클래스별 Precision·Recall·F1 및 모델별 예측 결과와 함께 비교했습니다.</p>
     <div class="media" style="margin-top:14px;">
-<p class="media-caption">FN 취약 장면 갤러리입니다. 덤프트럭은 초기 운영 모델에서 F1 0.15로 낮았고, 작은 크기나 가림이 있는 장면에서 누락이 반복됐습니다. 펌프카는 후속 모델 결합 과정에서 F1이 0.57에서 0.53으로 소폭 낮아졌습니다. 전체 평균만으로 개선 여부를 판단하지 않고, 이처럼 놓치기 쉬운 클래스와 촬영 조건을 별도로 확인했습니다.</p>
 <img src="../assets/p02/hard_case_fn_gallery.png"
            alt="덤프트럭과 펌프카의 미검출 사례를 모은 이미지. 희소 객체가 작거나 가려진 장면에서 놓치는 상황" />
+<p class="media-caption">FN 취약 장면 갤러리입니다. 덤프트럭은 초기 운영 모델에서 F1 0.15로 낮았고, 작은 크기나 가림이 있는 장면에서 누락이 반복됐습니다. 펌프카는 후속 모델 결합 과정에서 F1이 0.57에서 0.53으로 소폭 낮아졌습니다. 전체 평균만으로 개선 여부를 판단하지 않고, 이처럼 놓치기 쉬운 클래스와 촬영 조건을 별도로 확인했습니다.</p>
     </div>
     <p style="color:var(--gray-700);margin-top:12px;">분류한 취약 환경을 중심으로 추가 CCTV 장면을 확보하고 라벨을 보강해 후속 학습에 반영했습니다. 갤러리는 실패가 발생한 환경을 정성적으로 확인하는 용도이고, <a href="p02_dashboard.html" style="color:#3182F6;font-weight:600;">Model-Compare 및 전체 실험 대시보드</a>는 동일한 평가 기준에서 모델별 지표와 예측을 정량 비교하는 용도로 사용했습니다.</p>
   </div>
@@ -219,24 +219,24 @@
     </ul>
 
     <div class="media" style="margin-top:14px;">
-<p class="media-caption"><b>후속 실험 1의 혼동 행렬</b>입니다. 별도 PoC 평가 영상에서 person의 36.4%가 background로 누락됐고, dump truck은 86.8%가 background로 오분류됐습니다. 이 결과를 부분 라벨로 인한 학습 편향의 근거로 보고 SAM2 마스크 기반 합성 데이터를 추가했습니다.</p>
 <img src="../assets/p02/v2_att1_confusion_matrix.png"
            alt="후속 실험 1 confusion matrix (row-normalized %) — 별도 PoC 평가 영상 기준. 대각선 person 63.6 / RMC 57.2 / truck 55.6 / fork lift 64.0 / dump truck 13.2 / pump car 93.5 / window 75.6. dump truck 86.8%가 background로 오분류 (여전한 minority 실패). truck 22.5%가 fork lift로 잘못 분류. bg 열에는 person 21.5·window 39.3·truck 17.0의 FP 분포." />
+<p class="media-caption"><b>후속 실험 1의 혼동 행렬</b>입니다. 별도 PoC 평가 영상에서 person의 36.4%가 background로 누락됐고, dump truck은 86.8%가 background로 오분류됐습니다. 이 결과를 부분 라벨로 인한 학습 편향의 근거로 보고 SAM2 마스크 기반 합성 데이터를 추가했습니다.</p>
     </div>
 
     <div class="media" style="margin-top:20px;">
-<p class="media-caption"><b>SAM2 기반 중장비 합성 데이터 생성 과정</b>입니다. 상단은 AIHub 원본에서 SAM2 마스크로 굴착기를 분리한 뒤 PoC CCTV 배경의 지정 위치에 합성한 결과이며, 빨간 상자는 삽입 영역을 나타냅니다. 하단은 생성한 합성 이미지 100장 중 크기 비율과 좌우 반전을 달리한 사례입니다. 중장비의 외형 정보는 보강하되 배경과 장면 특성은 PoC 영상에 맞추는 방식으로 데이터 도메인을 관리했습니다.</p>
 <img src="../assets/p02/sam2_synth_pipeline.png"
            alt="AIHub excavator → SAM2 instance mask → PoC 배경 offline 합성 파이프라인 4단계 시각화. 상단 행: AIHub 원본 크롭 → SAM2 마스크(배경 dim) → PoC CCTV 배경 → 최종 합성(빨간 bbox로 삽입 위치 표시). 하단 행: 다양한 area ratio·flip 조건의 합성 예시 4장."
            style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption"><b>SAM2 기반 중장비 합성 데이터 생성 과정</b>입니다. 상단은 AIHub 원본에서 SAM2 마스크로 굴착기를 분리한 뒤 PoC CCTV 배경의 지정 위치에 합성한 결과이며, 빨간 상자는 삽입 영역을 나타냅니다. 하단은 생성한 합성 이미지 100장 중 크기 비율과 좌우 반전을 달리한 사례입니다. 중장비의 외형 정보는 보강하되 배경과 장면 특성은 PoC 영상에 맞추는 방식으로 데이터 도메인을 관리했습니다.</p>
     </div>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">3. 9 attempt 통제 실험 + LLM-in-the-loop</h3>
 
     <div class="media" style="margin-top:10px;">
-<p class="media-caption"><b>후속 모델 9회 실험 결과</b>입니다. 기준 모델의 mAP@0.5는 0.421이었으며, 실험을 거쳐 최고 단일 모델은 0.632를 기록했습니다. 7개 모델의 Weighted Boxes Fusion(WBF) 앙상블은 0.670으로, 최고 단일 모델보다 3.8%p 높은 결과를 보였습니다.</p>
 <img src="../assets/p02/v2_9attempt_progression.png"
            alt="후속 모델 실험별 성능 비교 — 9 attempts (att2 0.421 · att3 0.455 · ext1 0.589 · tune1 0.524 · tune3 0.592 · hires1 0.554 · rtdetr-x-v1 0.498 · yolo11x-v1 0.615 · 최고 단일 모델 0.632 파란색 하이라이트). WBF 7-model ensemble mAP@0.5 = 0.670 빨간색 참조선" />
+<p class="media-caption"><b>후속 모델 9회 실험 결과</b>입니다. 기준 모델의 mAP@0.5는 0.421이었으며, 실험을 거쳐 최고 단일 모델은 0.632를 기록했습니다. 7개 모델의 Weighted Boxes Fusion(WBF) 앙상블은 0.670으로, 최고 단일 모델보다 3.8%p 높은 결과를 보였습니다.</p>
     </div>
 
     <div class="card-block" style="margin-top:14px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
@@ -314,9 +314,9 @@ yolo11x-v1 (신 YOLO)               0.615
       <li>실측 데모 (<span style="font-family:'JetBrains Mono',monospace;">manual_css411202z045</span>, 451 frames): dump truck·fork lift 2개 유효 ID 전 구간 안정 유지, max_conf <b>0.97~0.98</b>.</li>
     </ul>
     <div class="media" style="margin-top:14px;">
-<p class="media-caption"><b>BoT-SORT와 ReID를 결합한 추적 결과</b>입니다. <code>manual_css411202z045</code> 영상(15초, 451프레임)에서 지게차(ID 1, 최대 신뢰도 0.98)와 덤프트럭(ID 2, 최대 신뢰도 0.97)의 ID가 전체 구간에서 유지됐습니다. 세 번째 ID는 한 프레임에서만 나타난 오검출로 확인했습니다. 해당 결과는 <code>v4_tracking_demo.py</code>와 <code>botsort_reid.yaml</code> 설정으로 생성했습니다.</p>
 <img src="../assets/p02/tracking_demo.gif"
            alt="BOTSORT + ReID tracking demo — 최고 단일 모델 detection + BOTSORT+ReID tracker · manual_css411202z045 (15s, 451 frames) · ID 1 fork lift(max 0.98)·ID 2 dump truck(max 0.97) 안정 추적" />
+<p class="media-caption"><b>BoT-SORT와 ReID를 결합한 추적 결과</b>입니다. <code>manual_css411202z045</code> 영상(15초, 451프레임)에서 지게차(ID 1, 최대 신뢰도 0.98)와 덤프트럭(ID 2, 최대 신뢰도 0.97)의 ID가 전체 구간에서 유지됐습니다. 세 번째 ID는 한 프레임에서만 나타난 오검출로 확인했습니다. 해당 결과는 <code>v4_tracking_demo.py</code>와 <code>botsort_reid.yaml</code> 설정으로 생성했습니다.</p>
     </div>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">7. Deployment Optimization — PyTorch baseline + 5 export runtimes bench (최고 단일 모델, Phase 1)</h3>
@@ -348,10 +348,10 @@ yolo11x-v1 (신 YOLO)               0.615
     </div>
 
     <div class="media" style="margin-top:20px;">
-<p class="media-caption"><b>실행 환경별 지연 시간과 정확도 유지율 비교</b>입니다. 왼쪽은 6개 런타임의 p50·p95·p99 지연 시간을 로그 스케일로 비교하고, 오른쪽은 4개 GPU 환경의 속도 향상과 mAP 유지율을 나타냅니다. TensorRT FP16은 정확도 유지율 99% 이상을 유지하면서 약 3.9배의 속도 향상을 기록했습니다.</p>
 <img src="../assets/p02/latency_bench.png"
            alt="최고 단일 모델 (YOLO26x, imgsz 1280) 5-runtime latency bench + GPU speedup vs mAP retention scatter — 좌: 6 runtimes p50/p95/p99 log-scale bar (TRT FP16 highlighted). 우: 4 GPU runtimes speedup×retention (TRT FP16 star, INT8 93.10% retention 낙차)."
            style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption"><b>실행 환경별 지연 시간과 정확도 유지율 비교</b>입니다. 왼쪽은 6개 런타임의 p50·p95·p99 지연 시간을 로그 스케일로 비교하고, 오른쪽은 4개 GPU 환경의 속도 향상과 mAP 유지율을 나타냅니다. TensorRT FP16은 정확도 유지율 99% 이상을 유지하면서 약 3.9배의 속도 향상을 기록했습니다.</p>
     </div>
 
     <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:20px 0 6px;">Latency · batch=1 · 200 iter · CUDA sync · A6000 (GPU) / EPYC 7763 (CPU)</div>
@@ -440,7 +440,10 @@ yolo11x-v1 (신 YOLO)               0.615
         </tbody>
       </table>
     </div>
-    <p class="media-caption">측정 환경은 A6000, 입력 크기 1280, batch 1이며 전처리·추론·NMS를 포함한 end-to-end 지연 시간을 측정했습니다. INT8 보정에는 학습 제외 CCTV 평가 영상을 사용하지 않고 PoC train/val에서 층화 추출한 600장을 사용했습니다. INT8과 FP16의 지연 시간이 비슷했던 것은 export 그래프의 NMS·TopK·Expand 연산 일부가 FP32 경로로 실행됐기 때문입니다. 30분 동안 60개 구간을 측정한 결과 지연 시간 변화율은 FP16 +2.05%, INT8 −0.18%였습니다.</p>
+    <img src="../assets/p02/signalman_head_extended.png"
+             alt="Signalman attribute head ResNet18 학습 곡선 — train_loss 8 epoch 수렴, val AP 0.9988 best epoch 2, val acc 0.9866. 190K crops (IoU 100% 자동 회수)."
+             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">측정 환경은 A6000, 입력 크기 1280, batch 1이며 전처리·추론·NMS를 포함한 end-to-end 지연 시간을 측정했습니다. INT8 보정에는 학습 제외 CCTV 평가 영상을 사용하지 않고 PoC train/val에서 층화 추출한 600장을 사용했습니다. INT8과 FP16의 지연 시간이 비슷했던 것은 export 그래프의 NMS·TopK·Expand 연산 일부가 FP32 경로로 실행됐기 때문입니다. 30분 동안 60개 구간을 측정한 결과 지연 시간 변화율은 FP16 +2.05%, INT8 −0.18%였습니다.</p>
 
     <p style="color:var(--gray-700); margin-top:14px;">
       <b>선택: TensorRT FP16.</b> 3.9× 처리량·꼬리 지연 안정성(p99 16.65 ms) 확보 시 정확도 손실 &lt;1 pp.
@@ -487,16 +490,13 @@ yolo11x-v1 (신 YOLO)               0.615
 
       <div class="media" style="margin-top:20px;">
 <p class="media-caption"><b>신호수 속성 분류 헤드의 학습 곡선</b>입니다. 2번째 epoch에서 검증 AP 0.9988을 기록했습니다. 별도 수작업 라벨링 대신 기존 신호수 바운딩 박스 34,476개를 person 검출 결과와 IoU 임계값 0.35로 매칭해 crop을 자동 수집했으며, 총 19만 개 crop을 학습에 사용했습니다.</p>
-<img src="../assets/p02/signalman_head_extended.png"
-             alt="Signalman attribute head ResNet18 학습 곡선 — train_loss 8 epoch 수렴, val AP 0.9988 best epoch 2, val acc 0.9866. 190K crops (IoU 100% 자동 회수)."
-             style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
       </div>
 
       <div class="media" style="margin-top:20px;">
-<p class="media-caption"><b>tc02_01 영상의 1차 운영 모델 추적 결과</b>입니다. 신호수·굴착기·트럭을 함께 추적했으며, 15 fps 기준 약 4초를 넘는 가림 이후 person ID가 #12에서 #16으로 바뀌는 현상이 관찰됐습니다. 장시간 가림에서 발생하는 ID 전환은 현재 추적 설정의 한계로 구분하고, track buffer 조정과 Joint Detection and Embedding(JDE) 적용 가능성을 후속 검토 항목으로 남겼습니다.</p>
 <img src="../assets/p02/tc02_01_tracking.gif"
              alt="tc02_01 tracking demo — 1차 운영 모델 BoT-SORT+ReID tracking on manual_tc02_01_20260618_043652 · person #12 → #16 ID switch 관측 (60프레임 초과 occlusion)"
              style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption"><b>tc02_01 영상의 1차 운영 모델 추적 결과</b>입니다. 신호수·굴착기·트럭을 함께 추적했으며, 15 fps 기준 약 4초를 넘는 가림 이후 person ID가 #12에서 #16으로 바뀌는 현상이 관찰됐습니다. 장시간 가림에서 발생하는 ID 전환은 현재 추적 설정의 한계로 구분하고, track buffer 조정과 Joint Detection and Embedding(JDE) 적용 가능성을 후속 검토 항목으로 남겼습니다.</p>
       </div>
 
       <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">파이프라인 구조</h4>
@@ -547,7 +547,10 @@ Cache JSON (extended schema)
         </table>
       </div>
 
-      <p class="media-caption">각 단계는 이전 버전에서 확인된 오류 유형을 바탕으로 개선했습니다. Kalman 기반 보간은 짧은 검출 누락을 보완하지만, ID switch 이후 새로 생성된 track의 라벨이 초기화되는 문제까지 해결하지는 못했습니다. 이에 후속 버전에서는 시간·위치·크기·클래스 정보를 기준으로 track을 연결하는 cross-track linking을 추가했습니다.</p>
+      <img src="../assets/p02/p99_tail_chart.png"
+           alt="Tail latency comparison — 최고 단일 모델 vs 1차 운영 모델 · 5 runtimes p50/p99 log-scale bar chart. PyTorch 최고 단일 모델 p99 233.53ms → 1차 운영 모델 53.42ms. TRT FP16 최고 단일 모델 16.65ms → 1차 운영 모델 15.12ms (tail 개선). Real-time 25ms 요건 참조선."
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption">각 단계는 이전 버전에서 확인된 오류 유형을 바탕으로 개선했습니다. Kalman 기반 보간은 짧은 검출 누락을 보완하지만, ID switch 이후 새로 생성된 track의 라벨이 초기화되는 문제까지 해결하지는 못했습니다. 이에 후속 버전에서는 시간·위치·크기·클래스 정보를 기준으로 track을 연결하는 cross-track linking을 추가했습니다.</p>
 
       <div class="card-block" style="margin-top:14px;background:#F8FAFC;border:1px solid #E2E8F0;padding:14px 18px;">
         <p style="font-size:0.86rem;color:var(--gray-700);margin-bottom:6px;line-height:1.7;">
@@ -658,16 +661,13 @@ Cache JSON (extended schema)
 
     <div class="media" style="margin-top:20px;">
 <p class="media-caption"><b>최고 단일 모델과 1차 운영 모델의 tail latency 비교</b>입니다. 동일한 YOLO26x 아키텍처와 입력 크기 1280으로 다시 측정했을 때 PyTorch p99는 233ms에서 53ms로, TensorRT FP16 p99는 16.65ms에서 15.12ms로 감소했습니다. PyTorch 개선에는 배타적 자원 확보 효과가 포함되므로 모델 구조만의 개선으로 해석하지 않았습니다.</p>
-<img src="../assets/p02/p99_tail_chart.png"
-           alt="Tail latency comparison — 최고 단일 모델 vs 1차 운영 모델 · 5 runtimes p50/p99 log-scale bar chart. PyTorch 최고 단일 모델 p99 233.53ms → 1차 운영 모델 53.42ms. TRT FP16 최고 단일 모델 16.65ms → 1차 운영 모델 15.12ms (tail 개선). Real-time 25ms 요건 참조선."
-           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
     </div>
 
     <div class="media" style="margin-top:20px;">
-<p class="media-caption"><b>30분 지속 부하에서의 지연 시간 변화</b>입니다. 30초 단위 60개 구간을 측정한 결과 TensorRT FP16은 14.92ms에서 15.23ms로 2.05% 증가했고, INT8은 15.34ms에서 15.32ms로 0.18% 감소했습니다. 이 결과는 해당 측정 구간에서 큰 지연 시간 변동이 나타나지 않았음을 보여주며, 장시간 24시간 운영 안정성을 직접 입증한 결과로 확대 해석하지 않았습니다.</p>
 <img src="../assets/p02/drift_30min.png"
            alt="30-min sustained bench thermal drift — TRT FP16 first-window p50 14.92ms → last-window 15.23ms (drift +2.05%), TRT INT8 15.34→15.32ms (-0.18%). 24/7 스트리밍 열적 안정 확인."
            style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+<p class="media-caption"><b>30분 지속 부하에서의 지연 시간 변화</b>입니다. 30초 단위 60개 구간을 측정한 결과 TensorRT FP16은 14.92ms에서 15.23ms로 2.05% 증가했고, INT8은 15.34ms에서 15.32ms로 0.18% 감소했습니다. 이 결과는 해당 측정 구간에서 큰 지연 시간 변동이 나타나지 않았음을 보여주며, 장시간 24시간 운영 안정성을 직접 입증한 결과로 확대 해석하지 않았습니다.</p>
     </div>
 
     <p style="color:var(--gray-700); margin-top:14px;">
