@@ -60,7 +60,7 @@
   <div class="detail-article-layout">
     <aside class="article-sidebar">
       <div class="article-sidebar-title">이 페이지에서</div>
-      <nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#requirements">Solution Goals</a><a href="#method">Implementation</a><a href="#evaluation">Results &amp; Field Application</a></nav>
+      <nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#requirements">Solution Goals</a><a href="#method">Implementation</a><a href="#evaluation">Results &amp; Field Application</a><a href="#reflection">Technical Issues &amp; Improvements</a></nav>
     </aside>
     <main class="article-main">
   <div class="article-intro"><strong>프로젝트 개요.</strong> 탑뷰 4K 엘리베이터 CCTV에서 발생한 도메인 차이와 SAM2 마스크 전파 오류를 해결하기 위해, 검출 모델·마스크 프롬프팅·Active Learning·웹 라벨링 도구를 연결한 데이터 구축 파이프라인을 개발했습니다.</div>
@@ -158,7 +158,10 @@
     </p>
   </div>
   <div class="article-callout"><strong>결과.</strong> 폴리곤 마스크 프롬프트를 적용해 3개 테스트 클립 평균 Tracking IoU를 55.4%p 개선했습니다. 웹 라벨링 도구에서는 프레임당 클릭 수를 7회에서 2회로 줄였고, 60프레임 클립의 라벨링 시간은 30분에서 4분으로 단축했습니다. 이를 바탕으로 탑뷰 CCTV 데이터의 검수와 재학습을 반복할 수 있는 다중 사용자 웹 라벨링 시스템을 사내에 배포했습니다.</div>
-    </div>
+    <h2 class="section-title" id="reflection">05 · Technical Issues &amp; Improvements</h2>
+  <p>초기 구현에서 가장 먼저 확인한 문제는 중심점 프롬프트로 SAM2 마스크를 전파할 때 객체 경계가 프레임이 진행될수록 벗어나는 현상이었습니다. 중심점만으로는 객체의 형태를 충분히 전달하기 어렵다고 판단해, YOLO11m-seg가 생성한 폴리곤 마스크를 프롬프트로 전달하도록 변경했습니다. 이후 테스트 클립에서 마스크가 객체 영역을 더 안정적으로 따라가는 것을 확인했습니다.</p>
+  <p style="margin-top:10px;">다만 초기 검출 마스크가 부정확하거나 객체가 가려지는 구간에서는 폴리곤 프롬프트도 잘못된 경계를 이어받을 수 있습니다. 현재의 confidence 0.7 기준은 검수 후보를 단순하게 선별하는 규칙이므로, 다음 단계에서는 마스크 품질 변화와 프레임 간 추적 불일치도 함께 반영해 검수 우선순위를 조정하고, 가림·급격한 자세 변화가 있는 영상에서 전파 안정성을 추가로 확인할 예정입니다.</p>
+</div>
     </main>
   </div>
 </section>
