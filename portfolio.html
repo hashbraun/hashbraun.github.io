@@ -143,24 +143,28 @@
             <article class="showcase-slide" data-project="01">
               <a class="showcase-visual" href="projects/project-01.html"><img src="assets/p01/overview.png" alt="Smart-Elevator CCTV 자동 라벨링 시스템 아키텍처"><span class="showcase-visual-caption">COMPUTER VISION · SEGMENTATION</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 01</span><time>2026.03 — 2026.05</time></div><h3>Smart-Elevator CCTV Auto-Labeling</h3><p class="showcase-lead">탑뷰 4K CCTV의 도메인 차이와 SAM2 propagation drift를 해결하기 위해, 세그멘테이션 모델·마스크 프롬프팅·웹 라벨링 도구를 하나의 파이프라인으로 연결했습니다.</p>
+                <ul class="showcase-points"><li>YOLO11m-seg를 4K CCTV 19K 프레임·241개 시퀀스에 파인튜닝</li><li>중심점 대신 폴리곤 마스크를 SAM2 프롬프트로 전달해 전파 안정성 개선</li><li>저신뢰 프레임 검수·수정 결과를 재학습에 반영하는 Active Learning 루프 구성</li><li>FastAPI·React/Vite 기반 다중 사용자 검수 도구를 Docker·SLURM·NAS 환경에 배포</li></ul>
                 <a class="showcase-detail-link" href="projects/project-01.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="02">
               <a class="showcase-visual" href="projects/project-02.html"><img src="assets/p02/overview.png" alt="건설현장 안전 검출 및 반자동 라벨링 파이프라인"><span class="showcase-visual-caption">COMPUTER VISION · LONG-TAIL DETECTION</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 02</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p class="showcase-lead">SAM2 기반 반자동 라벨링 도구를 직접 만들고, 소수 클래스 성능과 같은 영상이 학습·평가에 섞이는 문제를 데이터 구성부터 모델 앙상블·배포 최적화까지 개선한 건설현장 CCTV 파이프라인입니다.</p>
+                <ul class="showcase-points"><li>현장 CCTV 데이터로 YOLO 검출 모델을 학습하고 반자동 라벨링 흐름 구현</li><li>동일 영상의 train/test 혼입을 막기 위해 scene/video 단위 데이터 분할 적용</li><li>희소 클래스 보강, 모델 앙상블 및 BoT-SORT·ReID 추적 실험</li><li>TensorRT FP16 변환으로 평균 추론 지연 57.09ms → 14.66ms 단축</li></ul>
                 <a class="showcase-detail-link" href="projects/project-02.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="03">
               <a class="showcase-visual" href="projects/project-03.html"><img src="assets/p03/eval_samples.png" alt="SO-100 첫 프레임과 action 시퀀스 데이터 예시"><span class="showcase-visual-caption">PHYSICAL AI · WORLD MODEL</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 03</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p class="showcase-lead">SO-100의 초기 프레임과 액션 시퀀스로 미래 프레임을 예측하기 위해 Cosmos-Predict3-Nano의 액션 입력 경로와 표현을 재설계했습니다.</p>
+                <ul class="showcase-points"><li>Cosmos-Predict3-Nano에 action projection과 modality embedding을 추가</li><li>Joint Angle 입력의 성능 저하를 확인하고 EE-Delta·정규화 Gripper 표현으로 전환</li><li>LoRA rank 32와 학습 체크포인트 비교로 모델 적응</li><li>216개 생성 샘플의 Action MAE와 Good/Bad rollout을 분석해 최종 step 6000 모델 선정</li></ul>
                 <a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
             <article class="showcase-slide" data-project="04">
               <a class="showcase-visual" href="projects/project-04.html"><img src="assets/p04/overview.png" alt="SO-101 양팔 로봇 teleoperation 및 VLA 파이프라인"><span class="showcase-visual-caption">PHYSICAL AI · VLA IMITATION LEARNING</span></a>
               <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 04</span><time>2025.07 — 2026.03</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p class="showcase-lead">SO-101 양팔 로봇에서 teleoperation 시연 수집과 정책 학습·실기 평가를 경험하고, 시각·기하·로봇 상태 정보를 함께 다루는 입력 구조를 탐색했습니다.</p>
+                <ul class="showcase-points"><li>SO-101 양팔 로봇 teleoperation으로 시연 데이터 수집</li><li>LeRobot 기반 ACT·SmolVLA imitation learning 파이프라인 구성 및 비교</li><li>SmolVLA action expert에 LoRA를 적용해 제한된 시연 데이터로 적응 실험</li><li>실기 로봇 rollout을 통해 정책 실행과 입력 구성의 한계 확인</li></ul>
                 <a class="showcase-detail-link" href="projects/project-04.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
               </div>
             </article>
@@ -168,7 +172,13 @@
           <div class="showcase-pagination" id="showcasePagination" aria-label="프로젝트 선택">
             <button type="button" class="showcase-dot active" data-slide="0" aria-label="프로젝트 1 보기" aria-current="true"></button><button type="button" class="showcase-dot" data-slide="1" aria-label="프로젝트 2 보기"></button><button type="button" class="showcase-dot" data-slide="2" aria-label="프로젝트 3 보기"></button><button type="button" class="showcase-dot" data-slide="3" aria-label="프로젝트 4 보기"></button>
           </div>
-          <div class="showcase-next-batch"><span>다음 프로젝트</span><a href="projects/project-05.html">SMIM · On-Device Memory Agent</a><a href="projects/project-06.html">Dynamic Obstacle-Aware Replanning</a><a href="projects/project-07.html">Image Auto-Labeling</a><a href="projects/project-08.html">VLM Video Action Recognition</a><small>다음 작업 단계에서 동일한 쇼케이스와 기술 아티클 형식으로 확장합니다.</small></div>
+          <div class="showcase-next-batch">
+            <span>ADDITIONAL PROJECTS · 05—08</span>
+            <div class="showcase-next-item"><a href="projects/project-05.html">SMIM · On-Device Memory Agent</a><ul class="showcase-points"><li>BM25·Vector 검색과 RRF를 결합한 로컬 Hybrid Retrieval 구현</li><li>Cross-encoder 재랭킹과 문서 구조 신호를 활용한 후보 정렬</li><li>Corrective·Reflection Loop 및 Grounding Validator 구현</li></ul></div>
+            <div class="showcase-next-item"><a href="projects/project-06.html">Dynamic Obstacle-Aware Replanning</a><ul class="showcase-points"><li>Depth Camera PointCloud를 OctoMap으로 변환</li><li>MoveIt2·OMPL RRT-Connect 기반 경로 계획과 충돌 검사</li><li>맵 변화 감지와 상태 머신을 연결한 동적 장애물 재계획</li></ul></div>
+            <div class="showcase-next-item"><a href="projects/project-07.html">Image Auto-Labeling</a><ul class="showcase-points"><li>VLM으로 이미지 내 객체 클래스 후보 추출</li><li>SAM 마스크 생성 후 영역별 클래스 분류</li><li>DBSCAN 기반 중복·인접 마스크 병합으로 자동 라벨 정리</li></ul></div>
+            <div class="showcase-next-item"><a href="projects/project-08.html">VLM Video Action Recognition</a><ul class="showcase-points"><li>FFmpeg 기반 적응형 프레임 샘플링 및 해상도 전처리</li><li>VLM 출력에 Action 정의와 시간 제약을 적용한 구조화</li><li>행동 구간을 타임스탬프·라벨로 변환해 타임라인 구성</li></ul></div>
+          </div>
         </div>
       </div>
     </section>
