@@ -784,6 +784,11 @@ section {
 .showcase-star > div { border-top:1px solid var(--line); padding-top:8px; }
 .showcase-star b { display:block; margin-bottom:3px; color:var(--accent); font:700 .7rem var(--font-mono); letter-spacing:.03em; }
 .showcase-star p { margin:0; color:var(--sub); font-size:.82rem; line-height:1.55; }
+
+.showcase-points { margin:0; padding:0 0 0 1.15rem; display:grid; gap:7px; color:var(--sub); font-size:.84rem; line-height:1.58; }
+.showcase-points li { padding-left:2px; }
+.showcase-points li::marker { color:var(--accent); }
+
 .showcase-detail-link { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:auto; padding-top:15px; color:var(--ink); font-size:.86rem; font-weight:700; }
 .showcase-detail-link span { color:var(--accent); font-size:1.1rem; }
 .showcase-pagination { display:flex; justify-content:center; align-items:center; gap:8px; padding:14px 0 4px; }
