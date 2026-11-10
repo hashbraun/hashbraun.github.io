@@ -59,69 +59,54 @@
   </div>
 
   <h2 class="section-title" id="problem">01 · Problem Definition</h2>
-  <div class="card-block">
+  
     <p>정적 플래너만으로는 실행 중인 궤적에 갑자기 진입하는 동적 장애물에 대응하기 어렵습니다. 실제 UR5e 하드웨어에 적용하기 전에 Gazebo 시뮬레이션에서 장애물 감지부터 재계획까지 이어지는 반응형 파이프라인을 먼저 검증할 필요가 있었습니다.</p>
     <p style="margin-top:10px;">팀 프로젝트의 개발 범위를 고려해 별도의 장애물 인식 모델을 학습하기보다, 지도 갱신 정보를 이용해 <b>장애물 감지 → 정지 → 후퇴 → 재계획 → 재개</b>가 연결되도록 시스템을 단순화했습니다.</p>
-  </div>
+  
 
   <h2 class="section-title" id="scope">02 · Solution Goals</h2>
-  <div class="card-block">
-    <p>깊이 카메라의 관측을 OctoMap으로 변환해 MoveIt2의 Planning Scene에 반영하고, OMPL 경로 계획과 연속 충돌 검사를 연결하는 것을 목표로 삼았습니다. 실행 중에는 지도 변화량을 감지해 동적 장애물이 진입했을 때 로봇을 정지시키고, 안전한 위치로 후퇴한 뒤 새 경로를 계획하도록 Recovery FSM을 구성했습니다.</p>
-  </div>
+  <ul style="padding-left:20px;color:var(--gray-700);">
+    <li>깊이 카메라 관측을 OctoMap으로 변환해 MoveIt2 Planning Scene에 반영함.</li>
+    <li>OMPL RRT-Connect와 연속 충돌 검사를 연결해 관절 공간 경로를 생성함.</li>
+    <li>지도 변경 이벤트가 발생하면 정지·후퇴·재계획·재개로 이어지는 Recovery FSM을 구성함.</li>
+    <li>Gazebo에서 Perception부터 Control까지 이어지는 반응형 재계획 흐름을 검증함.</li>
+  </ul>
 
   <h2 class="section-title" id="decisions">03 · Design Decisions &amp; Trade-offs</h2>
-  <div class="card-block">
-    <h3 class="article-subtitle">객체 인식보다 점유 지도 기반 장애물 표현</h3>
-    <p>이 과제의 핵심은 장애물의 의미 클래스가 아니라 로봇 궤적과 공간이 충돌하는지 판단하는 것이었습니다. 따라서 YOLO와 같은 객체 검출기나 ICP 기반 객체 인식기를 별도로 학습·구성하는 대신, 깊이 카메라 점군을 OctoMap의 free·occupied·unknown 공간 표현으로 바꾸는 방식을 선택했습니다. 이 접근은 학습 데이터 없이 Planning Scene을 갱신할 수 있지만, 장애물의 종류나 의미를 구분하지는 못합니다.</p>
-    <h3 class="article-subtitle">MoveIt2·OMPL과 연속 충돌 검사</h3>
-    <p>UR5e의 6개 관절 상태에서 목표 자세까지 경로를 계산하기 위해 MoveIt2 Planning Scene과 OMPL의 RRT-Connect를 연결했습니다. RRT-Connect는 시작·목표 양쪽에서 탐색 트리를 확장해 경로를 찾는 샘플링 기반 계획기입니다. waypoint 단위 검사만으로는 두 점 사이 구간의 충돌을 놓칠 수 있어 Continuous Collision Check를 함께 사용하도록 구성했습니다.</p>
-    <h3 class="article-subtitle">지도 변화량은 장애물의 의미가 아닌 이벤트 대리 지표</h3>
-    <p>실시간 지도 변화를 감시하기 위해 OctoMap/Planning Scene 데이터량의 bytes-diff를 사용했습니다. 약 160 bytes 임계값은 장애물의 종류·위치·위험도를 직접 판별하는 값이 아니라, 지도 변경이 발생했음을 감지하기 위한 실험적 휴리스틱입니다. 따라서 장면 노이즈나 복셀 갱신량에 따라 오탐·미탐이 발생할 수 있으며, 실제 환경에 일반화되는 장애물 감지기로 해석해서는 안 됩니다.</p>
-  </div>
+  <h3 class="article-subtitle">객체 인식보다 점유 지도 기반 장애물 표현</h3>
+  <p>이번 과제에서 필요한 판단은 장애물의 종류를 분류하는 것이 아니라 로봇의 계획 궤적과 점유 공간이 충돌하는지 확인하는 것이었습니다. 따라서 별도의 객체 검출 모델을 학습하기보다 깊이 카메라 점군을 OctoMap으로 변환해 free·occupied·unknown 공간을 표현했습니다. 학습 데이터와 클래스 정의 없이 Planning Scene을 갱신할 수 있다는 장점이 있지만, 장애물의 의미나 개별 객체를 추적하지는 않습니다.</p>
+  <h3 class="article-subtitle">MoveIt2·OMPL 기반 관절 공간 계획</h3>
+  <p>UR5e는 6개 관절의 상태가 함께 움직이므로 목표 위치만 고려한 직선 이동보다 로봇의 관절 제약과 충돌 장면을 반영하는 계획기가 필요했습니다. MoveIt2의 Planning Scene에 OctoMap을 연결하고 OMPL의 RRT-Connect를 사용해 시작·목표 관절 상태 사이의 경로를 탐색했습니다. waypoint만 확인하면 샘플 사이의 충돌을 놓칠 수 있어 연속 충돌 검사도 함께 적용했습니다.</p>
+  <h3 class="article-subtitle">지도 변경량 기반 이벤트 감지의 한계</h3>
+  <p>실시간 이벤트 감지를 위해 OctoMap/Planning Scene 데이터량의 bytes-diff를 사용했습니다. 약 160 bytes 임계값은 지도 갱신이 발생했음을 감지하기 위한 실험적 휴리스틱이며, 장애물의 종류·위치·위험도를 직접 측정하지 않습니다. 복셀 갱신량은 센서 노이즈나 관측 범위에도 영향을 받으므로, 이 값을 일반적인 동적 장애물 인식 성능으로 해석할 수 없습니다.</p>
 
   <h2 class="section-title" id="implementation">04 · Implementation</h2>
-  <div class="card-block">
-    <h3 class="article-subtitle">깊이 영상에서 3차원 점유 지도 생성</h3>
-    <p>Gazebo의 깊이 카메라에서 점군을 생성하고, MoveIt의 OccupancyMapUpdater를 통해 OctoMap으로 통합했습니다. 별도의 YOLO나 ICP 기반 장애물 인식기를 추가 학습하는 대신, 관측된 공간을 free·occupied·unknown 상태로 누적하는 확률적 3차원 점유 격자를 장애물 표현으로 사용했습니다. 이 선택으로 인식 모델 학습 없이도 계획 장면을 갱신할 수 있었습니다.</p>
-    <h3 class="article-subtitle">경로 생성과 연속 충돌 검사</h3>
-    <p>MoveIt 2와 OMPL의 RRT-Connect를 사용해 시작 상태에서 목표 상태까지 관절 공간 경로를 생성했습니다. 경로의 이산 waypoint만 검사하면 waypoint 사이 구간에서 발생하는 충돌을 놓칠 수 있으므로, Continuous Collision Check를 적용해 궤적 구간의 충돌 가능성도 확인하도록 구성했습니다.</p>
-    <h3 class="article-subtitle">지도 변화량 기반 복구 상태 머신</h3>
-    <p>동적 장애물이 들어올 때마다 별도의 객체 분류 모델을 실행하는 대신, Planning Scene의 지도 데이터량(voxel bytes) 변화를 감시했습니다. 변화량이 약 160 bytes 임계값을 넘으면 장애물 진입 이벤트로 판단하고, Monitor → Detect → Stop → Back-off → Replan → Resume 순서로 복구 절차를 실행하도록 구현했습니다. UR5e의 이동·정지·재개는 JointTrajectory Controller를 통해 제어했습니다.</p>
+  <h3 class="article-subtitle">Depth Camera → PointCloud → OctoMap</h3>
+  <p>Gazebo의 깊이 카메라에서 생성한 점군을 MoveIt OccupancyMapUpdater로 전달해 OctoMap으로 통합했습니다. 관측 광선이 통과한 공간은 free, 종단점은 occupied로 갱신하고 관측되지 않은 영역은 unknown으로 유지해 3차원 점유 지도를 구성했습니다. 갱신된 지도는 MoveIt2 Planning Scene에 반영되어 경로 계획과 충돌 검사에 사용됩니다.</p>
+  <h3 class="article-subtitle">MoveIt2 Planning Scene과 RRT-Connect</h3>
+  <p>현재 로봇 관절 상태와 목표 상태를 기준으로 MoveIt2가 Planning Scene을 참조하고, OMPL RRT-Connect가 관절 공간 경로를 탐색하도록 연결했습니다. 생성된 경로에는 연속 충돌 검사를 적용해 waypoint 사이 구간의 충돌 가능성도 확인하도록 구성했습니다.</p>
+  <h3 class="article-subtitle">Recovery FSM과 로봇 제어</h3>
+  <p>재계획 감시 노드가 Planning Scene의 지도 데이터량 변화를 확인하고, 변화량이 약 160 bytes 임계값을 넘으면 복구 이벤트를 발생시킵니다. 이후 Monitor → Detect → Stop → Back-off → Replan → Resume 순서로 상태를 전이하도록 구성했으며, UR5e의 정지·후퇴·재개 명령은 JointTrajectory Controller를 통해 전달했습니다.</p>
 
     <div class="media" style="margin-top:20px;">
-      <img src="../assets/p06/architecture.png"
-           alt="Architecture — Perception (Depth Camera → OctoMap) · Planning (MoveIt2 + OMPL + CCC) · Control (JointTrajectory Ctrl → UR5e Driver/Gazebo) · Reactive Recovery FSM: Monitor → Detect (bytes-diff τ=160) → Stop → Back-off → Replan → Resume" />
-      <p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고, 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
+      <img src="../assets/p06/architecture.png" alt="Architecture — Perception, Planning, Control and Recovery FSM" />
+      <p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
     </div>
-
     <div class="media" style="margin-top:16px;">
-      <img src="../assets/p06/octomap_raycasting.png"
-           alt="OctoMap raycasting 원리 — 카메라에서 쏜 ray를 따라 free 셀(흰색)과 occupied 셀(녹색)을 확률적으로 갱신, 미관측 영역은 unknown(회색)으로 유지" />
-      <p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 깊이 카메라에서 발사한 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 확률 갱신하며, 센서가 관측하지 못한 영역은 unknown 상태로 유지합니다.</p>
+      <img src="../assets/p06/octomap_raycasting.png" alt="OctoMap raycasting — free, occupied and unknown voxel updates" />
+      <p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 갱신하며 미관측 영역은 unknown으로 유지합니다.</p>
     </div>
-
     <div class="media-grid-2" style="margin-top:16px;">
-      <div class="media">
-        <img src="../assets/p06/gazebo_scene.png"
-             alt="Gazebo scene — UR5e 6-DOF 매니퓰레이터가 초록 큐브(target) 방향으로 접근, 테이블 위 정적 장애물과 동적 장애물이 함께 배치된 시뮬레이션 환경" />
-      <p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 로봇의 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치해 경로 재계획 상황을 재현했습니다.</p>
-      </div>
-      <div class="media">
-        <img src="../assets/p06/log_replan.png"
-             alt="Replan 로그 — [replan_trigger] 지도 데이터량 변화 감지 기준: 14615 → 현재: 14455 | 차이: 160 → 동적 장애물 감지, 이동 정지 → 이동 중단 및 재계획 요청 → replan_command 발행 → 경로 계획 성공! → 새 경로 실행 SUCCESS" />
-      <p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청, 새 경로 실행이 이어진 로그입니다.</p>
-      </div>
+      <div class="media"><img src="../assets/p06/gazebo_scene.png" alt="Gazebo UR5e simulation scene with static and dynamic obstacles" /><p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치했습니다.</p></div>
+      <div class="media"><img src="../assets/p06/log_replan.png" alt="Replanning event log showing map data change, stop and successful replanning" /><p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청과 새 경로 실행이 이어진 로그입니다.</p></div>
     </div>
-
     <div class="media" style="margin-top:16px;">
-      <img src="../assets/p06/rqt_graph.png"
-           alt="rqt_graph — ROS 2 node/topic 토폴로지: gazebo · robot_state_publisher · move_group(MoveIt2) · joint_trajectory_controller · octomap_server · replan_trigger 노드가 planning_scene, joint_states, depth/points 토픽으로 상호 연결된 전체 그래프" />
+      <img src="../assets/p06/rqt_graph.png" alt="ROS 2 node and topic graph for Gazebo, MoveIt2, OctoMap, trajectory controller and replanning node" />
       <p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
     </div>
-  </div>
 
   <h2 class="section-title" id="results">05 · Experiments &amp; Results</h2>
-  <div class="card-block">
+  
     <p style="color:var(--gray-700);">
       Gazebo의 UR5e 시뮬레이션에서 Perception–Planning–Control–Recovery FSM이 연결된 반응형 재계획을 end-to-end로 동작시켰습니다. 지도 데이터량 변화(bytes-diff, τ ≈ 160)를 기준으로 동적 장애물 진입을 감지하고, 별도 인식기 없이 <b>정지 → 후퇴 → 재계획 → 재개</b>가 이어지는 것을 로그와 RViz에서 확인했습니다 (예: <span style="font-family:'JetBrains Mono',monospace;">14615 → 14455 (Δ160)</span> 감지 → replan SUCCESS).
     </p>
@@ -151,12 +136,12 @@
       <li>Robot &mdash; <b>UR5e (6-DOF, Gazebo Sim)</b>, JointTrajectory Controller</li>
       <li>Team &mdash; 양태훈 (데이터사이언스) · 오상민 (AI) · 조윤재 (AI) — 인공지능종합설계 팀프로젝트</li>
     </ul>
-  </div>
+  
   <h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
-  <div class="card-block">
-    <p>현재 구현은 깊이 영상에서 점유 지도를 만들고, 지도 변화 이벤트를 기준으로 정지·후퇴·재계획·재개를 연결한 Gazebo 시뮬레이션 시스템입니다. 학습된 World Model이나 동적 객체 추적 모델을 구현한 프로젝트는 아닙니다. 또한 bytes-diff는 지도 변경량을 이용한 간접 지표이므로, 복셀 갱신량과 실제 충돌 위험이 항상 일치하지 않습니다.</p>
-    <p style="margin-top:10px;">후속 개선에서는 지도 변화량만 감시하는 방식에서 벗어나 변경된 복셀의 공간 위치와 계획 궤적의 충돌 구간을 함께 확인하고, 임계값 민감도 및 오탐·미탐을 별도 평가할 필요가 있습니다. 실제 UR5e와 깊이 센서에서의 지연·정지 거리·재계획 성공률도 시뮬레이션 결과와 분리해 검증해야 합니다.</p>
-  </div>
+  
+    <p>이 프로젝트를 통해 센서 관측을 Planning Scene에 반영하는 단계부터 경로 생성, 실행 중단, 복구와 재계획까지 하나의 ROS 2 시스템으로 연결했습니다. 다만 구현의 핵심은 학습 기반 World Model이나 객체 추적이 아니라, 점유 지도 갱신과 휴리스틱 이벤트 감지를 이용한 반응형 모션 플래닝입니다.</p>
+    <p style="margin-top:10px;">후속 개선에서는 bytes-diff 임계값만으로 이벤트를 판단하지 않고, 변경된 복셀의 공간 위치와 현재 계획 궤적의 충돌 구간을 함께 비교하는 방식이 필요합니다. 또한 임계값별 오탐·미탐과 정지·후퇴·재계획 지연을 측정하고, 실제 UR5e와 깊이 센서에서 정지 거리 및 재계획 성공률을 시뮬레이션 결과와 분리해 검증해야 합니다.</p>
+  
 </main>
   </div>
 </section>
