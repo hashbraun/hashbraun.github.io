@@ -62,30 +62,30 @@
   </div>
 
   <h2 class="section-title" id="problem">01 · Problem Definition</h2>
-  <div class="card-block">
+  
     <p><b>KIRO(한국로봇융합연구원) 산학협력 과제</b>로, 산업 현장의 대규모 이미지 데이터를 사람의 개입을 최소화한 자동 라벨링 파이프라인으로 처리해 인건비와 작업 시간을 줄이는 것이 과제 목표였습니다. 인하대 팀은 AGI·LLM 연계 알고리즘을 개발하고, KIRO는 현장 데이터 수집과 검증을 담당했습니다.</p>
     <p style="margin-top:10px;">첫 적용 도메인은 자율 예초 로봇이 사용하는 산길·초지 이미지였습니다. 특히 예초 완료 영역(Mowed)과 미예초 영역(Unmowed)을 구분해야 했지만, 해당 클래스 체계로 사전 라벨링된 공개 데이터셋이 없었습니다. 풀과 초지의 경계도 연속적으로 이어져 수동 폴리곤 라벨링에 시간이 많이 들고 작업자별 편차가 발생했습니다. 이에 모델을 별도로 학습하지 않고도 라벨 후보를 생성할 수 있는 제로 트레이닝 파이프라인을 설계했습니다.</p>
-  </div>
+  
 
   <h2 class="section-title" id="scope">02 · Scope &amp; Design Goals</h2>
-  <div class="card-block">
+  
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>이미지 전체의 장면 문맥을 VLM에 전달해 실제 등장하는 클래스 후보를 추출함.</li>
       <li>SAM AutomaticMaskGenerator의 서로 다른 설정으로 작은 객체와 넓은 영역의 마스크 후보를 함께 생성함.</li>
       <li>마스크별 클래스 분류 결과에서 중복·인접 영역을 정리해 활용 가능한 라벨 후보를 생성함.</li>
       <li>별도 도메인 데이터 학습 없이 범용 VLM과 SAM을 조합한 zero-shot 파이프라인을 구성함.</li>
     </ul>
-  </div>
+  
 
   <h2 class="section-title" id="implementation">03 · Design &amp; Implementation</h2>
-  <div class="card-block">
+  
     <h3 class="article-subtitle">고정 라벨 학습 대신 이미지별 클래스 추출</h3>
     <p>적용 도메인에는 Mowed·Unmowed를 포함한 현장 클래스 체계로 사전 라벨링된 학습 데이터가 충분하지 않았습니다. 산길·초지처럼 일반 화각의 장면에서는 객체와 배경의 전체 맥락을 함께 볼 수 있어, GPT-4o-mini에 이미지 전체를 전달해 등장 클래스를 추출하는 방식이 유효했습니다. 도메인 전용 segmentation 모델을 파인튜닝하는 대신 VLM은 클래스 후보를, SAM은 픽셀 영역 생성을 담당하도록 역할을 분리했습니다.</p>
     <h3 class="article-subtitle">작은 객체와 넓은 지면 영역을 함께 포착</h3>
     <p>SAM AutomaticMaskGenerator를 세밀한 설정과 큰 영역을 우선하는 설정으로 각각 실행했습니다. 두 결과를 합친 뒤 IoU 0.7 이상 중복 마스크를 제거해 작은 객체 경계와 넓게 이어지는 초지 영역을 함께 확보하려 했습니다. 이후 마스크 crop의 클래스를 앞 단계에서 추출한 후보 목록으로 제한하고, 동일 클래스의 인접 마스크를 DBSCAN과 형태학적 닫힘으로 정리했습니다.</p>
-  </div>
+  
 
-  <div class="card-block">
+  
     <h3 class="article-subtitle">이미지별 클래스 후보 추출</h3>
     <p>먼저 이미지 전체를 base64로 인코딩해 GPT-4o-mini에 전달하고, 해당 장면에 실제로 등장하는 클래스 목록을 추출했습니다. 일반 화각의 장면에서는 전체 이미지의 공간적·의미적 맥락을 함께 제공하는 편이 객체와 배경을 구분하는 데 유리했습니다. 사전에 고정된 라벨 목록만 강제하면 이미지에 없는 클래스까지 포함될 수 있으므로, 도로·사람·차량·예초/비예초 영역·배경 등 과제 목적을 안내하되 실제 등장한 클래스만 반환하도록 구성했습니다.</p>
     <h3 class="article-subtitle">서로 다른 크기의 마스크 생성</h3>
@@ -133,10 +133,10 @@
         <p class="media-caption">해당 이미지에서는 SAM이 생성한 마스크 100개에서 IoU 0.7 기준 중복 마스크를 제거해 71개를 남겼습니다. 이후 마스크별 클래스를 분류하고 DBSCAN으로 인접 영역을 병합해 Mowed Area 5개, Unmowed Area 12개, Tree 9개, Others 7개로 정리했습니다.</p>
       </div>
     </div>
-  </div>
+  
 
   <h2 class="section-title" id="results">04 · Experiments &amp; Results</h2>
-  <div class="card-block">
+  
     <p style="color:var(--gray-700);">
       GPT-4o-mini의 이미지 전체 입력으로 장면별 클래스 후보를 추출하고, SAM 마스크 생성·마스크별 클래스 분류·DBSCAN 병합을 연결해 별도 도메인 모델 학습 없이 라벨 후보를 생성했습니다. 일반 화각의 산길 이미지에서 Mowed Area와 Unmowed Area를 포함한 여러 클래스가 분리되는 정성 결과를 확인했습니다. 다만 이 결과는 선택한 이미지의 출력 사례를 확인한 것으로, 정답 마스크와 비교한 정량 성능이나 데이터셋 전체에 대한 일반화 성능을 검증한 것은 아닙니다.
     </p>
@@ -164,13 +164,13 @@
       <li>Team &mdash; 안우진 (인하대 조교수, 책임) · 장선호 (KIRO 주임, 공동연구자) · 조윤재 · 권유진 · 김건우 (인하대 학사 · 참여연구원)</li>
       <li>Notes &mdash; 학습 없는 파이프라인이라 <b>Stage 3 LLM 분류 편차</b>와 <b>DBSCAN eps</b> 튜닝이 다음 반복의 개선 포인트</li>
     </ul>
-  </div>
+  
   <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
-  <div class="card-block">
-    <p>평가는 서로 다른 산길 이미지의 출력과 실행 로그를 확인하는 정성 검토에 머물렀습니다. 정답 segmentation mask를 이용한 IoU·mAP, 클래스별 precision/recall, 이미지당 처리 시간, 수작업 대비 절감 시간은 측정하지 않았습니다. 따라서 28·30·34개와 같은 마스크 수는 파이프라인의 출력 규모를 보여줄 뿐, 라벨 정확도나 생산성 개선을 나타내는 성능 지표는 아닙니다.</p>
-    <p style="margin-top:10px;">주요 한계는 GPT-4o-mini의 마스크별 클래스 선택 편차와 DBSCAN 거리 임계값에 결과가 민감할 수 있다는 점입니다. 특히 경계가 연속적인 Mowed·Unmowed 영역은 crop 범위와 장면 문맥에 따라 분류가 달라질 수 있습니다. 후속 검증에서는 사람 검수 라벨을 기준으로 클래스별 오류와 경계 품질을 측정하고, DBSCAN eps 및 SAM 생성 설정을 검증 세트에서 조정할 필요가 있습니다.</p>
-    <p style="margin-top:10px;">이 경험은 이후 탑뷰 CCTV처럼 시점과 데이터 분포가 달라지는 환경에서 자동 라벨링의 품질을 어떻게 확보할지 고민하는 출발점이 되었습니다. Project 01에서는 범용 zero-shot 조합을 그대로 재사용한 것이 아니라, 탑뷰 도메인에 맞춘 segmentation 모델과 마스크 프롬프팅, 사람 검수 및 Active Learning 루프를 별도로 개발했습니다. 두 프로젝트는 구현을 공유한 관계가 아니라, 자동 라벨링을 현장 데이터에 맞게 발전시키는 과정에서 문제의식이 확장된 관계입니다.</p>
-  </div>
+  
+    <p>주요 한계는 GPT-4o-mini의 마스크별 클래스 선택 편차와 DBSCAN의 거리 임계값에 결과가 민감할 수 있다는 점입니다. 특히 경계가 모호한 Mowed·Unmowed 영역은 crop 범위와 장면 맥락에 따라 분류가 달라질 수 있습니다. 다음 단계에서는 사람 검수 라벨을 기준으로 클래스별 오류와 경계 품질을 측정하고, DBSCAN eps 및 SAM 생성 설정을 검증 세트에서 조정해야 합니다.</p>
+    <h3 class="article-subtitle">후속 연구 방향 · Geometry-aware Robust Labeling</h3>
+    <p>단일 이미지의 색상과 장면 문맥에 의존하는 분류를 보완하기 위해, 카메라 기하 정보를 이용한 깊이·3D 구조와 RGB 기반 의미 정보를 분리한 파이프라인을 탐구할 수 있습니다. 스테레오 원본과 보정 정보가 있다면 disparity로 metric depth를 계산하고, 여러 시점의 마스크를 3D 공간에서 정합해 일관된 라벨을 통합합니다. 단일 RGB만 확보된 경우에는 VGGT 등으로 상대 깊이와 point map을 추정할 수 있지만, 실제 크기를 복원하려면 카메라 정보나 기준 물체 등 scale anchor가 필요합니다. 조명·그림자·블러 등 저품질 입력은 품질 점수로 선별하고, 불확실한 샘플에만 보정·다중 시점 재추론을 적용해 계산 비용을 제어하는 방향이 적합합니다. <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Zhao_SAM2Object_Consolidating_View_Consistency_via_SAM2_for_Zero-Shot_3D_Instance_CVPR_2025_paper.html" target="_blank" rel="noopener">SAM2Object (CVPR 2025)</a>, <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Wang_VGGT_Visual_Geometry_Grounded_Transformer_CVPR_2025_paper.html" target="_blank" rel="noopener">VGGT (CVPR 2025)</a>, <a href="https://openaccess.thecvf.com/content/CVPR2024/html/Chen_RobustSAM_Segment_Anything_Robustly_on_Degraded_Images_CVPR_2024_paper.html" target="_blank" rel="noopener">RobustSAM (CVPR 2024)</a> 등을 참고할 수 있습니다.</p>
+  
 </main>
   </div>
 </section>
