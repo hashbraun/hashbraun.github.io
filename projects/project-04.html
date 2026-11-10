@@ -51,9 +51,9 @@
     <main class="article-main">
 
   <div class="media">
-<p class="media-caption">실기 SO-101 양팔 로봇에서 시연을 수집하고, 해당 데이터를 이용해 VLA 정책을 학습한 뒤 실제 로봇에서 폐루프 실행을 평가하는 전체 연구 흐름입니다.</p>
 <img src="../assets/p04/overview.png"
          alt="System Overview — Teleop Rig → SO-101 Bi-arm → Multi-modal Demos → VLA Policy → Closed-loop Rollout" />
+<p class="media-caption">실기 SO-101 양팔 로봇에서 시연을 수집하고, 해당 데이터를 이용해 VLA 정책을 학습한 뒤 실제 로봇에서 폐루프 실행을 평가하는 전체 연구 흐름입니다.</p>
   </div>
 
   <div class="case-study-summary" style="margin-bottom:20px;">
@@ -73,9 +73,9 @@
     <p>SO-101 양팔 로봇과 리더-팔로워 teleoperation 환경을 구성하고, 작업자가 리더 로봇을 조작하는 동안 팔로워 로봇의 동작과 카메라 관측, 로봇 상태, 액션을 에피소드 단위로 기록했습니다. 수집한 시연은 Hugging Face LeRobot 데이터 형식으로 정리해 정책 학습과 실제 로봇 평가에 사용했습니다.</p>
     <p style="margin-top:10px;">관측 장치는 Top·Front·Wrist 시점의 RGB 카메라와 RealSense 깊이 카메라로 구성했습니다. Top·Front 시점은 작업 공간과 물체의 배치를 넓게 관찰하고, Wrist 시점은 말단부 주변의 조작 상황을 가까이서 관찰합니다. 깊이 영상에서는 Point Cloud를 복원할 수 있으며, 로봇 관절 상태(proprioception)와 액션 정보도 시각 관측의 시점에 맞춰 정렬해 기록했습니다.</p>
     <div class="media" style="margin-top:20px;">
-<p class="media-caption">정책 학습에 사용한 관측·액션 데이터의 전체 구조입니다. Top·Front·Wrist RGB 영상과 Point Cloud/FPS, 로봇 상태 정보를 시점에 맞춰 구성하고, 정책이 양팔 로봇의 액션을 예측하는 흐름을 나타냅니다. 세부 입력 조합은 정책별 실험 단계에 따라 확장했습니다.</p>
 <img src="../assets/p04/architecture.png"
            alt="System input-output overview — Top, Front and Wrist RGB, Point Cloud/FPS and proprioceptive state to policy, then dual-arm actions" />
+<p class="media-caption">정책 학습에 사용한 관측·액션 데이터의 전체 구조입니다. Top·Front·Wrist RGB 영상과 Point Cloud/FPS, 로봇 상태 정보를 시점에 맞춰 구성하고, 정책이 양팔 로봇의 액션을 예측하는 흐름을 나타냅니다. 세부 입력 조합은 정책별 실험 단계에 따라 확장했습니다.</p>
     </div>
   </div>
 
@@ -85,14 +85,14 @@
     <p>초기 정책은 LeRobot에서 지원하는 ACT(Action Chunking with Transformers)로 구성했습니다. ACT는 관측으로부터 일정 구간의 액션 시퀀스를 청크 단위로 예측하는 모방학습 정책입니다. 시연 에피소드에 기록된 관측과 액션의 시간적 대응 관계를 학습하고, 학습한 정책을 SO-101 양팔 로봇에서 실행하는 초기 기준선으로 사용했습니다.</p>
     <div class="media-pair" aria-label="ACT demonstration collection and closed-loop rollout examples">
 <div class="media">
-<p class="media-caption">리더-팔로워 방식의 실기 시연 수집 장면입니다. 작업자의 리더 로봇 조작에 따라 팔로워 로봇이 동작하며, 이때의 관측과 액션을 학습용 에피소드로 기록합니다.</p>
 <img src="../assets/p04/demo_teleop.gif"
              alt="Teleoperation demo collection — leader-follower SO-101 demonstration collection" />
+<p class="media-caption">리더-팔로워 방식의 실기 시연 수집 장면입니다. 작업자의 리더 로봇 조작에 따라 팔로워 로봇이 동작하며, 이때의 관측과 액션을 학습용 에피소드로 기록합니다.</p>
       </div>
 <div class="media">
-<p class="media-caption">학습한 정책을 실제 SO-101 양팔 로봇에서 실행한 폐루프 롤아웃 예시입니다. 컵을 집고 이동하는 동작을 통해 정책의 액션 출력이 실제 로봇 제어로 이어지는 과정을 확인했습니다.</p>
 <img src="../assets/p04/demo_rollout.gif"
              alt="Closed-loop bi-manipulation rollout — cup pick-and-place" />
+<p class="media-caption">학습한 정책을 실제 SO-101 양팔 로봇에서 실행한 폐루프 롤아웃 예시입니다. 컵을 집고 이동하는 동작을 통해 정책의 액션 출력이 실제 로봇 제어로 이어지는 과정을 확인했습니다.</p>
       </div>
     </div>
 
@@ -104,9 +104,9 @@
     <h3 class="article-subtitle">RGB·Point Cloud·FPS의 역할</h3>
     <p>RGB 영상은 물체의 외관과 장면 맥락을 제공하고, Point Cloud는 깊이 영상에서 복원한 3차원 좌표를 통해 공간 구조를 표현합니다. 점군은 원본 상태에서 밀집되거나 특정 영역에 편중될 수 있어 Farthest Point Sampling(FPS)을 적용해 공간적으로 분포된 점을 선택했습니다. 이는 3차원 기하 정보를 관측에 포함하기 위한 입력 구성으로, 성능 향상을 입증한 결과와는 구분합니다.</p>
 <div class="media" style="margin-top:16px;">
-<p class="media-caption">RealSense 깊이 영상에서 복원한 Point Cloud와 FPS 샘플링 결과입니다. FPS는 원본 점군의 밀집도를 줄이고 공간 전반에 분포한 점을 선택해 3차원 기하 정보를 일정한 크기의 입력으로 구성하는 데 사용했습니다.</p>
 <img src="../assets/p04/pointcloud.png"
            alt="RealSense depth image converted to Point Cloud and FPS-sampled bi-arm point cloud" />
+<p class="media-caption">RealSense 깊이 영상에서 복원한 Point Cloud와 FPS 샘플링 결과입니다. FPS는 원본 점군의 밀집도를 줄이고 공간 전반에 분포한 점을 선택해 3차원 기하 정보를 일정한 크기의 입력으로 구성하는 데 사용했습니다.</p>
     </div>
 
     <h3 class="article-subtitle">다중 카메라와 로봇 상태의 시간 정렬</h3>
