@@ -49,7 +49,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">Solution Goals</a><a href="#decisions">Design Decisions</a><a href="#implementation">Implementation</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">System Setup &amp; Goals</a><a href="#decisions">Design Decisions</a><a href="#implementation">Implementation</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -64,7 +64,7 @@
     <p style="margin-top:10px;">팀 프로젝트의 개발 범위를 고려해 별도의 장애물 인식 모델을 학습하기보다, 지도 갱신 정보를 이용해 <b>장애물 감지 → 정지 → 후퇴 → 재계획 → 재개</b>가 연결되도록 시스템을 단순화했습니다.</p>
   
 
-  <h2 class="section-title" id="scope">02 · Solution Goals</h2>
+  <h2 class="section-title" id="scope">02 · System Setup &amp; Goals</h2>
   <ul style="padding-left:20px;color:var(--gray-700);">
     <li>깊이 카메라 관측을 OctoMap으로 변환해 MoveIt2 Planning Scene에 반영함.</li>
     <li>OMPL RRT-Connect와 연속 충돌 검사를 연결해 관절 공간 경로를 생성함.</li>
@@ -72,38 +72,44 @@
     <li>Gazebo에서 Perception부터 Control까지 이어지는 반응형 재계획 흐름을 검증함.</li>
   </ul>
 
-  <h2 class="section-title" id="decisions">03 · Design Decisions &amp; Trade-offs</h2>
-  <h3 class="article-subtitle">객체 인식보다 점유 지도 기반 장애물 표현</h3>
-  <p>이번 과제에서 필요한 판단은 장애물의 종류를 분류하는 것이 아니라 로봇의 계획 궤적과 점유 공간이 충돌하는지 확인하는 것이었습니다. 따라서 별도의 객체 검출 모델을 학습하기보다 깊이 카메라 점군을 OctoMap으로 변환해 free·occupied·unknown 공간을 표현했습니다. 학습 데이터와 클래스 정의 없이 Planning Scene을 갱신할 수 있다는 장점이 있지만, 장애물의 의미나 개별 객체를 추적하지는 않습니다.</p>
-  <h3 class="article-subtitle">MoveIt2·OMPL 기반 관절 공간 계획</h3>
-  <p>UR5e는 6개 관절의 상태가 함께 움직이므로 목표 위치만 고려한 직선 이동보다 로봇의 관절 제약과 충돌 장면을 반영하는 계획기가 필요했습니다. MoveIt2의 Planning Scene에 OctoMap을 연결하고 OMPL의 RRT-Connect를 사용해 시작·목표 관절 상태 사이의 경로를 탐색했습니다. waypoint만 확인하면 샘플 사이의 충돌을 놓칠 수 있어 연속 충돌 검사도 함께 적용했습니다.</p>
-  <h3 class="article-subtitle">지도 변경량 기반 이벤트 감지의 한계</h3>
-  <p>실시간 이벤트 감지를 위해 OctoMap/Planning Scene 데이터량의 bytes-diff를 사용했습니다. 약 160 bytes 임계값은 지도 갱신이 발생했음을 감지하기 위한 실험적 휴리스틱이며, 장애물의 종류·위치·위험도를 직접 측정하지 않습니다. 복셀 갱신량은 센서 노이즈나 관측 범위에도 영향을 받으므로, 이 값을 일반적인 동적 장애물 인식 성능으로 해석할 수 없습니다.</p>
+  <h2 class="section-title" id="decisions">03 · Design &amp; Implementation</h2>
+  <h3 class="article-subtitle">깊이 관측 기반 점유 지도 — 의미 인식 대신 충돌 공간 표현</h3>
+  <p>이 과제의 핵심은 장애물의 종류를 분류하는 것이 아니라 로봇의 현재·예정 궤적과 점유 공간이 겹치는지 판단하는 것이었습니다. 따라서 별도의 YOLO 객체 검출기나 ICP 기반 인식기를 추가하는 대신, 깊이 카메라 점군을 OctoMap의 free·occupied·unknown 상태로 표현했습니다. 학습 데이터 없이 Planning Scene을 갱신할 수 있는 장점이 있지만, 장애물의 클래스나 의미를 구분하지는 않습니다.</p>
+  <p>Gazebo 깊이 카메라에서 점군을 생성하고 MoveIt의 OccupancyMapUpdater를 통해 OctoMap으로 통합했습니다. 센서 광선이 통과한 영역은 free, 끝점은 occupied로 갱신하고 관측되지 않은 공간은 unknown으로 유지해 3차원 점유 지도를 구성했습니다.</p>
 
-  <h2 class="section-title" id="implementation">04 · Implementation</h2>
-  <h3 class="article-subtitle">Depth Camera → PointCloud → OctoMap</h3>
-  <p>Gazebo의 깊이 카메라에서 생성한 점군을 MoveIt OccupancyMapUpdater로 전달해 OctoMap으로 통합했습니다. 관측 광선이 통과한 공간은 free, 종단점은 occupied로 갱신하고 관측되지 않은 영역은 unknown으로 유지해 3차원 점유 지도를 구성했습니다. 갱신된 지도는 MoveIt2 Planning Scene에 반영되어 경로 계획과 충돌 검사에 사용됩니다.</p>
-  <h3 class="article-subtitle">MoveIt2 Planning Scene과 RRT-Connect</h3>
-  <p>현재 로봇 관절 상태와 목표 상태를 기준으로 MoveIt2가 Planning Scene을 참조하고, OMPL RRT-Connect가 관절 공간 경로를 탐색하도록 연결했습니다. 생성된 경로에는 연속 충돌 검사를 적용해 waypoint 사이 구간의 충돌 가능성도 확인하도록 구성했습니다.</p>
-  <h3 class="article-subtitle">Recovery FSM과 로봇 제어</h3>
-  <p>재계획 감시 노드가 Planning Scene의 지도 데이터량 변화를 확인하고, 변화량이 약 160 bytes 임계값을 넘으면 복구 이벤트를 발생시킵니다. 이후 Monitor → Detect → Stop → Back-off → Replan → Resume 순서로 상태를 전이하도록 구성했으며, UR5e의 정지·후퇴·재개 명령은 JointTrajectory Controller를 통해 전달했습니다.</p>
+  <h3 class="article-subtitle">MoveIt 2·OMPL — 관절 공간 경로 계획</h3>
+  <p>UR5e는 6개 관절의 상태로 움직이므로 목표 자세까지의 경로를 관절 공간에서 계산하도록 MoveIt 2 Planning Scene과 OMPL의 RRT-Connect를 연결했습니다. RRT-Connect는 시작·목표 양쪽에서 탐색 트리를 확장하는 샘플링 기반 계획기입니다. waypoint만 검사하면 점 사이 구간의 충돌을 놓칠 수 있어 Continuous Collision Check를 함께 적용했습니다.</p>
 
-    <div class="media" style="margin-top:20px;">
-      <img src="../assets/p06/architecture.png" alt="Architecture — Perception, Planning, Control and Recovery FSM" />
-      <p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
+  <h3 class="article-subtitle">지도 변화량 감시와 Recovery FSM</h3>
+  <p>실행 중 장애물 진입 이벤트를 감지하기 위해 OctoMap/Planning Scene 데이터량의 bytes-diff를 감시했습니다. 약 160 bytes 임계값은 장애물의 종류·위치·위험도를 판별하는 값이 아니라 지도 갱신 이벤트를 포착하기 위한 실험적 휴리스틱입니다. 임계값을 넘으면 Monitor → Detect → Stop → Back-off → Replan → Resume 순서로 복구 절차를 실행하고, 로봇 제어는 JointTrajectory Controller로 전달했습니다. 이 방식은 별도 객체 인식 모델 없이 재계획 흐름을 연결하지만, 장면 노이즈나 복셀 갱신량에 따라 오탐·미탐이 발생할 수 있습니다.</p>
+
+  <div class="media" style="margin-top:20px;">
+    <img src="../assets/p06/architecture.png"
+         alt="Architecture — Perception (Depth Camera → OctoMap) · Planning (MoveIt2 + OMPL + CCC) · Control (JointTrajectory Ctrl → UR5e Driver/Gazebo) · Reactive Recovery FSM: Monitor → Detect (bytes-diff τ=160) → Stop → Back-off → Replan → Resume" />
+    <p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고, 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
+  </div>
+  <div class="media" style="margin-top:16px;">
+    <img src="../assets/p06/octomap_raycasting.png"
+         alt="OctoMap raycasting principle — free, occupied and unknown voxel updates" />
+    <p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 깊이 카메라에서 발사한 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 확률 갱신하며, 센서가 관측하지 못한 영역은 unknown 상태로 유지합니다.</p>
+  </div>
+  <div class="media-grid-2" style="margin-top:16px;">
+    <div class="media">
+      <img src="../assets/p06/gazebo_scene.png"
+           alt="Gazebo scene — UR5e manipulator with static and dynamic obstacles" />
+      <p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 로봇의 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치해 경로 재계획 상황을 재현했습니다.</p>
     </div>
-    <div class="media" style="margin-top:16px;">
-      <img src="../assets/p06/octomap_raycasting.png" alt="OctoMap raycasting — free, occupied and unknown voxel updates" />
-      <p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 갱신하며 미관측 영역은 unknown으로 유지합니다.</p>
+    <div class="media">
+      <img src="../assets/p06/log_replan.png"
+           alt="Replanning event log — map data change, stop, replan request and successful new path" />
+      <p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청, 새 경로 실행이 이어진 로그입니다.</p>
     </div>
-    <div class="media-grid-2" style="margin-top:16px;">
-      <div class="media"><img src="../assets/p06/gazebo_scene.png" alt="Gazebo UR5e simulation scene with static and dynamic obstacles" /><p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치했습니다.</p></div>
-      <div class="media"><img src="../assets/p06/log_replan.png" alt="Replanning event log showing map data change, stop and successful replanning" /><p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청과 새 경로 실행이 이어진 로그입니다.</p></div>
-    </div>
-    <div class="media" style="margin-top:16px;">
-      <img src="../assets/p06/rqt_graph.png" alt="ROS 2 node and topic graph for Gazebo, MoveIt2, OctoMap, trajectory controller and replanning node" />
-      <p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
-    </div>
+  </div>
+  <div class="media" style="margin-top:16px;">
+    <img src="../assets/p06/rqt_graph.png"
+         alt="ROS 2 node and topic graph connecting Gazebo, MoveIt2, OctoMap, trajectory controller and replanning node" />
+    <p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
+  </div>
 
   <h2 class="section-title" id="results">05 · Experiments &amp; Results</h2>
   
