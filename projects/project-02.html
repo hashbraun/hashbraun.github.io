@@ -723,13 +723,12 @@ Cache JSON (extended schema)
   <h3 class="article-subtitle" id="reflection">05 · Technical Issues &amp; Improvements</h3>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
-      <li>프레임 단위 분할에서 기록한 mAP 약 95%는 동일 영상의 인접 프레임이 학습과 평가에 함께 포함된 데이터 누수로 인해 높게 측정된 결과였습니다. 영상 단위로 분리한 평가에서는 mAP가 약 0.4~0.6 수준으로 낮아졌으며, 이후에는 이 평가 방식을 기준으로 일반화 성능을 판단했습니다.</li>
-      <li>외부 데이터를 그대로 편입했더니 라벨 온톨로지가 달라 unlabeled 객체가 background로 학습되면서 person·fork lift 성능이 오히려 낮아졌습니다. SAM2 crop 합성으로 객체 외형만 활용하고 배경은 CCTV 환경을 유지하는 방식으로 대응했습니다.</li>
-      <li>학습 장면 수를 32개에서 155개로 약 5배 늘린 실험에서는 하이퍼파라미터 조정보다 큰 폭인 14%p의 성능 개선을 확인했습니다.</li>
-      <li>Codex의 파라미터 제안과 회귀 감지 규칙을 결합해 약 4시간이 소요되는 실패 학습을 자동으로 식별하고, 후속 실험에 반영하지 않도록 관리했습니다.</li>
-      <li>학습에서 제외한 영상은 모델 선택과 일반화 성능 확인에 사용했습니다. 최종 배포 모델은 설정을 결정한 뒤 확보한 데이터를 모두 사용해 다시 학습했습니다.</li>
-      <li>Signalman처럼 소수 속성에 해당하는 항목은 detection head를 다시 학습하기보다 <b>attribute head를 분리해 학습</b>하는 편이 안전했습니다. 이를 통해 기본 검출 성능을 보전하고, 속성 학습이 실패했을 때의 대체 경로를 명확히 했습니다.</li>
-      <li>추적 결과의 시각적 안정화는 단일 후처리만으로 해결되지 않았습니다. Kalman 보간, EMA 평활화, track linking을 단계적으로 추가했으며, 각 변경은 이전 단계에서 확인한 실패 원인과 사용자 검토 의견을 바탕으로 결정했습니다.</li>
+      <li><b>평가 데이터 누수:</b> 프레임 단위로 데이터를 나누면서 같은 영상의 인접 프레임이 학습과 평가에 함께 들어갔습니다. 평가 결과가 실제 일반화 성능보다 높게 나오는 문제를 확인한 뒤, 영상 단위로 분리하고 학습에 포함되지 않은 CCTV 영상으로 추가 확인했습니다.</li>
+      <li><b>외부 데이터의 라벨 불일치:</b> AIHub 데이터를 그대로 학습에 넣자 라벨이 없는 객체가 background로 처리되어 person·fork lift 검출에 악영향을 주었습니다. 이후 SAM2로 필요한 객체만 crop하고 PoC CCTV 배경에 합성해, 객체 외형은 활용하되 배경 도메인과 라벨 체계는 유지했습니다.</li>
+      <li><b>장시간 가림 이후 ID 전환:</b> 60프레임 이상 가려진 사람의 ID가 바뀌는 사례를 확인했습니다. Kalman 보간, EMA 평활화, track linking을 단계적으로 적용해 시각적 흔들림을 줄였으며, 장시간 가림에서 동일 객체를 다시 연결하는 문제는 ReID와 track buffer를 추가로 검토할 예정입니다.</li>
+      <li><b>INT8 변환 시 정확도 저하:</b> all-data 재학습 이후 일부 activation 범위가 달라지면서 INT8 변환 결과의 오차가 크게 증가했습니다. 배포 경로는 정확도 유지가 확인된 TensorRT FP16으로 선택했으며, INT8은 calibration 데이터와 clipping 설정을 다시 검증할 필요가 있습니다.</li>
+      <li><b>희소 속성의 분리:</b> Signalman처럼 소수 속성은 기본 detection head를 다시 학습하기보다 별도 attribute head로 분리했습니다. 이 구조는 기본 객체 검출을 유지하면서 속성 분류만 독립적으로 수정할 수 있도록 합니다.</li>
+      <li><b>실험 회귀 관리:</b> 학습 실패나 기존 성능의 하락을 뒤늦게 확인하지 않도록, 로그의 완료 상태와 평가 결과를 연결해 후속 실험 전에 회귀 여부를 확인하도록 구성했습니다.</li>
     </ul>
   </div>
   </details>
