@@ -824,8 +824,9 @@ section {
 
 
 /* Detail article with persistent left-side section navigation */
-.detail-article-layout { max-width:none; margin:0; padding:0 0 48px; display:grid; grid-template-columns:190px minmax(0,1fr); gap:38px; align-items:start; }
-.article-sidebar { position:sticky; top:82px; align-self:start; }
+.detail-article-layout { max-width:none; margin:0; padding:0 0 48px; display:grid; grid-template-columns:minmax(0,1fr) 190px; gap:38px; align-items:start; }
+.article-sidebar { grid-column:2; grid-row:1; position:sticky; top:82px; align-self:start; }
+.article-main { grid-column:1; grid-row:1; min-width:0; }
 .article-sidebar-title { margin:0 0 10px 12px; color:var(--mute); font:700 .68rem var(--font-mono); letter-spacing:.09em; text-transform:uppercase; }
 .article-main { min-width:0; }
 .article-main .article-intro { max-width:none; margin:0 0 24px; }
@@ -836,7 +837,8 @@ section {
 .media-caption { margin:8px 0 0; color:var(--sub); font-size:.86rem; line-height:1.75; }
 @media(max-width:900px) {
   .detail-article-layout { grid-template-columns:1fr; gap:14px; padding:0 0 40px; }
-  .article-sidebar { position:relative; top:auto; z-index:2; background:rgba(255,255,255,.96); padding:8px 0; border-bottom:1px solid var(--line); }
+  .article-sidebar { grid-column:1; grid-row:1; position:relative; top:auto; z-index:2; background:rgba(255,255,255,.96); padding:8px 0; border-bottom:1px solid var(--line); }
+  .article-main { grid-column:1; grid-row:2; }
   .article-sidebar-title { margin-left:0; }
   .article-main .article-toc { flex-direction:row; flex-wrap:wrap; gap:4px 8px; }
   .article-main .article-toc a { padding:7px 9px; font-size:.78rem; }
@@ -854,3 +856,7 @@ section {
 .result-group .kpi-tile { padding:14px 12px; }
 .result-group .kpi-tile .k-value { font-size:1.22rem; }
 @media(max-width:900px) { .result-pair { grid-template-columns:1fr; gap:12px; } }
+
+.article-subtitle { margin:26px 0 10px; font-size:1.08rem; line-height:1.45; color:var(--ink); font-weight:750; letter-spacing:-.02em; }
+.article-subtitle:first-child { margin-top:0; }
+.article-main p { line-height:1.85; }
