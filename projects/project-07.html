@@ -53,9 +53,9 @@
     <main class="article-main">
 
   <div class="media">
-<p class="media-caption">산길 원본 이미지와 자동 라벨링 결과입니다. <code>zed_7_images_00300.png</code>에서 Person, Vehicle, Sky, Mowed Area, Unmowed Area, Tree의 6개 클래스를 추출하고 28개 마스크를 생성했습니다. 마스크 수는 해당 이미지의 출력 결과이며 라벨 정확도를 나타내는 지표는 아닙니다.</p>
 <img src="../assets/p07/overview.png"
          alt="System Overview — 산길 원본 이미지(좌)와 SAM + GPT-4o-mini + DBSCAN 파이프라인이 6개 클래스(Person / Vehicle / Sky / Mowed Area / Unmowed Area / Tree)로 자동 분할한 결과(우, 28개 마스크)" />
+<p class="media-caption">산길 원본 이미지와 자동 라벨링 결과입니다. <code>zed_7_images_00300.png</code>에서 Person, Vehicle, Sky, Mowed Area, Unmowed Area, Tree의 6개 클래스를 추출하고 28개 마스크를 생성했습니다. 마스크 수는 해당 이미지의 출력 결과이며 라벨 정확도를 나타내는 지표는 아닙니다.</p>
   </div>
   <p>GPT-4o-mini에 이미지 전체를 입력해 장면에 등장하는 클래스 후보를 추출하고, SAM으로 마스크를 생성한 뒤 마스크별 클래스를 분류·병합하는 zero-shot 자동 라벨링 도구를 구현했습니다. 별도 도메인 모델 학습 없이 범용 VLM의 장면 이해와 SAM의 영역 제안을 결합했습니다.</p>
 
@@ -109,7 +109,9 @@
 <b>예초/비예초 영역 구분이 목적</b>임을
 기억해주세요. 이 이미지에 실제로 나타나는
 주요 객체들만 포함해주세요.</pre>
-        <p class="media-caption">이미지 전체를 입력해 장면 문맥을 유지하면서도, 예초 완료·미완료 영역 구분이라는 과제 목적에 필요한 클래스만 추출하도록 지시했습니다. 아래는 실제 사용한 프롬프트의 핵심 발췌입니다.</p>
+        <img src="../assets/p07/result_mountain_path.png"
+             alt="Qualitative result 1 — 하늘·나무·주황 미예초 초지·소량의 초록 예초 영역이 뒤섞인 산길 (zed_11_images_00150.png). 4개 클래스 · 30개 마스크로 자동 라벨: Sky / Mowed Area / Unmowed Area / Tree" />
+<p class="media-caption">이미지 전체를 입력해 장면 문맥을 유지하면서도, 예초 완료·미완료 영역 구분이라는 과제 목적에 필요한 클래스만 추출하도록 지시했습니다. 아래는 실제 사용한 프롬프트의 핵심 발췌입니다.</p>
       </div>
 
       <div>
@@ -141,13 +143,11 @@
 
     <div class="media">
 <p class="media-caption">첫 번째 정성 평가 장면에서는 Sky, Mowed Area, Unmowed Area, Tree의 4개 클래스를 기준으로 30개 마스크를 생성했습니다. 예초·비예초 영역이 함께 나타나는 장면에서 두 영역의 후보 마스크가 분리되는지 확인했습니다.</p>
-<img src="../assets/p07/result_mountain_path.png"
-             alt="Qualitative result 1 — 하늘·나무·주황 미예초 초지·소량의 초록 예초 영역이 뒤섞인 산길 (zed_11_images_00150.png). 4개 클래스 · 30개 마스크로 자동 라벨: Sky / Mowed Area / Unmowed Area / Tree" />
       </div>
       <div class="media">
-<p class="media-caption">넓은 초지와 능선이 포함된 두 번째 결과입니다. 6개 클래스에 대해 34개 마스크를 생성했으며, DBSCAN 병합 이후에도 예초·비예초 영역의 큰 경계가 유지되는지 확인할 수 있습니다.</p>
 <img src="../assets/p07/result_green_hills.png"
              alt="Qualitative result 2 — 광활한 초록·주황 능선 산길 (zed_8_images_00170.png). 6개 클래스 · 34개 마스크: Mowed Area / Unmowed Area / Sky / Tree / Others. DBSCAN 병합 후에도 예초/비예초 경계가 넓게 유지" />
+<p class="media-caption">넓은 초지와 능선이 포함된 두 번째 결과입니다. 6개 클래스에 대해 34개 마스크를 생성했으며, DBSCAN 병합 이후에도 예초·비예초 영역의 큰 경계가 유지되는지 확인할 수 있습니다.</p>
       </div>
     <p class="media-caption">두 장면의 결과는 서로 다른 배경·초지 형태에서도 예초·비예초 후보 영역을 생성할 수 있음을 보여주는 정성 사례입니다. 마스크 개수와 클래스 분리는 출력 사례의 관찰값이며, 정답 마스크와 비교한 IoU나 클래스별 정밀도·재현율을 의미하지 않습니다.</p>
 
