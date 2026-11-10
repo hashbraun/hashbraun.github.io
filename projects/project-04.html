@@ -73,7 +73,7 @@
     <p>실기 SO-101 양팔 로봇에서 리더-팔로워 방식의 원격 조작 환경을 구성하고, 시연 데이터를 수집·정리한 뒤 VLA 정책 학습과 폐루프 실행까지 연결하는 것을 목표로 삼았습니다. 또한 RGB 영상에 Point Cloud와 관절 상태를 추가해 시각 정보와 기하학적 정보를 함께 활용하는 입력 구조를 구현했습니다.</p>
   </div>
 
-  <h2 class="section-title" id="method">03 · Method — Multi-modal Observation &amp; Policy Learning</h2>
+  <h2 class="section-title" id="method">03 · Design Decisions &amp; Implementation</h2>
   <div class="card-block">
     <h3 class="article-subtitle">리더-팔로워 방식의 실기 시연 수집</h3>
     <p>먼저 SO-101 양팔 로봇의 리더-팔로워 teleoperation 환경을 구성했습니다. 작업자가 리더 로봇을 조작하면 팔로워 로봇이 같은 동작을 수행하도록 연결하고, 카메라 관측과 로봇 상태, 액션을 에피소드 단위로 기록했습니다. 수집한 시연은 정책 학습에 사용할 수 있도록 정리했으며, 이후 실제 로봇에서 정책을 실행하는 폐루프 평가까지 이어갔습니다.</p>
@@ -83,6 +83,8 @@
     <p>Top·Front·Wrist 카메라 3개 시점과 로봇의 proprioceptive state를 함께 사용하도록 입력 구조를 구성했습니다. Top·Front 영상은 작업 공간과 물체의 상대적 배치를 넓게 관찰하고, Wrist 영상은 말단부 주변의 접촉·조작 상황을 보완합니다. 관절 상태와 액션을 각 카메라 관측의 시점에 맞춰 정렬해, 시각 관측만으로 드러나지 않는 로봇 자체의 자세·관절 정보를 함께 전달하도록 했습니다. 다만 카메라별 입력의 독립적인 기여도는 통제된 ablation으로 검증하지 않았습니다.</p>
     <h3 class="article-subtitle">정책 베이스라인과 제한된 데이터 적응</h3>
     <p>Hugging Face LeRobot 파이프라인에서 ACT와 SmolVLA를 비교 대상으로 두고, 공개 OXE 데이터와 SO-101에서 수집한 제한된 teleoperation 시연을 활용해 정책 학습·적응 흐름을 실험했습니다. SmolVLA에서는 전체 모델을 다시 학습하는 대신 action expert에 LoRA를 적용해 제한된 시연 데이터로 적응하는 방법을 탐색했습니다. 이 페이지에서는 모델별 성공률이나 LoRA의 정량적 개선 폭을 제시할 만큼 통제된 반복 평가가 확보되지 않았으므로, 해당 선택을 성능 우위로 해석하지 않습니다.</p>
+    <h3 class="article-subtitle">개인 기여 범위</h3>
+    <p>팀 리더로서 리더-팔로워 teleoperation을 통한 SO-101 시연 수집, LeRobot 데이터·학습 파이프라인 구성, ACT·SmolVLA 비교 실험, Point Cloud/FPS 및 다중 카메라·proprioceptive 입력 구성, SmolVLA action expert LoRA 적용 실험, 실제 로봇 rollout 평가를 연결했습니다. 기구 설계나 별도 perception 모델을 새로 학습한 것으로 범위를 넓히지 않으며, 입력 모달리티별 성능 기여도는 아직 검증되지 않은 항목으로 남겨두었습니다.</p>
 
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p04/architecture.png"
