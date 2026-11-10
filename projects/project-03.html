@@ -62,7 +62,10 @@
     <p>앞선 RILS Lab 프로젝트에서 SO-101 시연 데이터를 직접 수집하고 VLA 정책을 학습하면서, 실제 로봇 데이터를 확보하는 데 드는 시간과 다양한 상태·행동을 충분히 포함시키는 일이 중요하다는 점을 경험했습니다. 이 경험을 바탕으로 World Model을 활용해 action-conditioned rollout을 생성하고, 로봇 학습에 활용할 수 있는 데이터를 확장하는 방향에 관심을 갖게 되었습니다.</p>
     <p style="margin-top:8px;">이번 프로젝트에서는 별도의 SO-100 데이터셋으로 생성 영상을 만들고, 생성 결과를 직접 재생·비교해 모델이 어떤 행동 조건에서 안정적이거나 실패하는지 분석했습니다. 영상이 생성된다는 사실만으로 학습 데이터로서 유용하다고 볼 수 없으므로, action MAE와 Good/Bad rollout을 함께 살펴 데이터 선별 및 모델 튜닝의 단서를 찾았습니다.</p>
   </div>
-  <h2 class="section-title"><span class="num">S ·</span> Problem Definition</h2>
+  <div class="article-intro"><strong>요약.</strong> SO-100의 초기 프레임과 joint-action 시퀀스를 조건으로 미래 영상을 생성하는 과제에서, 사전학습 모델과 태스크 액션 표현의 mismatch를 분석했습니다. Action Injection, LoRA, EE-Delta 재표현, checkpoint selection을 단계적으로 실험해 리더보드 성능을 개선했습니다. 생성 영상이 실제 정책 학습에 유효한지는 이 프로젝트에서 검증 범위에 포함되지 않았습니다.</div>
+  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">연구 문제</a><a href="#objective">목표</a><a href="#approach">방법 개요</a><a href="#experiments">실험</a><a href="#outcome">결과</a><a href="#future">한계와 후속 연구</a></nav>
+  <div class="article-section">
+  <h2 class="section-title" id="problem">01 · Research Problem — Action-conditioned Prediction</h2>
   <div class="card-block">
     <p>2026 INHA AI Challenge (Dacon 236736)는 로봇의 <b>첫 프레임과 joint-action 시퀀스</b>가 주어졌을 때 미래 프레임을 예측하는 <b>action-conditioned video generation world model</b>을 요구했다. 채점식은 <span style="font-family:'JetBrains Mono',monospace;">0.3·(1&minus;DINO_cos) + 0.3·(1&minus;VideoR3D_cos) + 0.4·Action_MAE</span> (lower better).</p>
     <p style="margin-top:10px;">기반 모델 Cosmos-Predict3-Nano는 프리트레인 시 사용된 <b>action distribution</b>과 태스크의 절대 joint-angle 표현 사이에 방향성 불일치가 있었고, LoRA 소자 튜닝만으로는 리더보드에서 유의한 개선을 얻기 어려웠다. 또 SO-100 도메인 자체의 <b>train/eval action 분포 편차</b>가 있어 데이터 이해가 사전에 필요했다.</p>
@@ -76,7 +79,7 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Technical Objective</h2>
+  <h2 class="section-title" id="objective">02 · Technical Objectives</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>Cosmos3-Nano에 <b>SO-100 액션 토큰</b>을 흘려 넣을 경로를 만든다.</li>
@@ -85,7 +88,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title">핵심 접근</h2>
+  <h2 class="section-title" id="approach">03 · Method Overview</h2>
   <div class="card-block">
     <ul>
       <li>SO-100 train/eval action 분포를 EDA로 비교해, 모델 선택과 액션 표현 설계의 기준을 세웠습니다.</li>
@@ -95,7 +98,7 @@
   </div>
   <details class="technical-details">
     <summary>모델 선택·액션 설계·파인튜닝 상세 보기</summary>
-  <h2 class="section-title"><span class="num">A ·</span> Design Decisions &amp; Experiments</h2>
+  <h2 class="section-title" id="experiments">04 · Design Decisions &amp; Experiments</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
       최종 최고 성능 모델 (<b>Cosmos3-Nano · v5_base(EE-delta 40k) · LoRA rank 32 · +ANCHORED_soft · B4 sweep step 6000</b>) 기준. 각 방법은 <b>가설(왜 도움 될 것으로 예상했는가) → 결과(어떤 metric이 얼마나 움직였는가)</b> 형식으로 정리.
@@ -112,7 +115,7 @@
 
   </details>
 
-  <h2 class="section-title"><span class="num">R ·</span> Evaluation &amp; Outcome</h2>
+  <h2 class="section-title" id="outcome">05 · Evaluation &amp; Results</h2>
   <div class="card-block">
     <div class="kpi-grid">
       <div class="kpi-tile">
@@ -196,7 +199,7 @@
       </table>
     </div>
     <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
-      * 11개 실측 데이터포인트 회귀식 <span style="font-family:'JetBrains Mono',monospace;">LB ≈ 0.2404 &minus; 0.1511·vid_l2 + 0.0077·dino_l2 + <b>2.804·act_mae</b> + 0.788·act_diff</span> (n=10, R² = 0.993). <b>act_mae 항이 사실상 단독 dominant</b>였음을 정량 확인.
+      * 실측 데이터 기반 회귀 분석 <span style="font-family:'JetBrains Mono',monospace;">LB ≈ 0.2404 &minus; 0.1511·vid_l2 + 0.0077·dino_l2 + <b>2.804·act_mae</b> + 0.788·act_diff</span> (n=10, R² = 0.993). <b>act_mae 항이 사실상 단독 dominant</b>였음을 정량 확인.
     </p>
 
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">vs DreamZero &mdash; 학습·추론 시간 (같은 A6000 Ada 기준)</h3>
@@ -272,8 +275,9 @@
   </div>
 
   <details class="technical-details">
-    <summary>추가 해석: Forward Dynamics의 로봇 시스템 내 활용</summary>
-  <h2 class="section-title">Forward Dynamics의 실전 의의 &mdash; 챌린지를 넘어</h2>
+    <summary>한계와 후속 연구: Forward Dynamics의 활용 가능성</summary>
+  <h2 class="section-title" id="future">06 · Limitations &amp; Future Work — Forward Dynamics</h2>
+  <p class="note-line"><b>범위 구분:</b> 아래 MPC·MCTS·Model-based RL 관련 내용은 이번 챌린지에서 구현·검증한 기능이 아니라, action-conditioned prediction이 향후 연결될 수 있는 활용 방향을 정리한 것입니다.</p>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       본 챌린지가 다루는 것은 "<b>첫 프레임과 액션 시퀀스가 주어졌을 때 미래 프레임을 예측</b>"하는 forward dynamics 문제. 이것이 실제 로봇 스택에서 어떤 위치를 차지하는지 정리한다.
@@ -286,6 +290,7 @@
     </ul>
   </div>
   </details>
+  </div>
 </section>
 
 <div class="pager">
