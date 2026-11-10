@@ -130,46 +130,61 @@
             <li><b>On-device Agent &amp; Retrieval:</b> <a href="projects/project-05.html">SMIM</a>은 다른 프로젝트와 억지로 연결하기보다 독립적인 Agent 연구 사례로 제시합니다. 문장 유사도와 맥락적 유용성의 차이를 문제로 정의하고, 외부 네트워크·API 없이 동작하는 로컬 환경에서 후보 검색과 LLM 기반 추천 판단의 품질·비용을 함께 고민했습니다.</li>
           </ul>
         </div>
-        <div class="project-filters" role="group" aria-label="프로젝트 분야 필터">
-          <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">All</button>
-          <button class="filter-btn" type="button" data-filter="cv" aria-pressed="false">CV</button>
-          <button class="filter-btn" type="button" data-filter="vla" aria-pressed="false">VLA</button>
-          <button class="filter-btn" type="button" data-filter="world-model" aria-pressed="false">World Model</button>
-          <button class="filter-btn" type="button" data-filter="agent" aria-pressed="false">Agent</button>
-        </div>
-        <div class="project-gallery">
-          <a class="project-card" data-category="world-model" href="projects/project-03.html">
-            <div class="project-thumb"><img src="assets/p03/eval_samples.png" alt="SO-100 action-conditioned rollout 데이터 예시"></div>
-            <div class="project-card-body"><div class="project-meta"><span>WORLD MODEL</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p>SO-100 joint-action 기반 미래 프레임 예측. EDA를 바탕으로 액션 표현과 주입 구조를 재설계.</p><div class="project-foot"><span>2026 INHA AI Challenge · Independent</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="agent" href="projects/project-05.html">
-            <div class="project-thumb"><img src="assets/p05/overview.png" alt="SMIM 시스템 개요"></div>
-            <div class="project-card-body"><div class="project-meta"><span>AGENT</span><time>2026.07 — 2026.08</time></div><h3>SMIM · On-Device Personal Memory Agent</h3><p>작성 중인 맥락을 감지해 개인 문서에서 근거가 있는 기억을 검색·제안하는 온디바이스 Agent.</p><div class="project-foot"><span>SW중심대학 디지털 경진대회</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="cv" href="projects/project-02.html">
-            <div class="project-thumb"><img src="assets/p02/overview.png" alt="건설안전 검출 및 세미오토 라벨링 파이프라인"></div>
-            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p>모델보다 데이터가 병목인 롱테일 검출 문제를 데이터셋 재구성과 반복 라벨링 파이프라인으로 개선.</p><div class="project-foot"><span>HDC LABS · AI Researcher</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="cv" href="projects/project-01.html">
-            <div class="project-thumb project-thumb-placeholder"><span>CV</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2026.03 — 2026.05</time></div><h3>Smart-Elevator CCTV Auto-Labeling</h3><p>4K 탑뷰 영상 라벨링 도구와 segmentation 모델을 결합한 자동화 파이프라인.</p><div class="project-foot"><span>현대엘리베이터 협력</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="cv" href="projects/project-08.html">
-            <div class="project-thumb project-thumb-placeholder"><span>VLM</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION · VLM</span><time>2026.03.01 — 2026.08.31</time></div><h3>VLM Video Action Recognition</h3><p>Qwen3-VL 영상 이해, OOM 대응을 위한 입력 최적화 및 대규모 배치 처리.</p><div class="project-foot"><span>HDC LABS · AI Research</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="vla" href="projects/project-04.html">
-            <div class="project-thumb project-thumb-placeholder"><span>VLA</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>VLA</span><time>2025.07 — 2026.03</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p>SO-101 teleoperation 시연 수집부터 정책 학습과 실기 closed-loop 평가까지.</p><div class="project-foot"><span>RILS Lab · Team Leader</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="vla" href="projects/project-06.html">
-            <div class="project-thumb project-thumb-placeholder"><span>ROBOTICS</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>ROBOTICS</span><time>2025.08 — 2025.12</time></div><h3>Dynamic Obstacle-Aware Path Replanning</h3><p>UR5e 시뮬레이션에서 동적 장애물 감지와 궤적 재계획을 연결.</p><div class="project-foot"><span>인공지능종합설계 · Team Member</span><b>상세 보기 ↗</b></div></div>
-          </a>
-          <a class="project-card" data-category="cv" href="projects/project-07.html">
-            <div class="project-thumb project-thumb-placeholder"><span>SEGMENTATION</span></div>
-            <div class="project-card-body"><div class="project-meta"><span>COMPUTER VISION</span><time>2025.04 — 2025.09</time></div><h3>Image Auto-Labeling · Mowed / Unmowed</h3><p>GPT-4o-mini와 SAM을 활용한 자율 예초 로봇 영상의 픽셀 단위 라벨 생성.</p><div class="project-foot"><span>KIRO 산학협력</span><b>상세 보기 ↗</b></div></div>
-          </a>
+        <div class="project-showcase" aria-label="주요 프로젝트 쇼케이스">
+          <div class="showcase-toolbar">
+            <span class="showcase-kicker">SELECTED PROJECTS · 01—04</span>
+            <div class="showcase-controls"><span class="showcase-count" aria-live="polite"><b id="showcaseCurrent">01</b> / 04</span><button type="button" class="showcase-arrow" id="showcasePrev" aria-label="이전 프로젝트">←</button><button type="button" class="showcase-arrow" id="showcaseNext" aria-label="다음 프로젝트">→</button></div>
+          </div>
+          <div class="showcase-track" id="showcaseTrack" tabindex="0" aria-label="프로젝트를 좌우로 넘겨보세요">
+            <article class="showcase-slide" data-project="01">
+              <a class="showcase-visual" href="projects/project-01.html"><img src="assets/p01/overview.png" alt="Smart-Elevator CCTV 자동 라벨링 시스템 아키텍처"><span class="showcase-visual-caption">COMPUTER VISION · SEGMENTATION</span></a>
+              <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 01</span><time>2026.03 — 2026.05</time></div><h3>Smart-Elevator CCTV Auto-Labeling</h3><p class="showcase-lead">탑뷰 4K CCTV의 도메인 차이와 SAM2 propagation drift를 해결하기 위해, 세그멘테이션 모델·마스크 프롬프팅·웹 라벨링 도구를 하나의 파이프라인으로 연결했습니다.</p>
+                <div class="showcase-star">
+                  <div><b>S · Situation</b><p>COCO 계열 사전학습 모델과 다른 탑뷰 영상에서 검출 성능과 라벨링 효율이 병목이 됐습니다.</p></div>
+                  <div><b>T · Task</b><p>탑뷰 특화 검출, 안정적인 마스크 전파, 사람 검수와 재학습이 이어지는 환경을 구축했습니다.</p></div>
+                  <div><b>A · Action</b><p>YOLO11m-seg 파인튜닝, Polygon-Mask Prompting, Active Learning, FastAPI·React 기반 도구를 구현했습니다.</p></div>
+                  <div><b>R · Result</b><p>Tracking IoU +55.4pp, 클릭 7→2회/프레임, 60프레임 라벨링 30→4분을 기록했습니다.</p></div>
+                </div><a class="showcase-detail-link" href="projects/project-01.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+              </div>
+            </article>
+            <article class="showcase-slide" data-project="02">
+              <a class="showcase-visual" href="projects/project-02.html"><img src="assets/p02/overview.png" alt="건설현장 안전 검출 및 반자동 라벨링 파이프라인"><span class="showcase-visual-caption">COMPUTER VISION · LONG-TAIL DETECTION</span></a>
+              <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 02</span><time>2026.06 — 2026.08</time></div><h3>Construction Safety · Semi-Auto Labeling</h3><p class="showcase-lead">소수 클래스 성능 저하와 프레임 단위 평가 누수를 진단하고, 데이터 구성부터 모델 앙상블·배포 최적화까지 반복 개선한 건설현장 CCTV 파이프라인입니다.</p>
+                <div class="showcase-star">
+                  <div><b>S · Situation</b><p>펌프카·RMC 등 희소 클래스 성능이 낮았고, 기존 validation 지표가 실제 운영 성능을 과대평가했습니다.</p></div>
+                  <div><b>T · Task</b><p>장면 단위 평가 체계와 롱테일 데이터·모델 개선 전략을 수립했습니다.</p></div>
+                  <div><b>A · Action</b><p>Scene-level split, 클래스 스킴 재설계, SAM2 합성 데이터, YOLO 실험, WBF·ReID 및 TensorRT 변환을 수행했습니다.</p></div>
+                  <div><b>R · Result</b><p>v1 배포본 운영, v2 WBF mAP@0.5 0.670, TensorRT FP16 3.9× 추론 가속을 확보했습니다. 평가지표별 조건은 상세 페이지에 구분했습니다.</p></div>
+                </div><a class="showcase-detail-link" href="projects/project-02.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+              </div>
+            </article>
+            <article class="showcase-slide" data-project="03">
+              <a class="showcase-visual" href="projects/project-03.html"><img src="assets/p03/eval_samples.png" alt="SO-100 첫 프레임과 action 시퀀스 데이터 예시"><span class="showcase-visual-caption">PHYSICAL AI · WORLD MODEL</span></a>
+              <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 03</span><time>2026.07 — 2026.08</time></div><h3>Action-Conditioned Video Generation World Model</h3><p class="showcase-lead">SO-100의 초기 프레임과 액션 시퀀스로 미래 프레임을 예측하기 위해 Cosmos-Predict3-Nano의 액션 입력 경로와 표현을 재설계했습니다.</p>
+                <div class="showcase-star">
+                  <div><b>S · Situation</b><p>기반 모델의 action 표현과 SO-100 joint-action 분포 사이에 mismatch가 있었고 train/eval 분포 차이도 관찰됐습니다.</p></div>
+                  <div><b>T · Task</b><p>액션 조건을 모델에 주입하고, 도메인에 맞는 표현·파인튜닝·checkpoint 선택 절차를 찾았습니다.</p></div>
+                  <div><b>A · Action</b><p>Action Injection, LoRA rank 32, EE-Delta 표현, anchoring 및 checkpoint sweep을 실험했습니다.</p></div>
+                  <div><b>R · Result</b><p>최종 리더보드 0.2407, 안전본 0.24524를 기록했습니다. 정책 학습 효용은 별도 검증 과제로 남겼습니다.</p></div>
+                </div><a class="showcase-detail-link" href="projects/project-03.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+              </div>
+            </article>
+            <article class="showcase-slide" data-project="04">
+              <a class="showcase-visual" href="projects/project-04.html"><img src="assets/p04/overview.png" alt="SO-101 양팔 로봇 teleoperation 및 VLA 파이프라인"><span class="showcase-visual-caption">PHYSICAL AI · VLA IMITATION LEARNING</span></a>
+              <div class="showcase-content"><div class="showcase-meta"><span>PROJECT 04</span><time>2025.07 — 2026.03</time></div><h3>Bi-manipulator VLA Imitation Learning</h3><p class="showcase-lead">SO-101 양팔 로봇에서 teleoperation 시연 수집과 정책 학습·실기 평가를 경험하고, 시각·기하·로봇 상태 정보를 함께 다루는 입력 구조를 탐색했습니다.</p>
+                <div class="showcase-star">
+                  <div><b>S · Situation</b><p>양팔 조작에서는 카메라 시점과 로봇 상태를 함께 고려해야 하며, 실제 시연 데이터 확보에도 시간과 장비가 필요했습니다.</p></div>
+                  <div><b>T · Task</b><p>실기 시연 수집·큐레이션과 VLA 정책 학습·평가 흐름을 구성했습니다.</p></div>
+                  <div><b>A · Action</b><p>SO-101 teleoperation, 다중 카메라·proprioception 융합, Point-Cloud/FPS 기반 입력 구조를 적용했습니다.</p></div>
+                  <div><b>R · Result</b><p>시연 수집부터 closed-loop 평가까지의 파이프라인을 수행했습니다. 입력 구조의 성능 개선은 정량 비교가 추가로 필요합니다.</p></div>
+                </div><a class="showcase-detail-link" href="projects/project-04.html">기술 상세 및 실험 기록 보기 <span>↗</span></a>
+              </div>
+            </article>
+          </div>
+          <div class="showcase-pagination" id="showcasePagination" aria-label="프로젝트 선택">
+            <button type="button" class="showcase-dot active" data-slide="0" aria-label="프로젝트 1 보기" aria-current="true"></button><button type="button" class="showcase-dot" data-slide="1" aria-label="프로젝트 2 보기"></button><button type="button" class="showcase-dot" data-slide="2" aria-label="프로젝트 3 보기"></button><button type="button" class="showcase-dot" data-slide="3" aria-label="프로젝트 4 보기"></button>
+          </div>
+          <div class="showcase-next-batch"><span>다음 프로젝트</span><a href="projects/project-05.html">SMIM · On-Device Memory Agent</a><a href="projects/project-06.html">Dynamic Obstacle-Aware Replanning</a><a href="projects/project-07.html">Image Auto-Labeling</a><a href="projects/project-08.html">VLM Video Action Recognition</a><small>다음 작업 단계에서 동일한 쇼케이스와 기술 아티클 형식으로 확장합니다.</small></div>
         </div>
       </div>
     </section>
@@ -500,20 +515,44 @@
 </script>
 
 <script>
-document.querySelectorAll('.project-filters .filter-btn').forEach((button) => {
-  button.addEventListener('click', () => {
-    const filter = button.dataset.filter;
-    document.querySelectorAll('.project-filters .filter-btn').forEach((item) => {
-      const active = item === button;
-      item.classList.toggle('active', active);
-      item.setAttribute('aria-pressed', String(active));
+(function () {
+  const track = document.getElementById('showcaseTrack');
+  if (!track) return;
+  const slides = Array.from(track.querySelectorAll('.showcase-slide'));
+  const dots = Array.from(document.querySelectorAll('.showcase-dot'));
+  const current = document.getElementById('showcaseCurrent');
+  const previous = document.getElementById('showcasePrev');
+  const next = document.getElementById('showcaseNext');
+  let activeIndex = 0;
+  function goTo(index) {
+    activeIndex = Math.max(0, Math.min(slides.length - 1, index));
+    slides[activeIndex].scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest', inline: 'start' });
+    update();
+  }
+  function update() {
+    const width = track.clientWidth || 1;
+    activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / width)));
+    if (current) current.textContent = String(activeIndex + 1).padStart(2, '0');
+    dots.forEach((dot, index) => {
+      const active = index === activeIndex;
+      dot.classList.toggle('active', active);
+      if (active) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
     });
-    document.querySelectorAll('.project-card').forEach((card) => {
-      const categories = card.dataset.category.split(' ');
-      card.hidden = filter !== 'all' && !categories.includes(filter);
-    });
+    if (previous) previous.disabled = activeIndex === 0;
+    if (next) next.disabled = activeIndex === slides.length - 1;
+  }
+  previous?.addEventListener('click', () => goTo(activeIndex - 1));
+  next?.addEventListener('click', () => goTo(activeIndex + 1));
+  dots.forEach((dot) => dot.addEventListener('click', () => goTo(Number(dot.dataset.slide))));
+  track.addEventListener('scroll', () => window.requestAnimationFrame(update), { passive: true });
+  track.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(activeIndex - 1); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); goTo(activeIndex + 1); }
   });
-});
+  window.addEventListener('resize', update, { passive: true });
+  update();
+})();
 </script>
 </body>
 </html>
