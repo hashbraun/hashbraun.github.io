@@ -718,7 +718,7 @@ section {
 }
 
 /* Research-oriented project gallery */
-.hero-statement { font-size:1.12rem; font-weight:450; letter-spacing:-.02em; line-height:1.85; margin-bottom:12px !important; color:var(--ink); }
+.hero-statement { font-size:1rem; font-weight:450; letter-spacing:-.02em; line-height:1.85; margin-bottom:12px !important; color:var(--ink); }
 .hero-statement strong { font-weight:760; color:var(--ink); }
 .github-link svg { width:17px; height:17px; display:block; }
 .projects-intro { color:var(--sub); margin:0 0 18px; }
@@ -1521,7 +1521,7 @@ section {
 }
 
 /* Research-oriented project gallery */
-.hero-statement { font-size:1.12rem; font-weight:450; letter-spacing:-.02em; line-height:1.85; margin-bottom:12px !important; color:var(--ink); }
+.hero-statement { font-size:1rem; font-weight:450; letter-spacing:-.02em; line-height:1.85; margin-bottom:12px !important; color:var(--ink); }
 .hero-statement strong { font-weight:760; color:var(--ink); }
 .github-link svg { width:17px; height:17px; display:block; }
 .projects-intro { color:var(--sub); margin:0 0 18px; }
