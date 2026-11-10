@@ -841,3 +841,9 @@ section {
   .article-main .article-toc { flex-direction:row; flex-wrap:wrap; gap:4px 8px; }
   .article-main .article-toc a { padding:7px 9px; font-size:.78rem; }
 }
+
+.result-context { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:14px 0 20px; }
+.result-context > div { padding:14px 16px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.result-context b { display:block; margin-bottom:7px; color:var(--ink); font-size:.92rem; }
+.result-context p { margin:0; color:var(--sub); font-size:.84rem; line-height:1.7; }
+@media(max-width:820px) { .result-context { grid-template-columns:1fr; } }
