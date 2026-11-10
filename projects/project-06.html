@@ -148,8 +148,10 @@
       <li>Perception &mdash; <b>OctoMap (MoveIt OccupancyMapUpdater)</b>, Planning Scene 실시간 반영</li>
       <li>Robot &mdash; <b>UR5e (6-DOF, Gazebo Sim)</b>, JointTrajectory Controller</li>
       <li>Team &mdash; 양태훈 (데이터사이언스) · 오상민 (AI) · 조윤재 (AI) — 인공지능종합설계 팀프로젝트</li>
-    </ul><h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
-  <div class="card-block">
+    </ul>
+
+  <h2 class="section-title" id="reflection">06 · Limitations &amp; Reflection</h2>
+  
     <p>현재 구현은 깊이 영상에서 점유 지도를 만들고, 지도 변화 이벤트를 기준으로 정지·후퇴·재계획·재개를 연결한 Gazebo 시뮬레이션 시스템입니다. 학습된 World Model이나 동적 객체 추적 모델을 구현한 프로젝트는 아닙니다. 또한 bytes-diff는 지도 변경량을 이용한 간접 지표이므로, 복셀 갱신량과 실제 충돌 위험이 항상 일치하지 않습니다.</p>
     <p style="margin-top:10px;">후속 개선에서는 지도 변화량만 감시하는 방식에서 벗어나 변경된 복셀의 공간 위치와 계획 궤적의 충돌 구간을 함께 확인하고, 임계값 민감도 및 오탐·미탐을 별도 평가할 필요가 있습니다. 실제 UR5e와 깊이 센서에서의 지연·정지 거리·재계획 성공률도 시뮬레이션 결과와 분리해 검증해야 합니다.</p>
 
