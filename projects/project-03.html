@@ -81,7 +81,7 @@
   <div class="card-block">
     <p>기반 모델 후보를 고를 때는 생성 품질뿐 아니라 액션 조건을 모델 내부에 연결할 수 있는지, 학습 자원과 추론 시간이 과제 규모에 적합한지를 함께 고려했습니다. Cosmos-Predict3-Nano는 비교 대상인 DreamZero(Wan2.1-I2V-14B)보다 작은 8B급 백본을 사용하고, 액션과 영상 정보를 함께 다루는 구조여서 제한된 실험 자원 안에서 액션 조건부 예측을 검증하기에 적합하다고 판단했습니다.</p>
     <h3 class="article-subtitle">학습 시간과 추론 경로 비교</h3>
-    <p>동일한 A6000 Ada 환경에서 비교한 기록상 Cosmos3-Nano는 10k step 환산 학습 시간이 약 1.25시간이었고, DreamZero는 약 12시간이었습니다. DreamZero의 216개 샘플 추론은 33분 48초(샘플당 약 9.4초)가 소요됐습니다. Cosmos3-Nano는 latent 공간에서 액션과 영상 생성을 함께 처리하는 구조이며, DreamZero는 Wan2.1-I2V-14B 백본을 사용해 여러 chunk를 순차 생성하는 경로였습니다. 실험 예산과 전체 샘플 평가 시간을 함께 고려해 Cosmos3-Nano를 주 실험 모델로 선택하고, 이후에는 백본 교체보다 액션 입력 경로와 표현을 개선하는 데 집중했습니다.</p>
+    <p>동일한 A6000 Ada 환경에서 비교한 기록상 Cosmos3-Nano는 10k step 환산 학습 시간이 약 1.25시간이었고, DreamZero는 약 12시간이었습니다. DreamZero의 216개 샘플 추론은 33분 48초(샘플당 약 9.4초)가 소요됐습니다. Cosmos3-Nano는 latent 공간에서 액션과 영상 생성을 함께 처리하는 구조이며, DreamZero는 Wan2.1-I2V-14B 백본을 사용해 여러 chunk를 순차 생성하는 경로였습니다. 학습 자원과 액션 조건을 처리하는 모델 구조를 고려해 Cosmos3-Nano를 주 실험 모델로 선택했습니다. 이후에는 백본 교체보다 액션 입력 경로와 표현을 개선하는 데 집중했습니다.</p>
     <h3 style="margin-top:16px; font-size:1.05rem; color:var(--ink);">DreamZero와의 학습·추론 시간 비교 (A6000 Ada)</h3>
     <div style="overflow-x:auto; margin-top:10px;">
       <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
@@ -138,7 +138,7 @@
     <h3 class="article-subtitle">LoRA로 학습 범위와 자원 사용 조정</h3>
     <p>8B급 백본 전체를 업데이트하는 방식은 실험에 필요한 GPU 메모리와 학습 시간이 커질 수 있어, attention 및 MLP projection에 rank 32 LoRA를 적용했습니다. 구체적으로 <code>add_q/k/v_proj</code>, <code>to_add_out</code>, <code>gate/up/down_proj</code>에 LoRA를 연결해 사전학습 가중치를 대부분 유지하면서 액션-영상 정렬에 필요한 파라미터를 학습했습니다.</p>
     <p style="margin-top:10px;">학습 설정만큼 추론 환경도 병목이었습니다. Blackwell 환경에서 기존 PyTorch 2.6 + CUDA 12.4 조합은 해당 GPU 아키텍처 커널을 지원하지 않아 별도 환경을 구성했습니다. RTX PRO 6000 Blackwell 95GB에 맞춰 PyTorch nightly CUDA 13.0 환경을 만들었고, diffusion step 처리 시간은 약 11초에서 1.5초로 줄어 약 7배 빨라졌습니다.</p>
-    <p style="margin-top:10px;">학습 시간과 추론 시간은 비교 기준을 혼동하지 않도록 구분했습니다. 아래 DreamZero 비교표는 동일한 A6000 Ada 기준의 측정이며, Blackwell의 7배 개선은 별도 추론 환경 이관 결과입니다.</p>
+    <p style="margin-top:10px;">아래 비교표의 학습 시간과 DreamZero 추론 시간은 동일한 A6000 Ada 환경에서 확인한 기록입니다. Cosmos3-Nano의 216개 샘플 전체 추론 시간은 기록을 확인하지 못해 공란 대신 미측정으로 표시했습니다. Blackwell의 diffusion step 단축 결과는 별도 하드웨어 환경에서 측정한 최적화 결과입니다.</p>
   </div>
 
   <h2 class="section-title" id="outcome">07 · Evaluation &amp; Results</h2>
@@ -147,7 +147,7 @@
       <div class="kpi-tile">
         <div class="k-label">Final Submission Score</div>
         <div class="k-value">0.2407</div>
-        <div class="k-sub">B4 training sweep · step 6000 checkpoint</div>
+        <div class="k-sub">B4 · 최종 제출 체크포인트</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">Action MAE (Injection)</div>
@@ -223,7 +223,7 @@
   <h2 class="section-title" id="retrospective">08 · Retrospective — 액션 표현과 생성 결과의 정렬</h2>
   <div class="card-block">
     <p>이번 프로젝트에서 가장 큰 개선은 모델 규모를 키우는 것이 아니라, 사전학습 모델의 액션 입력 구조와 SO-100 데이터의 표현 차이를 찾아 조정한 데서 나왔습니다. Action Injection으로 액션 특징이 영상 생성 경로에 들어가도록 연결했지만, 절대 관절 각도를 그대로 사용한 실험은 초기 모델보다 점수가 나빠졌습니다. 이후 EE-Delta와 Gripper 정규화를 적용하자 점수가 0.2454로 개선됐고, 최종 B4 step 6000 체크포인트는 0.2407을 기록했습니다.</p>
-    <p style="margin-top:10px;">또한 216개 rollout을 Action MAE로 정렬해 실제 영상을 비교하면서, 평균 점수만으로는 드러나지 않는 실패 조건을 확인했습니다. 큰 Gripper 이동이나 배경 물체가 많은 장면에서 액션 오차와 후반부 영상의 불안정성이 함께 커지는 경향이 나타났습니다. 이는 모델 적응 과정에서 액션 표현을 데이터 분포에 맞추는 일과, 전체 평균 지표뿐 아니라 샘플별 실패 사례를 함께 확인하는 일이 중요하다는 점을 보여줍니다.</p>
+    <p style="margin-top:10px;">216개 rollout을 Action MAE 순으로 정렬해 비교한 결과, 큰 Gripper 이동이나 배경 물체가 많은 장면에서 액션 예측 오차가 높아지고 후반부 영상의 안정성이 낮아지는 경향을 확인했습니다. 따라서 평균 점수만으로 모델을 판단하기보다 액션 오차와 생성 영상을 함께 분석해 취약한 입력 조건을 찾는 과정이 중요했습니다.</p>
     <p style="margin-top:10px;">이 프로젝트의 성과는 로봇 제어 정책을 완성하거나 생성 영상을 실제 정책 학습에 검증한 것이 아니라, 사전학습 비디오 생성 모델을 로봇 액션 조건에 맞게 적응시키고 평가 데이터의 실패 양상을 분석한 데 있습니다. 앞선 SO-101 VLA 시연 수집 경험에서 출발한 데이터 효율성 문제를, 별도의 SO-100 데이터셋을 이용한 action-conditioned 미래 영상 예측과 모델 적응 실험으로 확장했습니다.</p>
   </div>
   </div>
