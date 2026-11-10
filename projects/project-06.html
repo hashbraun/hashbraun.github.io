@@ -50,7 +50,8 @@
 <section>
   <div class="detail-article-layout">
     <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem Definition</a><a href="#scope">Scope &amp; Design Goals</a><a href="#implementation">System Design &amp; Implementation</a><a href="#decisions">Design Decisions</a><a href="#results">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a></nav></aside>
-     <div class="media">
+    <main class="article-main">
+  <div class="media">
     <img src="../assets/p06/overview.png"
          alt="System Overview — Depth Camera → PointCloud → OctoMap → Planning Scene → MoveIt2/OMPL → JointTrajectory Controller → UR5e (Gazebo), with reactive replan feedback loop" />
       <p class="media-caption">깊이 카메라 관측을 점유 지도로 변환해 경로 계획에 반영하고, 지도 변화 이벤트에 따라 정지·후퇴·재계획·재개를 수행하는 흐름입니다.</p>
