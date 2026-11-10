@@ -208,9 +208,9 @@
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">2. AIHub partial-label 회귀 진단</h3>
     <ul style="padding-left:18px;color:var(--gray-700);">
-      <li>후속 실험 1 (mixed 학습)에서 person <span class="warn" style="color:#b45309;">-3%</span> · fork lift <span class="warn" style="color:#b45309;">-7%</span> 회귀 관측.</li>
-      <li>원인: AIHub 237 라벨은 excavator만 존재 · 프레임 속 unlabeled person이 background로 학습되어 검출 억제.</li>
-      <li>대응: <b>SAM2 마스크 기반 crop 합성 파이프라인</b> (외형만 흡수, 환경은 PoC) — pre_extracted_bg 오염 77장 중 53장 발견 → 제외.</li>
+      <li>후속 실험 1에서 외부 데이터를 혼합해 학습한 결과, person 성능은 3%p, fork lift 성능은 7%p 하락했습니다.</li>
+      <li>원인은 AIHub 데이터의 237개 라벨이 excavator에만 부여되어 있었다는 점입니다. 라벨이 없는 person 객체가 학습 과정에서 background로 처리되면서 person 검출을 억제했습니다.</li>
+      <li>이에 <b>SAM2 마스크 기반 crop 합성 파이프라인</b>을 적용했습니다. 중장비의 외형은 합성 데이터로 보강하되 배경은 PoC CCTV 장면을 유지했으며, <code>pre_extracted_bg</code>에서 오염된 이미지 77장 중 53장을 확인해 학습 대상에서 제외했습니다.</li>
     </ul>
 
     <div class="media" style="margin-top:14px;">
@@ -518,9 +518,9 @@ Cache JSON (extended schema)
 
       <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">Multi-attribute head가 12-class 재학습보다 안전한 이유</h4>
       <ul style="padding-left:18px;color:var(--gray-700);">
-        <li><b>Detection 안정성 보전</b> — person 검출은 1차 운영 모델 성능 그대로 유지. signalman 판정은 별도 head 가 담당 → attribute 학습 실패해도 detection 은 살아있음.</li>
-        <li><b>학습 시간 · 데이터 부담 최소</b> — backbone freeze, last-block+FC 만 fine-tune. 원본 signalman 라벨(cls=8)을 IoU 매칭으로 <b>자동 회수</b> — 별도 라벨링 작업 없음.</li>
-        <li><b>v0 12-class 실패의 재발 방지</b> — 예전엔 signalman 소수 클래스 학습 시 person recall 이 같이 하락했음. attribute 방식은 detection 과 attribute 를 loss 상 분리하기 때문에 이 위험이 없음.</li>
+        <li><b>기본 검출 성능 보전</b> — person 검출은 1차 운영 모델을 유지하고, signalman 여부는 별도의 attribute head가 판정하도록 분리했습니다. 따라서 속성 분류 학습이 실패하더라도 기본 person 검출 경로는 영향을 받지 않습니다.</li>
+        <li><b>학습 시간과 데이터 라벨링 부담 감소</b> — Backbone을 고정하고 마지막 블록과 FC 계층만 미세 조정했습니다. 기존 signalman 라벨(cls=8)은 IoU 매칭으로 자동 수집해 별도의 수작업 라벨링을 줄였습니다.</li>
+        <li><b>12-class 통합 학습에서 발생한 회귀 방지</b> — 이전에는 signalman 소수 클래스를 함께 학습할 때 person recall도 함께 하락했습니다. 별도의 attribute head를 사용하면 detection과 attribute 분류의 학습 손실을 분리할 수 있어 이러한 성능 저하 위험을 줄일 수 있습니다.</li>
       </ul>
 
       <h4 style="margin-top:18px;font-size:0.95rem;color:var(--gray-900);">시각 안정화 4단계 반복 (실패 → 원인 → 대응)</h4>
@@ -716,9 +716,9 @@ Cache JSON (extended schema)
   <h2 class="section-title" id="conclusion">08 · Conclusion &amp; Future Work</h2>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
-      <li>이전 mAP 95%는 프레임 단위 split으로 leakage가 새서 부풀린 수치였다. 씬 단위 학습에서 제외한 영상으로 재정립한 0.6대가 실제 성능이었다.</li>
+      <li>프레임 단위 분할에서 기록한 mAP 약 95%는 동일 영상의 인접 프레임이 학습과 평가에 함께 포함된 데이터 누수로 인해 높게 측정된 결과였습니다. 영상 단위로 분리한 평가에서는 mAP가 약 0.4~0.6 수준으로 낮아졌으며, 이후에는 이 평가 방식을 기준으로 일반화 성능을 판단했습니다.</li>
       <li>외부 데이터를 그대로 편입했더니 라벨 온톨로지가 달라 unlabeled 객체가 background로 학습되면서 person·fork lift 성능이 오히려 낮아졌습니다. SAM2 crop 합성으로 객체 외형만 활용하고 배경은 CCTV 환경을 유지하는 방식으로 대응했습니다.</li>
-      <li>씬 다양성을 5배(32→155)로 늘린 실험은 하이퍼파라미터 튜닝보다 큰 개선 폭(+14%p)을 보였습니다.</li>
+      <li>학습 장면 수를 32개에서 155개로 약 5배 늘린 실험에서는 하이퍼파라미터 조정보다 큰 폭인 14%p의 성능 개선을 확인했습니다.</li>
       <li>Codex의 파라미터 제안과 회귀 감지 규칙을 결합해 약 4시간이 소요되는 실패 학습을 자동으로 식별하고, 후속 실험에 반영하지 않도록 관리했습니다.</li>
       <li>학습에서 제외한 영상은 모델 선택과 일반화 성능 확인에 사용했습니다. 최종 배포 모델은 설정을 결정한 뒤 확보한 데이터를 모두 사용해 다시 학습했습니다.</li>
       <li>Signalman처럼 소수 속성에 해당하는 항목은 detection head를 다시 학습하기보다 <b>attribute head를 분리해 학습</b>하는 편이 안전했습니다. 이를 통해 기본 검출 성능을 보전하고, 속성 학습이 실패했을 때의 대체 경로를 명확히 했습니다.</li>
