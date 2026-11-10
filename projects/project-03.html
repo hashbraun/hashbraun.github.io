@@ -48,6 +48,9 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">연구 문제</a><a href="#objective">목표</a><a href="#approach">방법 개요</a><a href="#experiments">실험</a><a href="#outcome">결과</a><a href="#future">한계와 후속 연구</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p03/eval_samples.png"
@@ -63,7 +66,6 @@
     <p style="margin-top:8px;">이번 프로젝트에서는 별도의 SO-100 데이터셋으로 생성 영상을 만들고, 생성 결과를 직접 재생·비교해 모델이 어떤 행동 조건에서 안정적이거나 실패하는지 분석했습니다. 영상이 생성된다는 사실만으로 학습 데이터로서 유용하다고 볼 수 없으므로, action MAE와 Good/Bad rollout을 함께 살펴 데이터 선별 및 모델 튜닝의 단서를 찾았습니다.</p>
   </div>
   <div class="article-intro"><strong>요약.</strong> SO-100의 초기 프레임과 joint-action 시퀀스를 조건으로 미래 영상을 생성하는 과제에서, 사전학습 모델과 태스크 액션 표현의 mismatch를 분석했습니다. Action Injection, LoRA, EE-Delta 재표현, checkpoint selection을 단계적으로 실험해 리더보드 성능을 개선했습니다. 생성 영상이 실제 정책 학습에 유효한지는 이 프로젝트에서 검증 범위에 포함되지 않았습니다.</div>
-  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">연구 문제</a><a href="#objective">목표</a><a href="#approach">방법 개요</a><a href="#experiments">실험</a><a href="#outcome">결과</a><a href="#future">한계와 후속 연구</a></nav>
   <div class="article-section">
   <h2 class="section-title" id="problem">01 · Research Problem — Action-conditioned Prediction</h2>
   <div class="card-block">
@@ -290,6 +292,8 @@
     </ul>
   </div>
   </details>
+  </div>
+</main>
   </div>
 </section>
 
