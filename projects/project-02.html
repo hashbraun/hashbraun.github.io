@@ -29,7 +29,7 @@
   </div>
   <span class="num-badge">PROJECT 02</span>
   <h1>Semi-Auto Labeling Tool with Construction-Safety Detector</h1>
-  <div class="subtitle">with <b>HDC LABS</b> · Construction-site CCTV · 10-class · v1 deployed → v2 WBF <b>mAP@0.5 0.670</b> → <b>TRT FP16</b> 배포 (3.9× · deploy-v1 mAP retention <b>100.00%</b>)</div>
+  <div class="subtitle">with <b>HDC LABS</b> · 건설현장 CCTV 객체 검출 · 반자동 라벨링 도구와 데이터 중심 학습 파이프라인 개발</div>
   <div class="stack">
     <span class="tech">YOLO26x / YOLOv11x / RT-DETR</span>
     <span class="tech">SAM2</span>
@@ -46,6 +46,9 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#pipeline">핵심 접근과 구현</a><a href="#results">검증 결과</a><a href="#deployment">배포와 최적화</a><a href="#tracking">객체 추적</a><a href="#conclusion">결론과 남은 과제</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p02/overview.png"
@@ -54,70 +57,53 @@
     <div class="cap" style="margin-top:8px;">System overview &middot; iterative label-pool 확장 루프. 결과: v1 attempt 2 배포 &middot; v2 WBF ensemble mAP@0.5 = 0.670.</div>
   </div>
 
-  <div class="article-intro"><strong>요약.</strong> 건설현장 CCTV의 롱테일 객체 검출 문제를 데이터셋 구성과 평가 프로토콜부터 재검토했습니다. v1 배포 모델과 v2 held-out 실험, 배포용 재학습·런타임 최적화 결과를 서로 다른 평가 조건으로 구분해 기록합니다.</div>
-  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#protocol">평가 설계</a><a href="#pipeline">개선 파이프라인</a><a href="#results">결과</a><a href="#deployment">배포·최적화</a></nav>
+  <div class="article-intro"><strong>프로젝트 개요.</strong> 소량의 초기 라벨에서 출발해 SAM2 기반 반자동 라벨링 도구를 직접 구현했습니다. 모델이 취약한 장면을 검수 후보로 모으고, 사람이 수정하거나 데이터를 추가한 뒤 다시 학습하는 과정을 연결해 데이터셋과 검출 모델을 함께 개선했습니다.</div>
   <div class="article-section">
-  <h2 class="section-title" id="problem">01 · Problem Definition — Long-tail Detection</h2>
+  <h2 class="section-title" id="problem">01 · 문제 정의 — 희소 객체와 데이터 구축 병목</h2>
   <div class="card-block">
-    <p>건설현장 CCTV용 12-클래스 중장비·작업자 검출기가 있었지만, 소수 클래스(펌프카·RMC 등)에 대한 성능이 사실상 무의미한 수준이었고, <b>대규모 라벨을 소량 시드로부터 부트스트랩</b>하는 사내 세미오토 라벨링 툴(FastAPI + Docker + SLURM)에 그대로 얹기 어려웠다.</p>
-    <p style="margin-top:10px;">또한 학습 val-mAP가 실측 성능과 어긋나는, <b>metric과 실측 사이의 괴리</b>가 있었다.</p>
+    <p>건설현장 CCTV에는 작업자와 여러 종류의 중장비가 함께 등장하지만, 펌프카·레미콘 운반차(RMC)·덤프트럭처럼 등장 빈도가 낮은 객체는 학습 데이터가 충분하지 않았습니다. 전체 정확도만 보면 문제가 작아 보이더라도, 실제 현장에서 중요한 소수 클래스는 놓치거나 다른 객체로 잘못 분류하는 경우가 있었습니다.</p>
+    <p style="margin-top:10px;">이 문제를 모델 구조만 바꿔 해결하기는 어렵다고 판단했습니다. 먼저 적은 수의 초기 라벨로 학습을 시작하고, 모델이 놓치기 쉬운 장면을 다시 검수해 데이터셋에 추가할 수 있어야 했습니다. 이를 위해 <b>SAM2를 활용한 반자동 라벨링 도구를 직접 구현</b>하고, 검수·수정·재학습이 이어지는 데이터 구축 과정을 만들었습니다.</p>
   </div>
 
-  <h2 class="section-title" id="protocol">02 · Evaluation Protocol &amp; Dataset Design</h2>
+  <h2 class="section-title" id="pipeline">02 · 핵심 접근과 구현 — 라벨링부터 모델 개선까지</h2>
   <div class="card-block">
-    <ul style="padding-left:18px;color:var(--gray-700);">
-      <li>소수 클래스를 살리는 방향으로 <b>학습 데이터 분할과 클래스 스킴</b>을 재설계한다.</li>
-      <li>롱테일에 맞는 <b>백본·해상도·증강 레시피</b>를 결정한다.</li>
-      <li><b>배포 판정 지표를 재정의</b>하여, 사내 배포 결정을 리더보드 편향 없이 내릴 수 있게 한다.</li>
-    </ul>
-  </div>
-
-  <h2 class="section-title" id="pipeline">03 · Data &amp; Model Improvement Pipeline</h2>
-  <div class="card-block">
-    <ul style="padding-left:18px;color:var(--gray-700);">
-      <li><b>데이터 스플릿 재구성</b> — scene-level 3-way split을 만들고, 소수 클래스는 val/test에 강제 할당해 저평가되지 않도록 함.</li>
-      <li><b>클래스 스킴 12→10</b> — 실제 검출 목표와 라벨 일관성을 기준으로 <i>signalman</i>은 <i>person</i>으로 통합하고, <i>check</i>는 검출 클래스 대신 신뢰도 기반 후처리 판정으로 분리.</li>
-      <li><b>YOLO26x · imgsz 1280</b> 백본 채택 + 롱테일 구제용 증강 레시피 (<code>cls=1.5</code>, <code>copy_paste=0.5</code>, <code>mixup=0.15</code>, <code>close_mosaic=30</code>).</li>
-      <li><b>배포 판정을 poc_eval per-class F1로 이동</b> — scene-held-out val과 별도 holdout <code>poc_eval</code>을 구분해, 전체 mAP뿐 아니라 클래스별 실제 운영 오류를 acceptance gate로 사용.</li>
-    </ul>
-
-    <p class="note-line"><b>평가 설계의 이유:</b> 같은 영상의 인접 프레임이 train/validation에 나뉘면 장면 정보가 공유되어 성능이 과대평가될 수 있습니다. 따라서 데이터 분할 단위를 frame에서 scene으로 바꿨습니다.</p>
-    <div class="media" style="margin-top:20px;">
-      <img src="../assets/p02/architecture.png"
-           alt="v2 architecture — DATA → SPLIT → 9 attempts → WBF ensemble → deploy + tracking"
-           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
-      <div class="cap" style="margin-top:8px;">v2 detection pipeline &middot; scene-level held-out → 9 attempts → 7-model WBF (+3.8pp) → deploy candidate + BOTSORT+ReID tracking.</div>
+    <p>핵심은 모델을 한 번 학습하고 끝내는 것이 아니라, <b>초기 라벨 → 자동 예측 → 사람의 검수와 수정 → 데이터 보강 → 재학습</b>을 반복할 수 있도록 만든 것입니다. 초기 데이터가 적을 때는 자동 예측 결과를 사람이 확인해 라벨을 확장하고, 모델이 취약한 장면은 검수 후보로 다시 올려 다음 학습에 반영하도록 구성했습니다.</p>
+    <div class="media" style="margin:18px 0 24px;">
+      <img src="../assets/p02/demo_tool_flow.png" alt="초기 라벨을 자동 예측 결과와 함께 검수하고 수정한 뒤 재학습에 반영하는 반자동 라벨링 도구 화면 흐름" style="width:100%;border:1px solid var(--line,#E5E7EB);border-radius:12px;">
+      <p class="media-caption">반자동 라벨링 도구의 실제 작업 흐름입니다. ① 초기 라벨을 바탕으로 객체 후보와 마스크를 미리 생성하고, ② 작업자가 잘못된 경계와 누락 객체를 검수·수정하며, ③ 확정한 라벨을 데이터셋에 반영해 다음 학습에 사용합니다. 학습 후 취약한 장면은 다시 검수 대상으로 돌려보냅니다.</p>
     </div>
 
-    <p class="note-line"><b>Tracking의 역할 구분:</b> BoT-SORT + ReID는 detector의 mAP/F1을 직접 높이는 기법이 아니라, 가림·재등장 상황에서 동일 객체의 ID 연속성을 보완하는 후처리 계층입니다.</p>
+    <p>초기 라벨링 도구를 만든 뒤에는 모델 실험을 반복할 수 있도록 데이터와 평가 절차도 함께 정비했습니다. 모델 후보를 비교하기 전에 같은 CCTV 영상에서 나온 프레임이 학습과 평가에 동시에 들어가지 않도록 분할 기준을 바꿨습니다.</p>
+    <p style="margin-top:12px;">프레임 단위로 무작위 분할하면 같은 영상의 10초와 10.1초 프레임이 학습 데이터와 평가 데이터에 나뉘어 들어갈 수 있습니다. 카메라 위치·조명·배경·객체 배치가 거의 같은 장면을 모델이 학습 중 이미 보게 되므로, 처음 보는 영상에서도 잘 작동하는 것처럼 점수가 부풀려질 수 있습니다. 실제로 기존 프레임 분할에서는 약 95% mAP가 나왔지만, 영상 장면 전체를 학습에서 제외하는 방식으로 다시 평가하자 0.4~0.6 수준으로 낮아졌습니다. 이 차이를 확인한 뒤 <b>영상 단위로 학습·검증·최종 평가 데이터를 분리</b>했습니다.</p>
+
+    <p style="margin-top:12px;">클래스도 실제 검출 목적에 맞게 정리했습니다. 기존 12개 클래스 중 <i>signalman</i>은 별도 객체라기보다 작업자(person)의 속성에 가까워 person으로 통합했고, <i>check</i>는 물체 종류가 아니라 검출 결과를 추가 확인해야 하는 상태이므로 검출 클래스에서 분리했습니다. 그 결과 객체 검출은 10개 클래스로 단순화하고, 애매한 사례는 후처리와 검수 단계에서 다루도록 했습니다.</p>
+
+    <div class="media" style="margin-top:20px;">
+      <img src="../assets/p02/architecture.png"
+           alt="영상 단위 데이터 분리, 9개 모델 실험, 7개 모델 예측 결합, 객체 추적을 연결한 검출 개선 파이프라인"
+           style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
+      <p class="media-caption">검출 모델 개선 파이프라인입니다. 먼저 서로 다른 CCTV 영상을 학습과 평가에 나눠 넣고, 9개 설정·모델 조합을 같은 평가 데이터로 비교했습니다. 이후 개별 모델의 예측을 7개 모델 가중 박스 융합(WBF)으로 결합해 가장 좋은 단일 모델보다 mAP@0.5를 3.8%p 높였습니다. 마지막으로 검출 결과에 객체 추적을 연결해 영상 안에서 같은 장비가 같은 ID로 이어지는지 확인했습니다.</p>
+    </div>
+
+    <p class="note-line">모델 선택에서는 더 큰 모델이나 높은 입력 해상도만을 기준으로 삼지 않았습니다. 데이터 구성을 늘렸을 때의 변화, 소수 클래스 성능, 과적합 징후, 추론 속도를 함께 비교했습니다. 특히 AIHub 데이터처럼 일부 클래스만 라벨링된 자료를 그대로 섞으면 라벨이 없는 작업자가 배경으로 학습되어 person·fork lift 성능이 떨어질 수 있었습니다. 이때는 원본 이미지를 통째로 섞는 대신 SAM2 마스크로 굴착기 영역만 분리해 CCTV 배경에 합성하는 방식을 적용했습니다.</p>
+
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
         <img src="../assets/p02/demo_pump.gif"
-             alt="v1 vs v2 pump-car detection side-by-side on window_10.mp4"
+             alt="기존 모델에서 창문을 펌프카로 오인한 장면과 개선 모델에서 창문으로 분류한 결과 비교"
              style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
-        <div class="cap" style="margin-top:8px;">Pump-car confusion fix &middot; v1 (좌) 은 창문을 pump car로 대량 오검(long-tail bleed), v2 antiof1 (우) 은 <code>window</code> 로 정확히 회복 &middot; conf ≥ 0.5.</div>
+        <p class="media-caption">오류 수정 사례입니다. 기존 모델은 건물 창문을 펌프카로 잘못 분류했습니다. 데이터와 학습 설정을 조정한 후속 모델은 같은 영역을 창문으로 분류해 해당 혼동을 줄였습니다.</p>
       </div>
       <div class="media">
-        <img src="../assets/p02/demo_tool_flow.png"
-             alt="Semi-Auto Labeling Tool UX — Pre-annotate → Review → Apply & Retrain"
+        <img src="../assets/p02/sam2_synth_pipeline.png"
+             alt="SAM2로 굴착기 영역을 분리해 건설현장 CCTV 배경에 합성하는 데이터 보강 예시"
              style="width:100%; border:1px solid var(--line, #E5E7EB); border-radius:12px;">
-        <div class="cap" style="margin-top:8px;">Semi-Auto Labeling Tool UX &middot; ① Pre-annotate → ② Human Review & Fix → ③ Apply & Retrain (SLURM + Codex).</div>
+        <p class="media-caption">희소 객체 데이터 보강 예시입니다. 외부 데이터에서 굴착기 영역만 SAM2 마스크로 분리한 뒤, 실제 CCTV 배경에 합성해 객체의 외형 정보는 활용하면서 배경 도메인 차이는 줄였습니다.</p>
       </div>
     </div>
   </div>
 
-    <div class="case-study-summary">
-      <h3>핵심 접근: 모델보다 데이터 파이프라인을 먼저 개선</h3>
-      <p>문제의 핵심은 소수 클래스의 라벨 부족과 프레임 단위 분할로 인한 평가 누수였습니다. 수동 시드 라벨에서 시작해 SAM2 보조 라벨링, 사람 검수, 씬 단위 데이터셋 구성, 학습·오류 분석, 희소 사례 합성, 버전별 재학습으로 이어지는 반복 구조를 정리했습니다.</p>
-      <ol>
-        <li>Seed labeling 및 SAM2 기반 반자동 라벨 생성</li>
-        <li>Human review · 오류/누락 라벨 정리 · scene-level split</li>
-        <li>학습 및 per-class 평가로 데이터 병목과 hard case 진단</li>
-        <li>희소 클래스 보강·합성 데이터를 기존 데이터와 병합</li>
-        <li>데이터셋과 모델 버전을 관리하며 재학습·회귀 검증</li>
-      </ol>
-    </div>
-  <h2 class="section-title" id="results">04 · Measured Results — v1 Deployment vs. v2 Experiment</h2>
+  <h2 class="section-title" id="results">03 · 검증 결과 — 운영 모델과 후속 실험 비교</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
       <b>v1 (배포본) — poc_eval per-class F1</b> 4개 tile과 <b>v2 (진행형) — test_poc AP@0.5 · WBF 앙상블</b> 4개 tile을 나란히 배치한다. v2 세부 실험 과정은 아래 <b>v2 · Progression</b> 섹션.
