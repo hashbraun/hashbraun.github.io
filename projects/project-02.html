@@ -57,7 +57,7 @@
     <div class="cap" style="margin-top:8px;">전체 작업 흐름입니다. 초기 라벨과 자동 예측 결과를 사람이 검수하고, 수정된 라벨을 데이터셋에 반영해 다음 학습으로 연결합니다.</div>
   </div>
 
-  <div class="article-intro"><strong>프로젝트 개요.</strong> 소량의 초기 라벨에서 출발해 SAM2 기반 반자동 라벨링 도구를 직접 구현했습니다. 모델이 취약한 장면을 검수 후보로 모으고, 사람이 수정하거나 데이터를 추가한 뒤 다시 학습하는 과정을 연결해 데이터셋과 검출 모델을 함께 개선했습니다.</div>
+  <div class="article-intro"><strong>프로젝트 개요.</strong> 소량의 초기 라벨에서 출발해 SAM2 기반 반자동 라벨링 도구를 직접 구현했습니다. 초기 라벨로 학습한 모델이 놓치거나 불확실하게 판단한 장면을 자동으로 검수 후보에 등록하고, 사람이 수정하거나 필요한 데이터를 추가·증강한 뒤 다시 학습하는 과정을 연결했습니다.</div>
   <div class="article-section">
   <h2 class="section-title" id="problem">01 · 문제 정의 — 희소 객체와 데이터 구축 병목</h2>
   <div class="card-block">
@@ -70,7 +70,7 @@
     <p>핵심은 모델을 한 번 학습하고 끝내는 것이 아니라, <b>초기 라벨 → 자동 예측 → 사람의 검수와 수정 → 데이터 보강 → 재학습</b>을 반복할 수 있도록 만든 것입니다. 초기 데이터가 적을 때는 자동 예측 결과를 사람이 확인해 라벨을 확장하고, 모델이 취약한 장면은 검수 후보로 다시 올려 다음 학습에 반영하도록 구성했습니다.</p>
     <div class="media" style="margin:18px 0 24px;">
       <img src="../assets/p02/demo_tool_flow.png" alt="초기 라벨을 자동 예측 결과와 함께 검수하고 수정한 뒤 재학습에 반영하는 반자동 라벨링 도구 화면 흐름" style="width:100%;border:1px solid var(--line,#E5E7EB);border-radius:12px;">
-      <p class="media-caption">반자동 라벨링 도구의 실제 작업 흐름입니다. ① 초기 라벨을 바탕으로 객체 후보와 마스크를 미리 생성하고, ② 작업자가 잘못된 경계와 누락 객체를 검수·수정하며, ③ 확정한 라벨을 데이터셋에 반영해 다음 학습에 사용합니다. 학습 후 취약한 장면은 다시 검수 대상으로 돌려보냅니다.</p>
+      <p class="media-caption">반자동 라벨링 도구의 실제 작업 흐름입니다. ① 초기 라벨과 검출 결과를 바탕으로 SAM2가 객체 마스크를 생성하고, ② 작업자가 잘못된 경계와 누락 객체를 검수·수정하며, ③ 확정한 라벨을 데이터셋에 반영해 다음 학습에 사용합니다. 학습 후 취약한 장면은 다시 검수 대상으로 돌려보냅니다.</p>
     </div>
 
     <p>초기 라벨링 도구를 만든 뒤에는 모델 실험을 반복할 수 있도록 데이터와 평가 절차도 함께 정비했습니다. 모델 후보를 비교하기 전에 같은 CCTV 영상에서 나온 프레임이 학습과 평가에 동시에 들어가지 않도록 분할 기준을 바꿨습니다.</p>
@@ -85,7 +85,7 @@
       <p class="media-caption">검출 모델 개선 파이프라인입니다. 먼저 서로 다른 CCTV 영상을 학습과 평가에 나눠 넣고, 9개 설정·모델 조합을 같은 평가 데이터로 비교했습니다. 이후 개별 모델의 예측을 7개 모델 가중 박스 융합(WBF)으로 결합해 가장 좋은 단일 모델보다 mAP@0.5를 3.8%p 높였습니다. 마지막으로 검출 결과에 객체 추적을 연결해 영상 안에서 같은 장비가 같은 ID로 이어지는지 확인했습니다.</p>
     </div>
 
-    <p class="note-line">모델 선택에서는 더 큰 모델이나 높은 입력 해상도만을 기준으로 삼지 않았습니다. 데이터 구성을 늘렸을 때의 변화, 소수 클래스 성능, 과적합 징후, 추론 속도를 함께 비교했습니다. 특히 AIHub 데이터처럼 일부 클래스만 라벨링된 자료를 그대로 섞으면 라벨이 없는 작업자가 배경으로 학습되어 person·fork lift 성능이 떨어질 수 있었습니다. 이때는 원본 이미지를 통째로 섞는 대신 SAM2 마스크로 굴착기 영역만 분리해 CCTV 배경에 합성하는 방식을 적용했습니다.</p>
+    <p class="note-line">모델 선택에서는 더 큰 모델이나 높은 입력 해상도만을 기준으로 삼지 않았습니다. YOLO26x·YOLO11x와 RT-DETR, 입력 해상도 1280·1536, 데이터 확장과 학습 설정을 바꾼 9개 실험을 같은 평가 영상에서 비교했습니다. 소수 클래스 성능, 과적합 징후, 전체 검출 성능과 추론 속도를 함께 고려했고, 단일 모델만으로 놓치는 사례를 보완하기 위해 예측 결과가 서로 다른 모델들을 가중 박스 융합(WBF)으로 결합했습니다. 특히 AIHub 데이터처럼 일부 클래스만 라벨링된 자료를 그대로 섞으면 라벨이 없는 작업자가 배경으로 학습되어 person·fork lift 성능이 떨어질 수 있었습니다. 이때는 원본 이미지를 통째로 섞는 대신 SAM2 마스크로 굴착기 영역만 분리해 CCTV 배경에 합성하는 방식을 적용했습니다.</p>
 
     <div class="media-grid-2" style="margin-top:16px;">
       <div class="media">
@@ -112,12 +112,12 @@
       <div><b>최종 배포 모델</b><p>후속 실험으로 설정을 고른 뒤, 실제 운영에 활용할 수 있도록 확보한 데이터를 모두 넣어 다시 학습한 모델입니다. 이때의 검증 점수는 학습에 사용한 데이터가 포함되므로, 처음 보는 영상에 대한 일반화 성능으로 해석하지 않습니다.</p></div>
     </div>
 
-    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">1차 운영 모델 &middot; 별도 PoC 영상의 클래스별 F1</div>
+    <div class="result-pair"><div class="result-group"><div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">1차 운영 모델 · 별도 PoC 영상의 클래스별 F1</div>
     <div class="kpi-grid">
       <div class="kpi-tile">
         <div class="k-label">Pump Car F1</div>
         <div class="k-value">0.00 → 0.57</div>
-        <div class="k-sub">별도 PoC 영상 · 클래스별 F1</div>
+        <div class="k-sub">별도 PoC 영상에서 측정</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">RMC F1</div>
@@ -127,7 +127,7 @@
       <div class="kpi-tile">
         <div class="k-label">Person F1</div>
         <div class="k-value">0.50 → 0.75</div>
-        <div class="k-sub">poc_eval per-class</div>
+        <div class="k-sub">별도 PoC 영상에서 측정</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">Window (saturated)</div>
@@ -136,7 +136,7 @@
       </div>
     </div>
 
-    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:24px 0 6px;">후속 실험 모델 &middot; 미사용 CCTV 영상의 mAP@0.5 · 7개 모델 결합</div>
+    </div><div class="result-group"><div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">후속 실험 모델 · 학습에 포함하지 않은 CCTV 영상의 mAP@0.5</div>
     <div class="kpi-grid">
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">7개 모델 결합 · mAP@0.5</div>
@@ -146,7 +146,7 @@
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">truck  ·  fork lift</div>
         <div class="k-value">0.903 · 0.869</div>
-        <div class="k-sub">truck Recall 99.3%</div>
+        <div class="k-sub">재현율 99.3%</div>
       </div>
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">RMC  ·  dump truck</div>
@@ -160,6 +160,7 @@
       </div>
     </div>
 
+    </div></div>
     <p class="note-line">1차 운영 모델에서는 별도 PoC 영상에서 펌프카 F1이 0.00에서 0.57로, RMC F1이 0.20에서 0.72로 개선됐습니다. 작업자(person)도 0.50에서 0.75로 높아졌지만, 창문(window)은 0.84에서 0.72로 낮아져 클래스 간 균형을 다시 조정해야 한다는 점을 확인했습니다.</p>
     <p class="note-line">후속 실험에서는 학습에 사용하지 않은 CCTV 35개 영상·5,766프레임을 기준으로 모델을 비교했습니다. 이 평가에서 7개 모델의 예측을 결합한 결과 mAP@0.5 0.670을 기록했고, 가장 성능이 높았던 단일 모델(0.632)보다 3.8%p 높았습니다. 이는 해당 평가 영상에서 여러 모델의 예측을 결합하는 것이 추가 이득을 줬다는 의미입니다.</p>
     </div>
