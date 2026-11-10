@@ -28,7 +28,7 @@
     <span>PROJECT 07</span>
   </div>
   <span class="num-badge">PROJECT 07</span>
-  <h1>AGI을 활용한 영상 데이터 오토라벨링 프로그램 개발</h1>
+  <h1>AGI를 활용한 영상 데이터 오토라벨링 프로그램 개발</h1>
   <div class="subtitle">산학협력 · with <b>한국로봇융합연구원 (KIRO)</b> · 산길·예초(Mowed / Unmowed) 이미지 · SAM (vit_h) + GPT-4o-mini + DBSCAN Mask Merge</div>
   <div class="stack">
     <span class="tech">SAM (vit_h)</span>
@@ -55,9 +55,7 @@
   <div class="media">
     <img src="../assets/p07/overview.png"
          alt="System Overview — 산길 원본 이미지(좌)와 SAM + GPT-4o-mini + DBSCAN 파이프라인이 6개 클래스(Person / Vehicle / Sky / Mowed Area / Unmowed Area / Tree)로 자동 분할한 결과(우, 28개 마스크)" />
-    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-      * 산길 원본 vs 오토라벨링 결과 (좌: <span style="font-family:'JetBrains Mono',monospace;">zed_7_images_00300.png</span>, 우: 6개 클래스 · 28개 마스크). Person / Vehicle / Sky / <b>Mowed Area</b> / <b>Unmowed Area</b> / Tree.
-    </p>
+    <p class="media-caption">산길 원본 이미지와 자동 라벨링 결과를 비교한 화면입니다. <code>zed_7_images_00300.png</code>에서 Person, Vehicle, Sky, Mowed Area, Unmowed Area, Tree의 6개 클래스를 추출하고 총 28개 마스크를 생성했습니다.</p>
   </div>
 
   <h2 class="section-title" id="problem">01 · Problem Definition</h2>
@@ -98,9 +96,7 @@
 <b>예초/비예초 영역 구분이 목적</b>임을
 기억해주세요. 이 이미지에 실제로 나타나는
 주요 객체들만 포함해주세요.</pre>
-        <p style="color:var(--sub, #6B7280); font-size:0.82rem; margin-top:8px; font-style:italic;">
-          * 사전 라벨 세트에 종속되지 않도록 <b>이미지별 동적 클래스 추출</b> + <b>과제 목적</b>을 프롬프트에 명시.
-        </p>
+        <p class="media-caption">프롬프트에는 고정된 라벨 목록을 그대로 적용하는 대신, 이미지에 실제로 등장하는 클래스만 추출하도록 지시했습니다. 동시에 예초 완료 영역과 미완료 영역을 구분한다는 과제 목적을 명시했습니다.</p>
       </div>
 
       <div>
@@ -119,9 +115,7 @@
   Others:        9 →  7개   (DBSCAN 병합 후)
 
 4단계: 결과 시각화 완료</pre>
-        <p style="color:var(--sub, #6B7280); font-size:0.82rem; margin-top:8px; font-style:italic;">
-          * SAM 원본 <b>100 → 71(dedup) → 분류 → DBSCAN 병합</b> 후 Mowed 5 · Unmowed 12 · Tree 9 · Others 7 마스크.
-        </p>
+        <p class="media-caption">해당 이미지에서는 SAM이 생성한 마스크 100개에서 IoU 0.7 기준 중복 마스크를 제거해 71개를 남겼습니다. 이후 마스크별 클래스를 분류하고 DBSCAN으로 인접 영역을 병합해 Mowed Area 5개, Unmowed Area 12개, Tree 9개, Others 7개로 정리했습니다.</p>
       </div>
     </div>
   </div>
@@ -136,7 +130,7 @@
       <div class="media">
         <img src="../assets/p07/result_mountain_path.png"
              alt="Qualitative result 1 — 하늘·나무·주황 미예초 초지·소량의 초록 예초 영역이 뒤섞인 산길 (zed_11_images_00150.png). 4개 클래스 · 30개 마스크로 자동 라벨: Sky / Mowed Area / Unmowed Area / Tree" />
-        <p class="media-caption">산길 이미지에 대한 첫 번째 정성 결과입니다. 하늘·나무와 함께 예초 완료·미완료 영역을 분리했으며, 4개 클래스에 대해 30개 마스크가 생성됐습니다.</p>
+        <p class="media-caption">두 정성 평가 이미지의 결과를 비교했습니다. 왼쪽 이미지는 4개 클래스에서 30개 마스크, 오른쪽 이미지는 6개 클래스에서 34개 마스크를 생성했습니다. 서로 다른 장면에서도 예초 완료·미완료 영역을 분리하는 후보를 생성할 수 있음을 확인했으며, 경계 정확도에 대한 별도 정량 평가는 포함하지 않았습니다.</p>
       </div>
       <div class="media">
         <img src="../assets/p07/result_green_hills.png"
