@@ -47,7 +47,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#research-context">Problem Definition</a><a href="#system">System Setup &amp; Data</a><a href="#method">Method &amp; Policy Learning</a><a href="#evaluation">Experiments &amp; Results</a><a href="#reflection">Limitations &amp; Reflection</a><a href="#next-question">Future Research</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#research-context">Problem Definition</a><a href="#system">System Setup &amp; Data</a><a href="#method">Method &amp; Policy Learning</a><a href="#evaluation">Experiments &amp; Results</a><a href="#reflection">Policy Analysis &amp; Reflection</a><a href="#next-question">Future Research</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -113,8 +113,8 @@
       <p class="media-caption">RealSense 깊이 영상에서 복원한 Point Cloud와 FPS 샘플링 결과입니다. FPS는 원본 점군의 밀집도를 줄이고 공간 전반에 분포한 점을 선택해 3차원 기하 정보를 일정한 크기의 입력으로 구성하는 데 사용했습니다.</p>
     </div>
 
-    <h3 class="article-subtitle">개인 기여 범위</h3>
-    <p>팀 리더로서 SO-101 리더-팔로워 teleoperation과 시연 수집, LeRobot 데이터·학습 파이프라인 구성, ACT 기반 초기 정책 학습과 실기 롤아웃, 카메라 관측 확장 후 SmolVLA 적용 및 action expert LoRA 실험을 연결했습니다. Point Cloud/FPS와 proprioceptive state를 포함한 관측 구성도 함께 다뤘습니다. 기구 설계나 별도 perception 모델의 신규 학습, 정책별 성능 우위를 입증한 통제 실험까지 수행한 것으로 범위를 확대하지 않습니다.</p>
+      <h3 class="article-subtitle">개인 기여 범위</h3>
+    <p>팀 리더로서 SO-101 리더-팔로워 teleoperation과 시연 수집, LeRobot 데이터·학습 파이프라인, ACT 기반 정책 학습 및 실제 로봇 롤아웃을 연결했습니다. 이후 카메라 관측 구성을 확장하고 SmolVLA를 적용해 action expert LoRA 기반 적응 실험을 진행했으며, Point Cloud/FPS와 proprioceptive state를 포함한 관측 구성도 다뤘습니다.</p>
   </div>
 
   <h2 class="section-title" id="evaluation">04 · Experiments &amp; Results</h2>
@@ -139,11 +139,20 @@
     <h3 class="article-subtitle">결과 해석</h3>
     <p>현재 확인 가능한 성과는 ACT 정책의 실제 양팔 로봇 폐루프 실행과, 관측 구성을 확장한 SmolVLA·LoRA 적응 실험을 수행했다는 점입니다. 다만 ACT와 SmolVLA는 데이터 구성과 카메라 입력, 정책 구조가 동일하게 통제된 비교 실험이 아니며, 정책별 성공률·반복 횟수·궤적 오차를 비교한 정량 벤치마크도 확보하지 않았습니다. 따라서 어느 정책이 더 높은 성능을 보였거나 카메라 추가가 성공률을 개선했다고 결론 내리지는 않습니다.</p>
   </div>
-  <h2 class="section-title" id="reflection">05 · Limitations &amp; Reflection</h2>
+  <h2 class="section-title" id="reflection">05 · Policy Analysis &amp; Reflection</h2>
   <div class="card-block">
-    <p>이 프로젝트를 통해 SO-101 양팔 로봇의 시연 수집, LeRobot 데이터 구성, ACT 정책 학습, 실제 로봇 롤아웃까지 연결하는 모방학습 실험 경로를 구성했습니다. 이후 카메라 관측을 확장하고 SmolVLA와 action expert LoRA를 적용해 사전학습 VLA 정책의 로봇 적응 가능성도 탐색했습니다.</p>
-    <p style="margin-top:10px;">반면 시연 데이터의 규모가 제한적이고 실제 로봇 실험에 반복 비용이 들어, 카메라 수·Point Cloud/FPS·proprioception의 기여도와 ACT·SmolVLA 정책 차이를 분리해 검증하지 못했습니다. 따라서 현재 결과는 특정 입력 구성이 위치 추정이나 조작 성공률을 개선했다는 증거가 아니라, 서로 다른 정책과 관측 구성을 실제 로봇 학습·실행 경로에 적용해 본 실험 기록으로 해석합니다.</p>
-    <p style="margin-top:10px;">후속 실험에서는 동일한 시연 데이터 분할과 태스크, 평가 횟수를 고정하고 ACT와 SmolVLA를 비교해야 합니다. 또한 RGB-only, 다중 카메라, Point Cloud/FPS, proprioception을 단계적으로 추가·제거하는 ablation을 설계하고, 태스크 성공률·실패 유형·실행 안정성을 함께 기록해야 각 구성 요소의 기여도를 판단할 수 있습니다.</p>
+    <h3 class="article-subtitle">ACT — 시연 기반 단일 태스크 모방학습</h3>
+    <p>ACT는 수집한 시연으로부터 다음 한 시점의 동작만 예측하는 대신 여러 시점의 액션을 하나의 chunk로 예측합니다. 원 논문은 action chunking으로 유효한 예측 horizon을 줄이고, 겹치는 chunk의 temporal ensembling으로 동작을 부드럽게 연결해 모방학습에서 발생하는 오차 누적을 완화하는 접근을 제시합니다. 태스크별 시연으로 정책을 학습하는 구조이므로, 정해진 조작 과제를 빠르게 학습하고 실제 로봇에 연결하는 기준선으로 활용하기 좋습니다. 반면 정책이 학습한 시연 분포에 크게 의존하기 때문에 물체 위치·초기 상태·조작 방식이 달라지면 학습 데이터 밖의 상태로 벗어나 성능이 저하될 수 있습니다. <a href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">ACT 원 논문</a></p>
+
+    <h3 class="article-subtitle">SmolVLA — 사전학습 표현을 활용하는 Vision-Language-Action 정책</h3>
+    <p>SmolVLA는 여러 카메라 영상, 로봇의 sensorimotor state, 자연어 지시를 함께 입력받고 action expert가 연속적인 액션 chunk를 생성하는 VLA 구조입니다. ACT가 특정 태스크의 시연을 중심으로 정책을 학습하는 접근이라면, SmolVLA는 공개 로봇 데이터로 사전학습한 시각·언어 표현을 태스크별 시연으로 적응시키는 방향입니다. 따라서 다양한 태스크와 지시를 공유하는 표현을 활용할 가능성이 있지만, 사전학습만으로 새로운 로봇·카메라·작업 조건에 자동으로 적응하는 것은 아닙니다. Hugging Face의 공식 가이드도 자체 환경에 맞는 fine-tuning과 작업 변형별 시연 데이터 확보를 권장하며, 공개 예시에서는 50개 에피소드로 여러 물체 위치 변형을 수집한 반면 25개 에피소드만 사용한 데이터는 성능이 부족했다고 설명합니다. 이 수치는 보편적인 최소 요구량이 아니라 해당 예시에서 관찰한 데이터 규모·다양성의 중요성을 보여주는 사례입니다. <a href="https://huggingface.co/papers/2506.01844" target="_blank" rel="noopener">SmolVLA 논문</a> · <a href="https://huggingface.co/blog/smolvla" target="_blank" rel="noopener">SmolVLA 기술 소개 및 벤치마크</a> · <a href="https://github.com/huggingface/lerobot/blob/main/docs/source/smolvla.mdx" target="_blank" rel="noopener">LeRobot fine-tuning 가이드</a></p>
+
+    <h3 class="article-subtitle">두 접근의 차이와 본 프로젝트에서의 해석</h3>
+    <p>두 정책은 단순히 모델 크기나 성공률로 우열을 나누기보다, 학습에 활용하는 사전 지식과 적용하려는 문제 범위가 다릅니다. ACT는 태스크별 시연을 직접 학습해 동작을 예측하는 구조로, 데이터와 태스크가 명확한 조건에서 구현·검증 경로가 비교적 단순합니다. SmolVLA는 사전학습된 VLA 표현과 언어 조건을 활용해 태스크 적응과 다중 작업 확장 가능성을 제공하지만, 로봇별 관측 스키마 정합성, 태스크별 시연의 다양성, 미세조정 및 추론 자원까지 함께 고려해야 합니다.</p>
+    <p style="margin-top:10px;">본 프로젝트에서는 ACT를 먼저 학습해 SO-101 양팔 로봇에서 실제 롤아웃을 수행했고, 이후 카메라 관측을 확장한 조건에서 SmolVLA와 action expert LoRA를 적용하는 실험을 진행했습니다. 외부 연구에서 SmolVLA가 ACT를 포함한 기준선보다 높은 성능을 보고한 벤치마크가 있지만, 이는 연구진이 정한 태스크·데이터·평가 환경의 결과입니다. 본 프로젝트의 ACT와 SmolVLA는 학습 데이터와 관측 구성이 동일하게 통제되지 않았으므로 그 결과를 그대로 가져와 자체 실험의 우열로 해석할 수 없습니다. 여기서 확인한 것은 ACT의 실기 모방학습 경로를 구성하고, 사전학습 VLA를 로봇 데이터에 적응시키는 별도 경로를 탐색했다는 점입니다.</p>
+
+    <h3 class="article-subtitle">핵심 회고 — 모델보다 데이터와 적용 조건을 함께 설계해야 한다</h3>
+    <p>실험을 진행하며 정책 구조뿐 아니라 시연 데이터가 포함하는 물체 위치·초기 상태·조작 변형의 범위, 카메라 입력 이름과 해상도, 로봇 상태 및 액션 표현의 정합성이 학습과 배포를 좌우한다는 점을 확인했습니다. 특히 사전학습 VLA를 사용하더라도 실제 로봇에 적용하려면 태스크별 시연과 관측 스키마를 맞추는 과정이 필요합니다. 이후에는 단순히 시연 수를 늘리는 것보다 실패가 발생한 조건과 미포함된 변형을 구분해 수집하고, 태스크 적응에 필요한 데이터의 효율을 높이는 방향으로 연구를 확장하고자 합니다.</p>
   </div>
   <h2 class="section-title" id="next-question">06 · Follow-up Research Question — Data Efficiency</h2>
   <div class="card-block"><p>실기 시연 수집에서 경험한 데이터 확보 비용과 행동 분포의 제한은 이후 World Model 프로젝트의 문제의식으로 이어졌습니다. 후속 프로젝트는 별도의 SO-100 데이터셋으로 수행했으며, 본 프로젝트의 SO-101 시연 데이터를 직접 재사용하지 않았습니다.</p></div>
