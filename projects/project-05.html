@@ -110,12 +110,12 @@
 
     <details class="technical-details" open><summary>검색·에이전트 아키텍처와 구현 상세 보기</summary>
     <ul style="padding-left:18px;color:var(--gray-700);margin-top:20px;">
-      <li><b>Hybrid candidate retrieval (담당)</b> — <b>BM25 (키워드 · 수치 · 전문 용어)</b> + <b>Vector search (granite-embedding-311m · 768d)</b>를 <b>RRF (Cormack et al., 2009)</b>로 융합하고, <b>Cross-encoder re-ranker</b>와 tier · recency · view 구조 신호로 후보 순위를 보정. 이는 LLM이 모든 개인 문서를 매번 읽는 대신 판단 대상을 좁혀 로컬 추론 비용을 통제하기 위한 설계.</li>
+      <li><b>Hybrid candidate retrieval (담당)</b> — <b>BM25 (키워드·수치·전문 용어)</b>와 <b>Vector search (granite-embedding-311m · 768d)</b> 결과를 <b>RRF (Cormack et al., 2009)</b>로 결합했습니다. 이후 <b>Cross-encoder re-ranker</b>와 tier·recency·view 구조 신호를 이용해 후보 순위를 보정했습니다. LLM이 모든 개인 문서를 매번 읽는 대신 검색으로 판단 대상을 좁혀 로컬 추론 비용을 통제하도록 설계했습니다.</li>
       <li><b>LLM-based contextual recommendation (비교 실험)</b> — 작성 중인 맥락과 문서 내용을 LLM이 함께 읽고, 단순히 주제가 일치하는지를 넘어 현재 상황에 참고가 될 문서인지 판단하는 접근을 BM25·Vector 유사도 검색과 비교. 제한된 실제 문서·맥락 비교에서는 BM25·Vector 유사도 검색으로 찾은 후보가 LLM의 단독 맥락 판단으로 선택한 문서보다 더 적합했던 사례가 있었습니다. 다만 평가 표본이 적어 이를 일반적인 우열로 확정할 수는 없었습니다. 이 결과는 문장·주제 유사도와 현재 상황에서의 실질적 유용성이 항상 일치하지 않으며, LLM의 판단만으로 검색 후보를 대체하기보다 검색 결과와 맥락 판단을 별도로 평가해야 한다는 점을 보여주었습니다.</li>
-      <li><b>On-device trade-off</b> — 외부 API와 검색 도구를 연결하지 않는 로컬 실행 조건에서 모델 호출 횟수·입력 문맥 길이·후보 수가 추론 비용에 직접 영향을 줌. 따라서 로컬 검색으로 후보를 먼저 압축하고 LLM 판단은 제한된 후보에 적용하는 구조를 설계 방향으로 삼음.</li>
-      <li><b>Corrective-RAG 외부 루프 (담당)</b> — Query Planning 단계에서 의도를 분해하고, Grounding 근거가 부족하면 <b>low_confidence</b>로 판정해 <b>쿼리 refinement</b>를 자동으로 재실행.</li>
-      <li><b>Reflection 내부 루프 (담당)</b> — sLLM이 카드마다 self-critique를 수행하고, 저점 카드는 <b>critique-guided regeneration</b>. 2회 재시도 후에는 keyword-based 카드로 폴백.</li>
-      <li><b>Grounding Validator (담당)</b> — 생성된 카드의 각 주장을 <b>원문 청크와 대조</b>해 근거가 없는 문장을 걸러내고, 근거가 약하면 카드를 <b>보류</b> 상태로 유지. Structured output으로 카드 스키마를 강제해 파싱 실패를 원천 차단.</li>
+      <li><b>On-device trade-off</b> — 외부 API와 검색 도구를 사용하지 않는 로컬 실행 환경에서는 모델 호출 횟수, 입력 문맥 길이, 후보 문서 수가 추론 비용에 직접 영향을 줍니다. 이에 로컬 검색으로 후보를 먼저 압축하고, LLM의 맥락 판단은 제한된 후보에 적용하는 구조를 설계했습니다.</li>
+      <li><b>Corrective-RAG 외부 루프 (담당)</b> — Query Planning 단계에서 사용자 입력의 의도를 분해하고, Grounding 근거가 부족하면 <b>low_confidence</b>로 판정해 검색 질의를 수정한 뒤 후보 검색을 다시 실행하도록 구현했습니다.</li>
+      <li><b>Reflection 내부 루프 (담당)</b> — 소형 언어 모델(sLLM)이 생성 카드마다 self-critique를 수행하도록 구성했습니다. 평가 점수가 낮은 카드는 <b>critique-guided regeneration</b>으로 다시 생성하고, 두 차례 재시도 후에도 기준을 충족하지 못하면 keyword 기반 카드로 전환했습니다.</li>
+      <li><b>Grounding Validator (담당)</b> — 생성된 카드의 각 주장을 <b>원문 청크와 대조</b>해 근거가 부족한 문장을 걸러내고, 검증 기준을 충족하지 못한 카드는 <b>보류</b> 상태로 유지했습니다. 또한 Structured Output으로 카드 스키마를 제한해 출력 형식의 일관성을 높이고 파싱 오류를 줄였습니다.</li>
       <li><b>Ingest Pipeline</b> — 개인 문서 → 파싱 → Semantic Chunking → granite-embedding-311m (768d) → LanceDB. 인덱싱은 사용자 노트 폴더 선택 → 권한 설정 → 로컬 sLLM 설치 순서로 온보딩이 진행됩니다.</li>
     </ul>
 
