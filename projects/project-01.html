@@ -69,30 +69,28 @@
   <h2 class="section-title" id="problem">01 · Problem Definition — 탑뷰 도메인과 라벨링 병목</h2>
   <div class="card-block">
     <p>스마트 엘리베이터 프로젝트에서 요구되는 학습 데이터는 <b>탑뷰(top-down) 시점의 4K CCTV 영상</b>이었다.
-    이 도메인은 COCO 계열 pretrained detector가 가정하는 시점(정면·측면)과 완전히 달라 <b>기성 모델의 검출 성능이 심각하게 떨어지고</b>, 그에 따라 수작업 라벨링 비용이 폭발적으로 증가하는 구조적 병목이 있었다.</p>
-    <p style="margin-top:10px;">SAM2 기반의 마스크 전파(video propagation)를 사용하더라도, <b>centroid-point prompting</b>은 마스크 초기 상태가 부정확할 때 클립 전체에 걸쳐 드리프트가 누적되는 불안정성을 보였다.</p>
+    이 도메인은 COCO 계열 사전학습 검출 모델이 주로 학습한 정면·측면 시점과 달라 <b>기존 모델의 검출 성능이 크게 떨어졌습니다.</b> 그 결과 자동 라벨을 그대로 활용하기 어려웠고, 수작업 라벨링에 많은 시간이 소요됐습니다.</p>
+    <p style="margin-top:10px;">SAM2의 영상 마스크 전파 기능을 사용하더라도 <b>중심점 하나만 전달하는 프롬프트</b>는 초기 마스크가 부정확할 때 객체의 실제 경계를 충분히 설명하지 못했습니다. 이로 인해 프레임이 진행될수록 마스크가 객체에서 벗어나는 현상이 누적됐습니다.</p>
   </div>
 
   <!-- STAR: TASK -->
   <h2 class="section-title" id="requirements">02 · 해결 목표</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
-      <li>탑뷰 도메인에 특화된 <b>세그멘테이션 검출기</b>를 확보한다.</li>
-      <li>SAM2의 마스크 전파 파이프라인을 <b>안정화</b>하여 클립 전체의 트래킹 품질을 끌어올린다.</li>
-      <li>모델 결과를 사람이 실제로 <b>다중 사용자 환경</b>에서 검수·수정할 수 있는 웹 라벨링 툴로 배포한다.</li>
-      <li>초기 라벨 소량으로 시작해 <b>모델이 데이터를 스스로 확장</b>하는 사이클을 갖춘다.</li>
+      <li>탑뷰 영상에 맞춘 <b>객체 세그멘테이션 모델</b>을 학습해 자동 라벨의 품질을 높입니다.</li>
+      <li>초기 마스크의 형태 정보를 SAM2에 전달해 <b>영상 내 마스크 전파의 안정성</b>을 확보합니다.</li>
+      <li>자동 생성 결과를 여러 작업자가 검수·수정할 수 있는 <b>웹 라벨링 도구</b>로 제공합니다.</li>
+      <li>소량의 초기 라벨에서 출발해 검수 데이터를 반복적으로 축적하는 <b>Active Learning 흐름</b>을 구현합니다.</li>
     </ul>
   </div>
 
   <!-- STAR: ACTION (with architecture + demo placeholders) -->
   <h2 class="section-title" id="method">03 · 핵심 구현 — 검출, 마스크 전파, 반복 라벨링</h2>
   <div class="card-block">
-    <ul style="padding-left:18px;color:var(--gray-700);">
-      <li><b>YOLO11m-seg 파인튜닝</b> — 4K 탑뷰 엘리베이터 영상 <b>19K 프레임 · 241 시퀀스</b>에 대해 탑뷰 도메인 적응.</li>
-      <li><b>Polygon-Mask Prompting</b> — SAM2의 centroid-point prompting을 폴리곤 마스크 프롬프트로 교체해, 검증된 초기 마스크가 propagation의 앵커 역할을 하도록 재설계.</li>
-      <li><b>Active Learning 루프</b> — 저신뢰 프레임을 자동 큐잉하고 <b>4× 오버샘플링 + replay</b>로 지속 재학습.</li>
-      <li><b>풀스택 배포</b> — FastAPI + React/Vite + Docker + SLURM + NAS mount 기반 다중 사용자 웹 툴로 사내 배포.</li>
-    </ul>
+    <p><b>탑뷰 전용 세그멘테이션 모델을 먼저 학습했습니다.</b> 정면·측면 시점 중심의 사전학습 모델만으로는 엘리베이터 내부의 탑뷰 영상에서 객체 경계를 안정적으로 찾기 어려웠습니다. 이에 4K CCTV 19K 프레임과 241개 시퀀스를 사용해 YOLO11m-seg를 파인튜닝하고, 객체 위치뿐 아니라 마스크까지 자동으로 생성하도록 했습니다.</p>
+    <p style="margin-top:12px;"><b>SAM2 입력은 중심점에서 폴리곤 마스크로 바꿨습니다.</b> 중심점 방식은 객체의 대략적인 위치만 전달하므로, 초기 마스크가 불완전하면 배경까지 포함한 상태로 다음 프레임에 전파될 수 있었습니다. 반면 폴리곤 마스크는 객체의 영역과 경계를 함께 전달하므로, 검증된 초기 마스크를 기준으로 후속 프레임의 형태를 더 안정적으로 유지할 수 있었습니다.</p>
+    <p style="margin-top:12px;"><b>검수가 필요한 프레임을 다시 학습 데이터로 연결했습니다.</b> 모델 신뢰도가 낮은 프레임을 자동으로 검수 후보에 등록하고, 작업자가 수정한 결과를 다음 학습에 반영했습니다. 저신뢰 사례는 4배 오버샘플링과 replay를 적용해 재학습 과정에서 더 자주 학습되도록 구성했습니다.</p>
+    <p style="margin-top:12px;"><b>여러 작업자가 함께 사용할 수 있도록 웹 도구로 배포했습니다.</b> FastAPI와 React/Vite로 검수 인터페이스를 구성하고, Docker·SLURM·NAS를 연결해 모델 실행과 데이터 저장을 분리했습니다.</p>
 
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p01/architecture.png"
@@ -148,10 +146,11 @@
     </div>
 
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
-      최종적으로 사내 <b>다중 사용자 웹 라벨링 툴</b>로 배포되어, 탑뷰 CCTV 도메인에 대한 학습 데이터 확보 파이프라인의 인력 병목을 실질적으로 완화하였다.
+      최종적으로 사내 <b>다중 사용자 웹 라벨링 도구</b>로 배포해 탑뷰 CCTV 데이터의 검수·수정 작업을 지원하고, 수작업 라벨링에 집중되던 시간을 줄였습니다.
     </p>
   </div>
   <div class="article-callout"><strong>결과.</strong> 폴리곤 마스크 프롬프트를 적용해 3개 테스트 클립 평균 Tracking IoU를 55.4%p 개선했습니다. 웹 라벨링 도구에서는 프레임당 클릭 수를 7회에서 2회로 줄였고, 60프레임 클립의 라벨링 시간은 30분에서 4분으로 단축했습니다. 이를 바탕으로 탑뷰 CCTV 데이터의 검수와 재학습을 반복할 수 있는 다중 사용자 웹 라벨링 시스템을 사내에 배포했습니다.</div>
+    </div>
     </main>
   </div>
 </section>
