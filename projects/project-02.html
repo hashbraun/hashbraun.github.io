@@ -54,13 +54,16 @@
     <div class="cap" style="margin-top:8px;">System overview &middot; iterative label-pool 확장 루프. 결과: v1 attempt 2 배포 &middot; v2 WBF ensemble mAP@0.5 = 0.670.</div>
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <div class="article-intro"><strong>요약.</strong> 건설현장 CCTV의 롱테일 객체 검출 문제를 데이터셋 구성과 평가 프로토콜부터 재검토했습니다. v1 배포 모델과 v2 held-out 실험, 배포용 재학습·런타임 최적화 결과를 서로 다른 평가 조건으로 구분해 기록합니다.</div>
+  <nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#protocol">평가 설계</a><a href="#pipeline">개선 파이프라인</a><a href="#results">결과</a><a href="#deployment">배포·최적화</a></nav>
+  <div class="article-section">
+  <h2 class="section-title" id="problem">01 · Problem Definition — Long-tail Detection</h2>
   <div class="card-block">
     <p>건설현장 CCTV용 12-클래스 중장비·작업자 검출기가 있었지만, 소수 클래스(펌프카·RMC 등)에 대한 성능이 사실상 무의미한 수준이었고, <b>대규모 라벨을 소량 시드로부터 부트스트랩</b>하는 사내 세미오토 라벨링 툴(FastAPI + Docker + SLURM)에 그대로 얹기 어려웠다.</p>
     <p style="margin-top:10px;">또한 학습 val-mAP가 실측 성능과 어긋나는, <b>metric과 실측 사이의 괴리</b>가 있었다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title" id="protocol">02 · Evaluation Protocol &amp; Dataset Design</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>소수 클래스를 살리는 방향으로 <b>학습 데이터 분할과 클래스 스킴</b>을 재설계한다.</li>
@@ -69,7 +72,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title" id="pipeline">03 · Data &amp; Model Improvement Pipeline</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>데이터 스플릿 재구성</b> — scene-level 3-way split을 만들고, 소수 클래스는 val/test에 강제 할당해 저평가되지 않도록 함.</li>
@@ -114,7 +117,7 @@
         <li>데이터셋과 모델 버전을 관리하며 재학습·회귀 검증</li>
       </ol>
     </div>
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <h2 class="section-title" id="results">04 · Measured Results — v1 Deployment vs. v2 Experiment</h2>
   <div class="card-block">
     <p style="color:var(--gray-700); margin-bottom:12px;">
       <b>v1 (배포본) — poc_eval per-class F1</b> 4개 tile과 <b>v2 (진행형) — test_poc AP@0.5 · WBF 앙상블</b> 4개 tile을 나란히 배치한다. v2 세부 실험 과정은 아래 <b>v2 · Progression</b> 섹션.
@@ -645,7 +648,7 @@ Cache JSON (extended schema)
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">9 ·</span> deploy-v1 실측 (Phase 2, 60/60 epoch)</h2>
+  <h2 class="section-title" id="deployment">05 · Deployment &amp; Runtime Optimization — deploy-v1</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       §5의 예상치 대신 all-data 재학습 <b>60/60 epoch · 40.4h · 3-GPU SLURM</b> 완주 후 실측. antiof1 승자 설정(AdamW + lr↓ + cls 0.8) 그대로 유지.
@@ -728,7 +731,7 @@ Cache JSON (extended schema)
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">＋</span> 추가 자료 — 전체 실험 대시보드</h2>
+  <h2 class="section-title">06 · Experiment Appendix &amp; Dashboard</h2>
   <div class="card-block" style="background:#EEF3FF; border:1px solid #D4DEF0; padding:16px 20px;">
     <p style="color:var(--gray-700); margin:0;">
       아래 대시보드는 v1 → v2 실험 전 구간의 씬 단위 데이터, attempt별 test_poc mAP 표, deploy-v1 40.4h 학습 곡선, Learned Signalman Head (ResNet18 val AP 0.9988), Overlay 시각 안정화 4단계, Slice C 오버레이 mp4 등 <b>사내 대시보드 원본을 사본 형태로 그대로 실은 자료</b>입니다.
@@ -738,7 +741,7 @@ Cache JSON (extended schema)
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">Δ ·</span> Lessons</h2>
+  <h2 class="section-title">07 · Lessons &amp; Remaining Hard Cases</h2>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
       <li>이전 mAP 95%는 프레임 단위 split으로 leakage가 새서 부풀린 수치였다. 씬 단위 held-out으로 재정립한 0.6대가 실제 성능이었다.</li>
@@ -751,6 +754,8 @@ Cache JSON (extended schema)
     </ul>
   </div>
   </details>
+<div class="article-callout"><strong>평가 지표 해석.</strong> v1의 poc_eval per-class F1, v2의 test_poc mAP@0.5, deploy-v1의 train-inclusive validation 수치는 데이터 분할과 평가 목적이 서로 다릅니다. 서로 직접 비교 가능한 단일 성능 추이로 해석하지 않도록 각 결과의 평가셋과 사용 목적을 함께 확인해야 합니다.</div>
+  </div>
 </section>
 
 <div class="pager">
