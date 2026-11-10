@@ -105,16 +105,19 @@
 
   <h2 class="section-title" id="results">03 · 검증 결과 — 운영 모델과 후속 실험 비교</h2>
   <div class="card-block">
-    <p style="color:var(--gray-700); margin-bottom:12px;">
-      <b>v1 (배포본) — poc_eval per-class F1</b> 4개 tile과 <b>v2 (진행형) — test_poc AP@0.5 · WBF 앙상블</b> 4개 tile을 나란히 배치한다. v2 세부 실험 과정은 아래 <b>v2 · Progression</b> 섹션.
-    </p>
+    <p style="color:var(--gray-700); margin-bottom:14px;">이 프로젝트에는 평가 목적이 다른 세 가지 모델 단계가 있습니다. 아래 결과를 읽을 때는 각 모델이 어떤 데이터로 평가됐는지 함께 봐야 합니다.</p>
+    <div class="result-context">
+      <div><b>1차 운영 모델</b><p>초기 개선을 마치고 라벨링 도구에 연결한 모델입니다. 별도로 확보한 PoC 영상에서 클래스별 F1을 확인해 펌프카·RMC처럼 놓치기 쉬운 객체가 얼마나 개선됐는지 살폈습니다.</p></div>
+      <div><b>후속 실험 모델</b><p>모델 구조와 학습 방법을 비교하기 위한 실험 단계입니다. 학습에 넣지 않은 CCTV 35개 영상(5,766프레임)을 평가에 사용하고, IoU 0.5 기준 mAP로 모델 전체의 검출 성능을 비교했습니다.</p></div>
+      <div><b>최종 배포 모델</b><p>후속 실험으로 설정을 고른 뒤, 실제 운영에 활용할 수 있도록 확보한 데이터를 모두 넣어 다시 학습한 모델입니다. 이때의 검증 점수는 학습에 사용한 데이터가 포함되므로, 처음 보는 영상에 대한 일반화 성능으로 해석하지 않습니다.</p></div>
+    </div>
 
-    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">v1 (배포본) &middot; poc_eval per-class F1</div>
+    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:16px 0 6px;">1차 운영 모델 &middot; 별도 PoC 영상의 클래스별 F1</div>
     <div class="kpi-grid">
       <div class="kpi-tile">
         <div class="k-label">Pump Car F1</div>
         <div class="k-value">0.00 → 0.57</div>
-        <div class="k-sub">poc_eval per-class</div>
+        <div class="k-sub">별도 PoC 영상 · 클래스별 F1</div>
       </div>
       <div class="kpi-tile">
         <div class="k-label">RMC F1</div>
@@ -133,7 +136,7 @@
       </div>
     </div>
 
-    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:24px 0 6px;">v2 (진행형) &middot; test_poc AP@0.5 · WBF 7-model ensemble</div>
+    <div style="font-size:0.82rem; color:var(--mute, #6B7280); letter-spacing:0.06em; margin:24px 0 6px;">후속 실험 모델 &middot; 미사용 CCTV 영상의 mAP@0.5 · 7개 모델 결합</div>
     <div class="kpi-grid">
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">WBF Ensemble mAP@0.5</div>
@@ -148,7 +151,7 @@
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">RMC  ·  dump truck</div>
         <div class="k-value">0.831 · 0.826</div>
-        <div class="k-sub">v1 대비 minority 대폭 회복</div>
+        <div class="k-sub">희소 객체 검출 성능 개선</div>
       </div>
       <div class="kpi-tile" style="border-top:3px solid #3182F6;">
         <div class="k-label">BOTSORT + ReID</div>
@@ -157,16 +160,12 @@
       </div>
     </div>
 
-    <div class="media" style="margin-top:20px;">
-      <img src="../assets/p02/perf_f1.png"
-           alt="Per-class Performance chart — v1 attempt 2 (poc_eval F1) 대 v2 WBF ensemble (test_poc AP@0.5) · 9 클래스 나란히 bar 비교 · 빨간 참고선 = ensemble all mAP 0.670" />
-      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-        * <b>v1 baseline vs v2 WBF ensemble</b> (7 모델). v1은 poc_eval F1, v2는 test_poc AP@0.5. car/RMC/truck/fork lift/dump truck/window 전반 큰 개선, pump car·defect는 여전히 낮음.
-      </p>
+    <p class="note-line">1차 운영 모델에서는 별도 PoC 영상에서 펌프카 F1이 0.00에서 0.57로, RMC F1이 0.20에서 0.72로 개선됐습니다. 작업자(person)도 0.50에서 0.75로 높아졌지만, 창문(window)은 0.84에서 0.72로 낮아져 클래스 간 균형을 다시 조정해야 한다는 점을 확인했습니다.</p>
+    <p class="note-line">후속 실험에서는 학습에 사용하지 않은 CCTV 35개 영상·5,766프레임을 기준으로 모델을 비교했습니다. 이 평가에서 7개 모델의 예측을 결합한 결과 mAP@0.5 0.670을 기록했고, 가장 성능이 높았던 단일 모델(0.632)보다 3.8%p 높았습니다. 이는 해당 평가 영상에서 여러 모델의 예측을 결합하는 것이 추가 이득을 줬다는 의미입니다.</p>
     </div>
 
     <p style="color:var(--gray-700);margin-top:16px;font-size:0.94rem;">
-      <b>v1 attempt 2</b> weight가 배포 가중치로 채택되어 사내 세미오토 라벨링 툴에 얹혀 운영되고 있다.
+      1차 운영 모델의 가중치는 사내 반자동 라벨링 도구의 자동 예측 단계에 연결해 실제 검수 업무에 사용했습니다.
     </p>
 
     <div class="media" style="margin-top:20px;">
@@ -295,7 +294,7 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
       <li><b>deploy-v1</b> 배포본 · antiof1 승자 설정 (AdamW + lr↓ + cls 0.8) 유지 · 60/60 epoch · 40.4h · 3-GPU SLURM. train-inclusive val <b>mAP50 0.9932 · mAP50-95 0.9447</b> <span style="color:var(--sub, #6B7280);">(sanity 지표 · §7 held-out 정직 지표와 별개)</span>. TRT FP16 export 시 <b>mAP retention 100.00% · loss 0.00 pp</b> — antiof1(99.18%)보다 우수.</li>
     </ul>
 
-    <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. End-to-end Tracking (BOTSORT + ReID)</h3>
+    <h3 id="tracking" style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. 가려진 객체의 ID를 이어주는 추적 기능</h3>
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>JDE (Joint Detection & Embedding) 실무 등가로 <b>Ultralytics BOTSORT + ReID</b> (<code>with_reid: True</code>) 채택.</li>
       <li>appearance-based re-identification으로 <b>occlusion 복구</b> (사람이 트럭 뒤로 사라졌다 재등장해도 같은 ID 유지).</li>
@@ -634,7 +633,7 @@ Cache JSON (extended schema)
     </div>
   </div>
 
-  <h2 class="section-title" id="deployment">05 · Deployment &amp; Runtime Optimization — deploy-v1</h2>
+  <h2 class="section-title" id="deployment">04 · 배포와 추론 최적화</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       §5의 예상치 대신 all-data 재학습 <b>60/60 epoch · 40.4h · 3-GPU SLURM</b> 완주 후 실측. antiof1 승자 설정(AdamW + lr↓ + cls 0.8) 그대로 유지.
@@ -685,7 +684,7 @@ Cache JSON (extended schema)
     </p>
   </div>
 
-  <h2 class="section-title"><span class="num">10 ·</span> Zero-shot 정량 검증 — Slice A upper bound · Slice C 신규 촬영</h2>
+  <h2 class="section-title"><span class="num">05 ·</span> 학습에 없던 신규 영상에서 추가 확인</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       §8 정성 갤러리와 별개로, Model-Compare 도구로 <b>정량</b> 검증까지 진행. Slice A는 학습 데이터라 upper bound sanity, Slice C는 학습 종료 후 촬영해 zero-shot 확인.
@@ -727,7 +726,7 @@ Cache JSON (extended schema)
     </p>
   </div>
 
-  <h2 class="section-title">07 · Lessons &amp; Remaining Hard Cases</h2>
+  <h2 class="section-title" id="conclusion">06 · 결론과 남은 과제</h2>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
       <li>이전 mAP 95%는 프레임 단위 split으로 leakage가 새서 부풀린 수치였다. 씬 단위 held-out으로 재정립한 0.6대가 실제 성능이었다.</li>
@@ -740,7 +739,9 @@ Cache JSON (extended schema)
     </ul>
   </div>
   </details>
-<div class="article-callout"><strong>평가 지표 해석.</strong> v1의 poc_eval per-class F1, v2의 test_poc mAP@0.5, deploy-v1의 train-inclusive validation 수치는 데이터 분할과 평가 목적이 서로 다릅니다. 서로 직접 비교 가능한 단일 성능 추이로 해석하지 않도록 각 결과의 평가셋과 사용 목적을 함께 확인해야 합니다.</div>
+<div class="article-callout"><strong>결론.</strong> 초기 라벨만으로 시작해 SAM2 기반 반자동 라벨링, 사람의 검수, 취약 장면 선별, 데이터 보강과 재학습을 연결하는 파이프라인을 구축했습니다. 영상 단위로 평가 데이터를 분리해 실제 일반화 성능을 확인했고, 후속 실험에서는 7개 모델 예측 결합으로 mAP@0.5 0.670을 달성했습니다. 검출 결과에는 객체 추적과 재식별을 추가했으며, 추론 최적화에서는 TensorRT FP16으로 PyTorch 대비 약 3.9배 빠른 처리를 확인했습니다. 다만 장시간 가림 이후 ID가 바뀌는 사례와 희소 객체의 미검출은 남아 있어, 추적 연결 규칙과 추가 라벨 확보가 후속 과제입니다.</div>
+    </div>
+    </main>
   </div>
 </section>
 
