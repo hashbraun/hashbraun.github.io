@@ -88,7 +88,23 @@
   <h2 class="section-title" id="method">03 · Implementation — 검출, 마스크 전파, 반복 라벨링</h2>
   <div class="card-block">
     <p><b>탑뷰 전용 세그멘테이션 모델을 먼저 학습했습니다.</b> 정면·측면 시점 중심의 사전학습 모델만으로는 엘리베이터 내부의 탑뷰 영상에서 객체 경계를 안정적으로 찾기 어려웠습니다. 이에 4K CCTV 19K 프레임과 241개 시퀀스를 사용해 YOLO11m-seg를 파인튜닝하고, 객체 위치뿐 아니라 마스크까지 자동으로 생성하도록 했습니다.</p>
-    <p style="margin-top:12px;"><b>SAM2 입력은 중심점에서 폴리곤 마스크로 바꿨습니다.</b> 중심점 방식은 객체의 대략적인 위치만 전달하므로, 초기 마스크가 불완전하면 배경까지 포함한 상태로 다음 프레임에 전파될 수 있었습니다. 반면 폴리곤 마스크는 객체의 영역과 경계를 함께 전달하므로, 검증된 초기 마스크를 기준으로 후속 프레임의 형태를 더 안정적으로 유지할 수 있었습니다.</p>
+<div class="media" style="margin-top:20px;">
+<p class="media-caption">세부 처리 구조입니다. YOLO11m-seg가 객체 영역을 찾으면 폴리곤 마스크를 SAM2 입력으로 전달합니다. SAM2는 이를 기준으로 후속 프레임의 마스크를 추적하고, 신뢰도가 낮거나 수정이 필요한 프레임은 검수 후보로 모읍니다.</p>
+<img src="../assets/p01/architecture.png"
+           alt="YOLO11m-seg 검출 결과를 폴리곤 프롬프트로 변환하고 SAM2 전파와 검수 후보 큐로 연결하는 구조" />
+    </div>
+    <p style="margin-top:12px;"><b>SAM2 입력은 중심점에서 폴리곤 마스크로 바꿨습니다.</b> 중심점 방식은 객체의 대략적인 위치만 전달하므로, 초기 마스크가 불완전하면 배경까지 포함한 상태로 다음 프레임에 전파될 수 있었습니다.</p>
+<div class="media">
+<p class="media-caption">기존 중심점 프롬프트 방식입니다. 초기 마스크가 부정확하면 중심점 하나만으로 객체의 형태와 경계를 충분히 전달하지 못해, 프레임이 진행될수록 마스크가 주변 영역으로 벗어나는 현상이 나타납니다.</p>
+<img src="../assets/p01/demo_centroid.gif"
+             alt="중심점 프롬프트를 사용했을 때 60프레임 동안 마스크가 객체에서 벗어나는 예시" />
+      </div>
+<p>반면 폴리곤 마스크는 객체의 영역과 경계를 함께 전달하므로, 검증된 초기 마스크를 기준으로 후속 프레임의 형태를 더 안정적으로 유지할 수 있었습니다.</p>
+<div class="media">
+<p class="media-caption">개선한 폴리곤 마스크 프롬프트 방식입니다. 점 하나가 아니라 객체의 영역과 경계를 함께 전달해, 초기 마스크를 기준으로 후속 프레임에서도 형태가 더 안정적으로 유지되도록 했습니다.</p>
+<img src="../assets/p01/demo_polygon.gif"
+             alt="폴리곤 마스크 프롬프트를 사용해 객체 경계를 유지하는 예시" />
+      </div>
     <h3 class="article-subtitle">Active Learning Loop — 저신뢰 프레임을 재학습으로 연결</h3>
     <p><b>모델 예측에서 검수 대상을 고르고, 수정 라벨을 다음 학습에 되돌리는 루프를 별도로 구현했습니다.</b> 단순히 자동 라벨을 생성하는 데서 끝내지 않고, 검출 결과 중 confidence가 0.7 이하인 예측을 자동으로 검수 후보로 선별해 웹 도구의 작업 큐로 전달했습니다.</p>
     <ol style="padding-left:20px;color:var(--gray-700);line-height:1.8;margin-top:8px;">
@@ -99,29 +115,18 @@
     </ol>
     <p style="margin-top:10px;">이 과정을 통해 <b>모델 예측 → 검수 후보 선별 → 사람의 수정 → 데이터셋 갱신 → 재학습</b>이 이어지는 실제 데이터 피드백 루프를 구성했습니다. 별도의 획득 함수나 불확실성 추정 알고리즘을 새로 제안한 것이 아니라, 저신뢰 프레임을 검수 우선순위로 활용하는 운영형 Active Learning 구현입니다.</p>
     <p style="margin-top:12px;"><b>여러 작업자가 함께 사용할 수 있도록 웹 도구로 배포했습니다.</b> FastAPI와 React/Vite로 검수 인터페이스를 구성하고, Docker·SLURM·NAS를 연결해 모델 실행과 데이터 저장을 분리했습니다.</p>
-
-    <div class="media" style="margin-top:20px;">
-<p class="media-caption">세부 처리 구조입니다. YOLO11m-seg가 객체 영역을 찾으면 폴리곤 마스크를 SAM2 입력으로 전달합니다. SAM2는 이를 기준으로 후속 프레임의 마스크를 추적하고, 신뢰도가 낮거나 수정이 필요한 프레임은 검수 후보로 모읍니다.</p>
-<img src="../assets/p01/architecture.png"
-           alt="YOLO11m-seg 검출 결과를 폴리곤 프롬프트로 변환하고 SAM2 전파와 검수 후보 큐로 연결하는 구조" />
-    </div>
-
-    <div class="media">
-<p class="media-caption">기존 중심점 프롬프트 방식입니다. 초기 마스크가 부정확하면 중심점 하나만으로 객체의 형태와 경계를 충분히 전달하지 못해, 프레임이 진행될수록 마스크가 주변 영역으로 벗어나는 현상이 나타납니다.</p>
-<img src="../assets/p01/demo_centroid.gif"
-             alt="중심점 프롬프트를 사용했을 때 60프레임 동안 마스크가 객체에서 벗어나는 예시" />
-      </div>
-      <div class="media">
-<p class="media-caption">개선한 폴리곤 마스크 프롬프트 방식입니다. 점 하나가 아니라 객체의 영역과 경계를 함께 전달해, 초기 마스크를 기준으로 후속 프레임에서도 형태가 더 안정적으로 유지되도록 했습니다.</p>
-<img src="../assets/p01/demo_polygon.gif"
-             alt="폴리곤 마스크 프롬프트를 사용해 객체 경계를 유지하는 예시" />
-      </div>
-
-    <div class="media" style="margin-top:16px;">
+<div class="media" style="margin-top:16px;">
 <p class="media-caption">웹 라벨링 도구 사용 화면입니다. 자동 생성된 마스크를 검수하고 필요한 부분만 수정할 수 있도록 구성해, 프레임마다 반복하던 수동 입력을 줄였습니다.</p>
 <img src="../assets/p01/tool_ux.gif"
            alt="웹 라벨링 도구에서 자동 생성된 마스크를 검수하고 수정하는 작업 흐름" />
     </div>
+
+    
+
+    
+      
+
+    
   </div>
 
   <!-- STAR: RESULT -->
