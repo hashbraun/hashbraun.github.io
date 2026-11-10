@@ -49,7 +49,7 @@
 
 <section>
   <div class="detail-article-layout">
-    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem &amp; Data Analysis</a><a href="#baseline">Baseline &amp; Model Selection</a><a href="#conditioning">Action Conditioning</a><a href="#representation">Action Representation</a><a href="#anchoring">Temporal Anchoring</a><a href="#optimization">Fine-tuning &amp; Optimization</a><a href="#outcome">Evaluation &amp; Results</a><a href="#retrospective">Retrospective</a></nav></aside>
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">Problem &amp; Data Analysis</a><a href="#baseline">Baseline &amp; Model Selection</a><a href="#conditioning">Action Conditioning</a><a href="#representation">Action Representation</a><a href="#anchoring">Temporal Anchoring</a><a href="#optimization">Fine-tuning &amp; Optimization</a><a href="#outcome">Evaluation &amp; Results</a><a href="#reflection">Technical Issues &amp; Improvements</a></nav></aside>
     <main class="article-main">
 
   <div class="media">
@@ -188,7 +188,7 @@
     </div>
 
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">낮은 Action MAE 샘플의 생성 영상</h3>
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
+    <div style="display:grid; grid-template-columns:1fr; gap:20px; margin-top:20px;">
       <div>
         <img src="../assets/p03/good_sample_085.gif"
              alt="Good case rollout 1 — sample_000085 (MAE 0.332). Cosmos3-Nano B4 step6000 pred 16 frame @ 6fps loop"
@@ -220,11 +220,11 @@
     </ul>
   </div>
 
-  <h2 class="section-title" id="retrospective">08 · Retrospective — 액션 표현과 생성 결과의 정렬</h2>
+  <h2 class="section-title" id="reflection">08 · Technical Issues &amp; Improvements — 액션 표현과 생성 결과의 정렬</h2>
   <div class="card-block">
-    <p>이번 프로젝트에서 가장 큰 개선은 모델 규모를 키우는 것이 아니라, 사전학습 모델의 액션 입력 구조와 SO-100 데이터의 표현 차이를 찾아 조정한 데서 나왔습니다. Action Injection으로 액션 특징이 영상 생성 경로에 들어가도록 연결했지만, 절대 관절 각도를 그대로 사용한 실험은 초기 모델보다 점수가 나빠졌습니다. 이후 EE-Delta와 Gripper 정규화를 적용하자 점수가 0.2454로 개선됐고, 최종 B4 step 6000 체크포인트는 0.2407을 기록했습니다.</p>
-    <p style="margin-top:10px;">216개 rollout을 Action MAE 순으로 정렬해 비교한 결과, 큰 Gripper 이동이나 배경 물체가 많은 장면에서 액션 예측 오차가 높아지고 후반부 영상의 안정성이 낮아지는 경향을 확인했습니다. 따라서 평균 점수만으로 모델을 판단하기보다 액션 오차와 생성 영상을 함께 분석해 취약한 입력 조건을 찾는 과정이 중요했습니다.</p>
-    <p style="margin-top:10px;">이 프로젝트의 성과는 로봇 제어 정책을 완성하거나 생성 영상을 실제 정책 학습에 검증한 것이 아니라, 사전학습 비디오 생성 모델을 로봇 액션 조건에 맞게 적응시키고 평가 데이터의 실패 양상을 분석한 데 있습니다. 앞선 SO-101 VLA 시연 수집 경험에서 출발한 데이터 효율성 문제를, 별도의 SO-100 데이터셋을 이용한 action-conditioned 미래 영상 예측과 모델 적응 실험으로 확장했습니다.</p>
+    <p>Action Injection을 추가한 뒤에도 액션 조건이 생성 결과에 충분히 반영되지 않는 문제가 있었습니다. 처음에는 절대 관절 각도를 입력했지만, 사전학습 모델이 기대하는 액션 표현과 데이터의 관절 값 범위가 맞지 않아 초기 모델보다 결과가 나빠졌습니다. 이를 확인한 뒤 End-Effector Delta와 Gripper 값을 정규화해 입력 표현을 바꾸었고, 액션 입력의 스케일과 의미를 모델의 학습 경로에 맞추는 방향으로 수정했습니다.</p>
+    <p style="margin-top:10px;">샘플별 결과를 비교했을 때 큰 Gripper 이동이 포함되거나 배경 물체가 많은 장면에서 Action MAE가 높아지고, rollout 후반부에 로봇 팔의 형상이나 물체 위치가 흐트러지는 사례가 나타났습니다. 현재는 제한된 평가 샘플에서 실패 조건을 확인한 단계이므로, 이후에는 액션 변화량과 장면 복잡도에 따른 데이터 분포를 나누어 분석하고, 특히 큰 동작이 포함된 시연을 보강할 예정입니다.</p>
+    <p style="margin-top:10px;">생성 영상의 시각적 일관성이 실제 로봇 동작의 정확성을 보장하지는 않습니다. 다음 단계에서는 예측 영상만으로 정책 성능을 판단하지 않고, 생성된 미래 상태와 실제 관측의 차이를 구간별로 확인한 뒤 시뮬레이션 또는 실제 정책 평가와 연결하는 방법을 검토할 예정입니다. 이 프로젝트는 별도의 SO-100 데이터셋으로 수행했으며, 앞선 SO-101 시연 데이터를 직접 재사용하지 않았습니다.</p>
   </div>
   </div>
 </main>
