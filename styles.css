@@ -821,3 +821,23 @@ section {
 @media(max-width:900px) { .showcase-slide { padding:18px; } .showcase-visual { aspect-ratio:16/9; } }
 @media(max-width:680px) { .showcase-toolbar { margin-top:18px; } .showcase-slide { gap:0; padding:12px; } .showcase-visual { aspect-ratio:16/9; } .showcase-content { padding:16px 4px 0; } .showcase-content h3 { font-size:1.35rem; } .showcase-lead { font-size:.9rem; } .showcase-star { gap:10px 12px; } .showcase-star p { font-size:.78rem; } .showcase-next-batch { gap:8px 12px; } .article-intro { padding:17px 18px; font-size:.95rem; } .article-toc { gap:8px 12px; font-size:.77rem; } }
 @media(prefers-reduced-motion:reduce) { .showcase-visual img,.showcase-arrow,.showcase-dot { transition:none; } }
+
+
+/* Detail article with persistent left-side section navigation */
+.detail-article-layout { max-width:var(--content-max); margin:0 auto; padding:0 24px 48px; display:grid; grid-template-columns:190px minmax(0,1fr); gap:38px; align-items:start; }
+.article-sidebar { position:sticky; top:82px; align-self:start; }
+.article-sidebar-title { margin:0 0 10px 12px; color:var(--mute); font:700 .68rem var(--font-mono); letter-spacing:.09em; text-transform:uppercase; }
+.article-main { min-width:0; }
+.article-main .article-intro { max-width:none; margin:0 0 24px; }
+.article-main .article-section { max-width:none; margin:0; }
+.article-main .article-toc { display:flex; flex-direction:column; flex-wrap:nowrap; gap:3px; margin:0; padding:0; border:0; font-size:.86rem; }
+.article-main .article-toc a { display:block; padding:9px 12px; border-radius:7px; color:var(--sub); text-decoration:none; line-height:1.4; }
+.article-main .article-toc a:hover,.article-main .article-toc a:focus-visible { background:var(--bg-soft); color:var(--ink); }
+.media-caption { margin:8px 0 0; color:var(--sub); font-size:.86rem; line-height:1.75; }
+@media(max-width:900px) {
+  .detail-article-layout { grid-template-columns:1fr; gap:14px; padding:0 20px 40px; }
+  .article-sidebar { position:relative; top:auto; z-index:2; background:rgba(255,255,255,.96); padding:8px 0; border-bottom:1px solid var(--line); }
+  .article-sidebar-title { margin-left:0; }
+  .article-main .article-toc { flex-direction:row; flex-wrap:wrap; gap:4px 8px; }
+  .article-main .article-toc a { padding:7px 9px; font-size:.78rem; }
+}
