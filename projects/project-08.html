@@ -45,19 +45,22 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#scope">목표와 범위</a><a href="#implementation">핵심 구현</a><a href="#results">결과</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p08/overview.png"
          alt="System Overview — MP4 → Adaptive ffmpeg → Qwen3-VL (structured) → Timestamped Action Segments" />
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <h2 class="section-title" id="problem"><span class="num">S ·</span> Situation</h2>
   <div class="card-block">
     <p>15개 카테고리에 대한 <b>초 단위 정밀 타임스탬프 액션 세그먼트</b>가 필요했지만, <b>전용 action recognizer를 새로 학습할 자원과 시간이 없었다</b>.</p>
     <p style="margin-top:10px;">또한 원본 클립이 길어 그대로 VLM에 넣으면 <b>OOM</b>이 자주 발생, 전체 데이터셋 배치가 불가능했다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title" id="scope"><span class="num">T ·</span> Task</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>학습 없이도 신뢰 가능한 액션 세그먼트를 뽑는 <b>VLM 파이프라인</b>을 설계한다.</li>
@@ -65,7 +68,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title" id="implementation"><span class="num">A ·</span> Action</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>Qwen3-VL structured output 파이프라인</b> — 액션 정의, 우선순위 규칙, 가시성 조건, 시간 임계값(≥5s)을 강제하는 <b>constraint-aware 프롬프트 엔지니어링 프레임워크</b>를 설계해 라벨 신뢰도를 높이고 hallucination을 완화.</li>
@@ -89,7 +92,7 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <h2 class="section-title" id="results"><span class="num">R ·</span> Result</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       전용 액션 인식기를 학습하지 않고도, <b>Qwen3-VL + constraint-aware structured output + adaptive ffmpeg</b>의 조합만으로 원본 MP4를 <b>초 단위 타임스탬프 액션 세그먼트</b>로 변환하는 파이프라인을 확보하였고, SLURM 위에서 <b>전 데이터셋 배치 처리</b>가 가능한 상태로 안착시켰다.
@@ -106,6 +109,8 @@
         * 9개 샘플 프레임에 Qwen3-VL이 출력한 <b>MM:SS 타임스탬프 · 액션 라벨</b>을 오버레이. Bp_free17 / Hyeyoung_Lee / room01 세션.
       </p>
     </div>
+  </div>
+</main>
   </div>
 </section>
 
