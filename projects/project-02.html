@@ -176,7 +176,7 @@
 
     <div class="media" style="margin-top:20px;">
       <img src="../assets/p02/hard_case_fn_gallery.png"
-           alt="Hard cases 갤러리 — dump truck (v1 att2 F1 0.15, 4 프레임) + pump car (v1 att2 F1 0.57 → v2 WBF 0.53으로 소폭 후퇴, 4 프레임) 2×4 그리드. 여전히 남은 minority-class FN 실제 예시" />
+           alt="덤프트럭과 펌프카의 미검출 사례를 모은 이미지. 희소 객체가 작거나 가려진 장면에서 여전히 놓치는 상황을 보여줌" />
       <p class="media-caption">남아 있는 미검출 사례입니다. 덤프트럭은 초기 운영 모델에서 F1 0.15로 낮아 작은 크기나 가림이 있는 장면을 여전히 놓쳤습니다. 펌프카는 후속 모델 결합 과정에서 F1이 0.57에서 0.53으로 소폭 낮아졌습니다. 전체 평균이 좋아져도 특정 클래스의 성능이 함께 좋아지는 것은 아니므로, 이 사례들은 추가 라벨링과 클래스별 검수가 필요한 대상으로 남겼습니다.</p>
     </div>
   </div>
@@ -192,8 +192,8 @@
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">1. 정직한 평가 확립</h3>
     <ul style="padding-left:18px;color:var(--gray-700);">
-      <li>기존 mixed test (5,916)를 <b>test_poc (5,766 · 35 씬)</b> / test_aihub (110) / test_wd (40) 로 소스별 분리 → pure CCTV 지표 확립.</li>
-      <li>이전 프레임 무작위 분할에서는 약 95% mAP가 나왔지만, 같은 CCTV 영상의 인접 프레임이 학습과 평가에 함께 들어간 영향이 컸습니다. 영상 단위로 분리하자 mAP는 0.4~0.6 수준으로 내려갔고, 이 수치를 처음 보는 장면에 대한 성능 판단 기준으로 삼았습니다.</li>
+      <li>기존에 서로 다른 출처가 섞여 있던 평가 데이터 5,916장을 CCTV 영상 35개·5,766프레임, AIHub 110장, 기타 40장으로 나눠 CCTV 환경만의 성능을 따로 확인했습니다.</li>
+      <li>이전 프레임 무작위 분할에서는 약 95% mAP가 나왔지만, 같은 CCTV 영상의 인접 프레임이 학습과 평가에 함께 들어간 영향이 컸습니다. 학습에서 제외한 영상으로 다시 평가하자 mAP는 0.4~0.6 수준으로 내려갔고, 이 수치를 처음 보는 장면에 대한 성능 판단 기준으로 삼았습니다.</li>
     </ul>
 
     <h3 style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">2. AIHub partial-label 회귀 진단</h3>
@@ -295,13 +295,13 @@ antiof1 (AdamW + lr↓ + cls 0.8) ★  0.632
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>배포 카메라 = 학습 도메인이므로 held-out 검증 후 <b>train + val + test_poc 모두 편입 재학습</b> (all-data 51K frames).</li>
       <li>산업 표준 pipeline (Kaggle 우승 · Waymo · Amazon SageMaker AutoML): 개발 시 held-out으로 방법 검증 → 배포용은 all data 재학습.</li>
-      <li><b>deploy-v1</b> 배포본 · antiof1 승자 설정 (AdamW + lr↓ + cls 0.8) 유지 · 60/60 epoch · 40.4h · 3-GPU SLURM. train-inclusive val <b>mAP50 0.9932 · mAP50-95 0.9447</b> <span style="color:var(--sub, #6B7280);">(sanity 지표 · §7 held-out 정직 지표와 별개)</span>. TRT FP16 export 시 <b>mAP retention 100.00% · loss 0.00 pp</b> — antiof1(99.18%)보다 우수.</li>
+      <li><b>deploy-v1</b> 배포본 · antiof1 승자 설정 (AdamW + lr↓ + cls 0.8) 유지 · 60/60 epoch · 40.4h · 3-GPU SLURM. 학습 데이터가 포함된 검증 점수는 <b>mAP50 0.9932 · mAP50-95 0.9447</b> <span style="color:var(--sub, #6B7280);">(학습에 포함된 데이터의 점수이므로 일반화 성능과 별개)</span>. TRT FP16 export 시 <b>mAP retention 100.00% · loss 0.00 pp</b> — antiof1(99.18%)보다 우수.</li>
     </ul>
 
     <h3 id="tracking" style="margin-top:22px;font-size:1.02rem;color:var(--gray-900);">6. 가려진 객체의 ID를 이어주는 추적 기능</h3>
     <ul style="padding-left:18px;color:var(--gray-700);">
-      <li>JDE (Joint Detection & Embedding) 실무 등가로 <b>Ultralytics BOTSORT + ReID</b> (<code>with_reid: True</code>) 채택.</li>
-      <li>appearance-based re-identification으로 <b>occlusion 복구</b> (사람이 트럭 뒤로 사라졌다 재등장해도 같은 ID 유지).</li>
+      <li><b>BoT-SORT</b>로 프레임 사이 객체의 위치와 움직임을 연결하고, <b>ReID(외형 재식별)</b>로 가려졌다가 다시 나타난 객체가 이전 객체인지 확인하도록 구성했습니다.</li>
+      <li>단순 위치 추적만으로는 긴 가림 이후 ID가 바뀔 수 있으므로, 외형 특징을 함께 비교해 <b>가림 이후에도 같은 객체 ID를 이어주는 방식</b>을 선택했습니다.</li>
       <li>실측 데모 (<span style="font-family:'JetBrains Mono',monospace;">manual_css411202z045</span>, 451 frames): dump truck·fork lift 2개 유효 ID 전 구간 안정 유지, max_conf <b>0.97~0.98</b>.</li>
     </ul>
     <div class="media" style="margin-top:14px;">
@@ -644,7 +644,7 @@ Cache JSON (extended schema)
       <div class="kpi-tile" style="border-top:3px solid #059669;">
         <div class="k-label">deploy-v1 val · mAP@0.5</div>
         <div class="k-value">0.9932</div>
-        <div class="k-sub">train-inclusive · 60/60 epoch</div>
+        <div class="k-sub">학습 데이터 포함 · 60/60 epoch</div>
       </div>
       <div class="kpi-tile" style="border-top:3px solid #059669;">
         <div class="k-label">mAP@0.5-95</div>
@@ -735,7 +735,7 @@ Cache JSON (extended schema)
       <li>외부 데이터를 그대로 편입했더니 라벨 온톨로지가 달라 unlabeled 객체가 background로 학습되면서 person·fork lift가 오히려 회귀했다. SAM2 crop 합성으로 외형만 흡수해서 우회했다.</li>
       <li>씬 다양성을 5×로 늘린 것(32→155)이 하이퍼파라미터 튜닝 총합보다 큰 편익(+14pp)이었다.</li>
       <li>codex의 파라미터 제안 + regression alarm 조합이 4h짜리 실패 학습을 자동으로 걸러줬다.</li>
-      <li>Held-out은 방법 검증용이지 배포용 모델이 아니다. 산업 표준대로 검증 후 all-data로 다시 학습해서 배포했다.</li>
+      <li>학습에서 제외한 영상은 모델 선택과 일반화 성능 확인에 사용했습니다. 최종 배포 모델은 설정을 결정한 뒤 확보한 데이터를 모두 사용해 다시 학습했습니다.</li>
       <li>Signalman 처럼 minority attribute 는 detection head 재학습 대신 <b>attribute head 분리 학습</b>이 안전했다. detection 성능 보전 + 학습 실패 시 fallback 명확.</li>
       <li>Tracking 시각 안정화는 한 번의 처리로 끝나지 않았다. Kalman → EMA → linking 각 단계가 이전 단계의 실패 원인 진단에서 나왔고, 리뷰어 피드백이 다음 개선의 트리거가 되었다.</li>
     </ul>
