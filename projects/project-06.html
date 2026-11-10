@@ -48,19 +48,22 @@
 </div>
 
 <section>
+  <div class="detail-article-layout">
+    <aside class="article-sidebar"><div class="article-sidebar-title">이 페이지에서</div><nav class="article-toc" aria-label="본문 목차"><a href="#problem">문제 정의</a><a href="#scope">목표와 범위</a><a href="#implementation">핵심 구현</a><a href="#results">결과</a></nav></aside>
+    <main class="article-main">
 
   <div class="media">
     <img src="../assets/p06/overview.png"
          alt="System Overview — Depth Camera → PointCloud → OctoMap → Planning Scene → MoveIt2/OMPL → JointTrajectory Controller → UR5e (Gazebo), with reactive replan feedback loop" />
   </div>
 
-  <h2 class="section-title"><span class="num">S ·</span> Situation</h2>
+  <h2 class="section-title" id="problem"><span class="num">S ·</span> Situation</h2>
   <div class="card-block">
     <p>정적 플래너만으로는 <b>실행 중인 궤적에 갑자기 들어오는 동적 장애물</b>을 회피할 수 없다. 실제 UR5e 하드웨어를 다루기 전, <b>Gazebo 시뮬레이션 위에서 반응형 재계획 파이프라인의 동작을 먼저 검증</b>할 필요가 있었다.</p>
     <p style="margin-top:10px;">특히 팀프로젝트 특성상 <b>장애물 감지 → 정지 → 후퇴 → 재계획 → 재개</b>가 별도 인식기 학습 없이도 안정적으로 트리거되도록 설계 자체를 단순화해야 했다.</p>
   </div>
 
-  <h2 class="section-title"><span class="num">T ·</span> Task</h2>
+  <h2 class="section-title" id="scope"><span class="num">T ·</span> Task</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li>Gazebo 상의 depth camera 스트림을 <b>확률적 3D 격자(OctoMap)</b>로 통합해 MoveIt2 planning scene에 반영한다.</li>
@@ -69,7 +72,7 @@
     </ul>
   </div>
 
-  <h2 class="section-title"><span class="num">A ·</span> Action</h2>
+  <h2 class="section-title" id="implementation"><span class="num">A ·</span> Action</h2>
   <div class="card-block">
     <ul style="padding-left:18px;color:var(--gray-700);">
       <li><b>Perception 파이프라인 (Gazebo Sim)</b> — Gazebo depth camera → PointCloud → <b>OctoMap (OccupancyMapUpdater)</b> → Planning Scene 반영. 별도 인식기(YOLO/ICP)를 학습·연결하지 않고, <b>OctoMap이 유지하는 확률적 3D 점유 격자 자체를 장애물 표현</b>으로 사용.</li>
@@ -107,7 +110,7 @@
     </div>
   </div>
 
-  <h2 class="section-title"><span class="num">R ·</span> Result</h2>
+  <h2 class="section-title" id="results"><span class="num">R ·</span> Result</h2>
   <div class="card-block">
     <p style="color:var(--gray-700);">
       Gazebo 상 UR5e에서 <b>Perception–Planning–Control–Recovery FSM 4단이 결합된 반응형 리플래닝</b>을 end-to-end로 동작시켰다. 지도 데이터량 변화(bytes-diff, τ ≈ 160)만으로도 <b>동적 장애물 진입 → 즉시 정지 → 후퇴 → 재계획 → 재개</b>가 별도 인식기 없이 트리거되는 것을 로그·RViz로 확인하였다 (예: <span style="font-family:'JetBrains Mono',monospace;">14615 → 14455 (Δ160)</span> 감지 → replan SUCCESS).
@@ -136,6 +139,8 @@
       <li>Robot &mdash; <b>UR5e (6-DOF, Gazebo Sim)</b>, JointTrajectory Controller</li>
       <li>Team &mdash; 양태훈 (데이터사이언스) · 오상민 (AI) · 조윤재 (AI) — 인공지능종합설계 팀프로젝트</li>
     </ul>
+  </div>
+</main>
   </div>
 </section>
 
