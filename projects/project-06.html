@@ -53,9 +53,9 @@
     <main class="article-main">
 
   <div class="media">
-    <img src="../assets/p06/overview.png"
+<p class="media-caption">깊이 카메라 관측을 점유 지도로 변환해 경로 계획에 반영하고, 지도 변화 이벤트에 따라 정지·후퇴·재계획·재개를 수행하는 흐름입니다.</p>
+<img src="../assets/p06/overview.png"
          alt="System Overview — Depth Camera → PointCloud → OctoMap → Planning Scene → MoveIt2/OMPL → JointTrajectory Controller → UR5e (Gazebo), with reactive replan feedback loop" />
-      <p class="media-caption">깊이 카메라 관측을 점유 지도로 변환해 경로 계획에 반영하고, 지도 변화 이벤트에 따라 정지·후퇴·재계획·재개를 수행하는 흐름입니다.</p>
   </div>
   <div class="article-callout">
     <strong>프로젝트 개요.</strong> UR5e 시뮬레이션에서 깊이 카메라와 OctoMap으로 작업 공간을 갱신하고, MoveIt 2 경로 계획 중 동적 장애물 진입이 감지되면 Recovery FSM으로 정지·후퇴·재계획·재개를 수행하는 반응형 모션 플래닝 파이프라인을 구현했습니다.
@@ -88,20 +88,22 @@
   <p>재계획 감시 노드가 임계값 초과를 감지하면 Monitor → Detect → Stop → Back-off → Replan → Resume 순서로 상태를 전이하도록 구성했습니다. UR5e의 정지·후퇴·재개 명령은 JointTrajectory Controller를 통해 전달했습니다.</p>
 
   <div class="media" style="margin-top:20px;">
-    <img src="../assets/p06/architecture.png" alt="Architecture — Perception, Planning, Control and Recovery FSM" />
-    <p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
+<p class="media-caption">Perception, Planning, Control과 Recovery FSM의 연결 구조입니다. 센서 정보가 Planning Scene에 반영되고 지도 변화 이벤트가 로봇 정지와 재계획을 트리거합니다.</p>
+<img src="../assets/p06/architecture.png" alt="Architecture — Perception, Planning, Control and Recovery FSM" />
   </div>
   <div class="media" style="margin-top:16px;">
-    <img src="../assets/p06/octomap_raycasting.png" alt="OctoMap raycasting — free, occupied and unknown voxel updates" />
-    <p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 갱신하며 미관측 영역은 unknown으로 유지합니다.</p>
+<p class="media-caption">OctoMap의 점유 지도 갱신 원리입니다. 광선이 통과한 셀은 free, 광선의 끝점은 occupied로 갱신하며 미관측 영역은 unknown으로 유지합니다.</p>
+<img src="../assets/p06/octomap_raycasting.png" alt="OctoMap raycasting — free, occupied and unknown voxel updates" />
   </div>
-  <div class="media-grid-2" style="margin-top:16px;">
-    <div class="media"><img src="../assets/p06/gazebo_scene.png" alt="Gazebo UR5e simulation scene with static and dynamic obstacles" /><p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치했습니다.</p></div>
-    <div class="media"><img src="../assets/p06/log_replan.png" alt="Replanning event log showing map data change, stop and successful replanning" /><p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청과 새 경로 실행이 이어진 로그입니다.</p></div>
-  </div>
+  <div class="media">
+<p class="media-caption">Gazebo에서 구성한 UR5e 실험 장면입니다. 목표 위치와 정적 장애물, 이동 중 진입하는 동적 장애물을 배치했습니다.</p>
+<img src="../assets/p06/gazebo_scene.png" alt="Gazebo UR5e simulation scene with static and dynamic obstacles" /></div>
+    <div class="media">
+<p class="media-caption">지도 데이터량 변화가 임계값에 도달한 뒤 장애물 감지, 정지, 재계획 요청과 새 경로 실행이 이어진 로그입니다.</p>
+<img src="../assets/p06/log_replan.png" alt="Replanning event log showing map data change, stop and successful replanning" /></div>
   <div class="media" style="margin-top:16px;">
-    <img src="../assets/p06/rqt_graph.png" alt="ROS 2 node and topic graph for Gazebo, MoveIt2, OctoMap, trajectory controller and replanning node" />
-    <p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
+<p class="media-caption">ROS 2 노드와 토픽의 연결 관계입니다. Gazebo, MoveIt2, OctoMap, trajectory controller와 재계획 노드 사이의 데이터 흐름을 확인할 수 있습니다.</p>
+<img src="../assets/p06/rqt_graph.png" alt="ROS 2 node and topic graph for Gazebo, MoveIt2, OctoMap, trajectory controller and replanning node" />
   </div>
 
   <h2 class="section-title" id="results">04 · Experiments &amp; Results</h2>
@@ -113,20 +115,18 @@
       5회 반복 실험에서는 3회 성공(3/5, 60%)으로 기록되었으며, 팀 자체 평가 자율 동작 완성도는 약 86%였습니다.
     </p>
 
-    <div class="media-grid-2" style="margin-top:20px;">
-      <div class="media">
-        <img src="../assets/p06/rviz_octomap.png"
+    <div class="media">
+<p class="media-caption">RViz에서 Planning Scene에 반영된 OctoMap 복셀을 확인한 화면입니다. 깊이 센서가 관측한 공간 정보가 충돌 검사와 경로 계획에 사용됩니다.</p>
+<img src="../assets/p06/rviz_octomap.png"
              alt="RViz — planning scene에 실제로 얹힌 OctoMap 복셀 (보라색). MoveIt MotionPlanning 패널의 Planning/Collision-aware IK/Replanning 옵션과 함께 실행 중인 상태" />
-      <p class="media-caption">RViz에서 Planning Scene에 반영된 OctoMap 복셀을 확인한 화면입니다. 깊이 센서가 관측한 공간 정보가 충돌 검사와 경로 계획에 사용됩니다.</p>
       </div>
       <div class="media">
-        <video src="../assets/p06/demo_replan.mp4"
+<p class="media-caption">동적 장애물이 경로에 진입한 뒤 로봇이 정지하고 후퇴한 다음, 새 경로를 계산해 이동을 재개하는 전체 시연입니다.</p>
+<video src="../assets/p06/demo_replan.mp4"
                autoplay loop muted playsinline
                style="width:100%; display:block; border-radius:8px;"
                aria-label="Demo replan — UR5e가 초록 target 방향으로 이동 중 red 실린더(동적 장애물) 진입 감지 → 정지 → 후퇴 → replan → 재개 시퀀스"></video>
-      <p class="media-caption">동적 장애물이 경로에 진입한 뒤 로봇이 정지하고 후퇴한 다음, 새 경로를 계산해 이동을 재개하는 전체 시연입니다.</p>
       </div>
-    </div>
 
     <ul style="padding-left:18px;color:var(--gray-700); margin-top:16px;">
       <li>실행 환경 &mdash; <b>Ubuntu 22.04 · ROS 2 Humble · Gazebo Classic 11 · RViz 2 · Python 3.10 (rclpy)</b></li>
