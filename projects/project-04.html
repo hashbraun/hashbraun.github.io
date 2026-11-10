@@ -139,7 +139,7 @@
     <h3 class="article-subtitle">결과 해석</h3>
     <p>현재 확인 가능한 성과는 ACT 정책의 실제 양팔 로봇 폐루프 실행과, 관측 구성을 확장한 SmolVLA·LoRA 적응 실험을 수행했다는 점입니다. 다만 ACT와 SmolVLA는 데이터 구성과 카메라 입력, 정책 구조가 동일하게 통제된 비교 실험이 아니며, 정책별 성공률·반복 횟수·궤적 오차를 비교한 정량 벤치마크도 확보하지 않았습니다. </p>
   </div>
-  <h2 class="section-title" id="reflection">05 · Policy Analysis &amp; Reflection</h2>
+  <h2 class="section-title" id="reflection">05 · Technical Issues &amp; Improvements</h2>
   <div class="card-block">
     <h3 class="article-subtitle">ACT — 시연 기반 단일 태스크 모방학습</h3>
     <p>ACT는 수집한 시연으로부터 다음 한 시점의 동작만 예측하는 대신 여러 시점의 액션을 하나의 chunk로 예측합니다. 원 논문은 action chunking으로 유효한 예측 horizon을 줄이고, 겹치는 chunk의 temporal ensembling으로 동작을 부드럽게 연결해 모방학습에서 발생하는 오차 누적을 완화하는 접근을 제시합니다. 태스크별 시연으로 정책을 학습하는 구조이므로, 정해진 조작 과제를 빠르게 학습하고 실제 로봇에 연결하는 기준선으로 활용하기 좋습니다. 반면 정책이 학습한 시연 분포에 크게 의존하기 때문에 물체 위치·초기 상태·조작 방식이 달라지면 학습 데이터 밖의 상태로 벗어나 성능이 저하될 수 있습니다. <a href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">ACT 원 논문</a></p>
