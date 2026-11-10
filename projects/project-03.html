@@ -55,9 +55,7 @@
   <div class="media">
     <img src="../assets/p03/eval_samples.png"
          alt="Eval 샘플 프리뷰 — 6개 SO-100 첫 프레임(상단, 로봇 gripper가 큐브를 조작하는 top-down view)과 각 샘플에 대응하는 15-step joint action 시퀀스(하단, shoulder/elbow/wrist/gripper 6채널 궤적)" />
-    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-      * 챌린지 데이터 예시 &mdash; SO-1초기 프레임 6개(상단)와 이에 대응하는 15-step joint-angle 시퀀스(하단)입니다. 모델은 각 초기 프레임과 액션 시퀀스를 조건으로 미래 15프레임을 생성합니다.
-    </p>
+    <p class="media-caption">챌린지 데이터 예시입니다. SO-100의 초기 프레임 6개(상단)와 이에 대응하는 15-step joint-angle 시퀀스(하단)를 보여줍니다. 모델은 각 초기 프레임과 액션 시퀀스를 조건으로 미래 15프레임을 생성합니다.</p>
   </div>
 
   <div class="case-study-summary" style="margin-bottom:20px;">
@@ -75,25 +73,23 @@
     <div class="media" style="margin-top:16px;">
       <img src="../assets/p03/dataset_eda.png"
            alt="SO-100 챌린지 데이터셋 EDA 9-panel — (상단) Action 분포 히스토그램, Train vs Eval 평균 비교 barplot, joint별 action velocity boxplot. (중단) Δaction 분포, gripper 궤적 20샘플, shoulder lift 궤적 20샘플. (하단) 밝기 분포, wrist roll train/eval 편차, shoulder pan start vs end 산점도" />
-      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-        * 데이터 분석 결과입니다. 관절별 액션 값과 변화량, 속도, 그리퍼·어깨 관절의 궤적, 학습·평가 데이터의 분포 차이를 함께 비교했습니다. 이 분석을 바탕으로 액션 표현을 재설계하고 초기 프레임 정보를 보존하는 후처리를 검토했습니다.
-      </p>
+      <p class="media-caption">SO-100 데이터의 관절별 액션 값·변화량·속도와 그리퍼 및 어깨 관절의 궤적을 분석하고, 학습 데이터와 평가 데이터의 분포 차이를 비교했습니다. 이 결과를 바탕으로 액션 표현을 재설계하고 초기 프레임 정보를 보존하는 후처리를 검토했습니다.</p>
     </div>
   </div>
 
   <h2 class="section-title" id="baseline">02 · Baseline &amp; Model Selection</h2>
   <div class="card-block">
     <p>기반 모델 후보를 고를 때는 생성 품질뿐 아니라 액션 조건을 모델 내부에 연결할 수 있는지, 학습 자원과 추론 시간이 과제 규모에 적합한지를 함께 고려했습니다. Cosmos-Predict3-Nano는 비교 대상인 DreamZero(Wan2.1-I2V-14B)보다 작은 8B급 백본을 사용하고, 액션과 영상 정보를 함께 다루는 구조여서 제한된 실험 자원 안에서 액션 조건부 예측을 검증하기에 적합하다고 판단했습니다.</p>
-    <h3 class="article-subtitle">학습·추론 경로와 모델 선택</h3>
+    <h3 class="article-subtitle">학습 시간과 추론 경로 비교</h3>
     <p>동일한 A6000 Ada 환경에서 비교한 기록상 Cosmos3-Nano는 10k step 환산 학습 시간이 약 1.25시간이었고, DreamZero는 약 12시간이었습니다. DreamZero의 216개 샘플 추론은 33분 48초(샘플당 약 9.4초)가 소요됐습니다. Cosmos3-Nano는 latent 공간에서 액션과 영상 생성을 함께 처리하는 구조이며, DreamZero는 Wan2.1-I2V-14B 백본을 사용해 여러 chunk를 순차 생성하는 경로였습니다. 실험 예산과 전체 샘플 평가 시간을 함께 고려해 Cosmos3-Nano를 주 실험 모델로 선택하고, 이후에는 백본 교체보다 액션 입력 경로와 표현을 개선하는 데 집중했습니다.</p>
-    <h3 style="margin-top:16px; font-size:1.05rem; color:var(--ink);">vs DreamZero &mdash; 학습·추론 시간 (같은 A6000 Ada 기준)</h3>
+    <h3 style="margin-top:16px; font-size:1.05rem; color:var(--ink);">DreamZero와의 학습·추론 시간 비교 (A6000 Ada)</h3>
     <div style="overflow-x:auto; margin-top:10px;">
       <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
         <thead>
           <tr style="background:var(--bg-soft, #F9FAFB); border-bottom:2px solid var(--line, #E5E7EB);">
             <th style="text-align:left;   padding:8px 12px;">모델</th>
             <th style="text-align:left;   padding:8px 12px;">학습 (10k step 환산)</th>
-            <th style="text-align:left;   padding:8px 12px;">추론 (216 sample)</th>
+            <th style="text-align:left;   padding:8px 12px;">추론 시간</th>
             <th style="text-align:left;   padding:8px 12px;">비고</th>
           </tr>
         </thead>
@@ -105,17 +101,15 @@
             <td style="padding:8px 12px;">Wan2.1-I2V-14B backbone · Vizuara SO-101 LoRA zero-shot</td>
           </tr>
           <tr style="background:rgba(49,130,246,0.06);">
-            <td style="padding:8px 12px;"><b>Cosmos3-Nano (v5_base)</b></td>
+            <td style="padding:8px 12px;"><b>Cosmos3-Nano</b></td>
             <td style="padding:8px 12px;"><b>~ 1.25 h</b> (10k step 환산, 2.2 it/s)</td>
-            <td style="padding:8px 12px;">Blackwell 이관 시 diffusion step <b>7× 가속</b></td>
-            <td style="padding:8px 12px;"><b>step 당 ~9.6× 빠름</b> (0.45 s vs 4.32 s)</td>
+            <td style="padding:8px 12px;">216개 샘플 전체 추론 시간: 동일 조건 측정 기록 미확인</td>
+            <td style="padding:8px 12px;">Blackwell 별도 이관 실험에서 diffusion step 약 11초 → 1.5초(약 7× 단축)</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic;">
-      * Cosmos3-Nano가 학습·추론 모두 압도적으로 빠른 이유는 <b>(1) 8B 백본이 DreamZero의 14B보다 작고, (2) latent 공간에서 action-video joint diffusion으로 chunk 반복 없이 한 번에 예측, (3) FlashAttention · Blackwell nightly torch로 kernel 최적화</b>. DreamZero는 chunk 방식(1 sample = 2 chunk × diffusion 8 step × 2회)이라 I/O·KV cache overhead가 더 큼.
-    </p>
+    <p class="media-caption">모델 구조와 실행 환경은 처리 시간에 영향을 주는 요소입니다. 다만 Cosmos3-Nano의 216개 샘플 전체 추론 시간은 동일한 A6000 Ada 조건에서 확인 가능한 측정 기록이 없어 DreamZero와 직접 비교하지 않았습니다. Blackwell 환경의 diffusion step 최적화 결과는 별도 실행 환경에서 얻은 값으로 구분해 제시합니다.</p>
 
   </div>
 
@@ -123,7 +117,7 @@
   <div class="card-block">
     <h3 class="article-subtitle">액션 정보가 모델 내부로 들어가는 경로 추가</h3>
     <p>기반 모델은 이미지와 텍스트 등 사전학습 모달리티를 처리할 수 있었지만, 이번 과제의 SO-100 6차원 액션 시퀀스를 동일한 방식으로 입력할 경로는 준비되어 있지 않았습니다. 따라서 액션 값을 단순히 프롬프트에 덧붙이는 대신, 액션 전용 투영층인 <code>action_proj_in</code>과 <code>action_proj_out</code>, 액션 모달리티 임베딩을 추가해 액션 특징이 영상 생성 과정에 전달되도록 구성했습니다.</p>
-    <p style="margin-top:10px;">새로 추가한 액션 입력 경로는 별도 학습률로 최적화하고, 기존 백본은 LoRA 중심으로 조정했습니다. 이 단계에서 Action MAE가 초기 설정 대비 43.2% 감소했습니다. 액션 조건이 생성 결과와 어떻게 연결되는지 확인하기 위해 평가 샘플의 예측 액션과 정답 액션 사이의 MAE를 계산하고, 216개 샘플을 오차 기준으로 정렬한 뒤 상·하위 사례의 생성 프레임과 rollout 영상을 직접 비교했습니다. 낮은 오차 사례에서는 로봇 팔과 주변 물체의 배치가 비교적 안정적으로 유지됐고, 높은 오차 사례에서는 후반부 팔 형상이 흐려지거나 물체 위치가 어긋나는 경향이 관찰됐습니다. 이 비교를 통해 액션 예측 오차가 낮은 샘플과 높은 샘플에서 생성 영상의 안정성이 어떻게 달라지는지 확인했습니다.</p>
+    <p style="margin-top:10px;">새로 추가한 액션 입력 경로는 별도 학습률로 최적화하고, 기존 백본은 LoRA 중심으로 조정했습니다. 이 단계에서 Action MAE가 초기 설정 대비 43.2% 감소했습니다. 액션 조건과 생성 결과의 관계는 평가 샘플별 예측 액션과 정답 액션 사이의 MAE를 계산한 뒤, 216개 샘플을 오차 순으로 정렬해 상·하위 사례의 생성 프레임과 rollout을 비교하는 방식으로 살펴봤습니다. 낮은 오차 사례에서는 로봇 팔과 주변 물체의 상대적 배치가 비교적 안정적으로 유지됐고, 높은 오차 사례에서는 후반부 팔 형상이 흐려지거나 물체 위치가 어긋나는 경향이 관찰됐습니다. 따라서 확인된 결과는 액션 예측 정합도와 생성 영상의 시각적 안정성이 함께 변하는 샘플별 경향입니다. 이를 입력 액션의 물리적 궤적을 정확히 재현했다는 로봇 수준 검증과 동일하게 해석하지는 않았습니다.</p>
   </div>
   <h2 class="section-title" id="representation">04 · Action Representation</h2>
   <div class="card-block">
@@ -136,7 +130,7 @@
   <h2 class="section-title" id="anchoring">05 · Temporal Anchoring</h2>
   <div class="card-block">
     <h3 class="article-subtitle">초기 관측 프레임 정보 보존</h3>
-    <p>Temporal Anchoring은 미래 프레임을 생성할 때 초기 관측 프레임의 시각적 기준이 흐려지는 현상을 줄이기 위한 후처리입니다. 이 구현에서는 생성된 프레임과 입력으로 사용한 첫 프레임을 픽셀 단위로 1:1 가중 합성(50:50 blending)해, 생성 결과가 초기 장면의 색상·배치 정보를 일정 부분 유지하도록 했습니다. 모델의 액션 예측 경로를 다시 학습하는 방식이 아니라, 생성된 영상에 기준 프레임 정보를 혼합하는 영상 후처리 단계입니다.
+    <p>Temporal Anchoring은 생성 영상의 초기 장면이 입력 프레임과 크게 달라지는 현상을 줄이기 위한 픽셀 기반 후처리입니다. 각 생성 프레임과 입력 시퀀스의 첫 프레임을 같은 크기로 맞춘 뒤, 두 프레임의 픽셀 값을 1:1 비율로 가중 합성(50:50 blending)합니다. 이 과정은 모델의 가중치나 액션 예측 경로를 변경하지 않으며, 생성된 프레임에 초기 관측의 색상과 공간 배치 정보를 다시 혼합해 시각적 기준점을 유지하도록 합니다.</p>
   </div>
 
   <h2 class="section-title" id="optimization">06 · Fine-tuning &amp; Optimization</h2>
@@ -163,7 +157,7 @@
     </div>
 
     <p style="color:var(--gray-700); margin-top:20px;">
-      <b>최종 제출 모델은 B4 학습 sweep의 step 6000 체크포인트입니다.</b> 대회 평가 점수는 초기 Cosmos3-Nano 0.268에서 최종 0.2407로 낮아졌습니다. 중간 실험에서 절대 관절 각도 기반 모델은 0.300으로 오히려 악화됐지만, EE-Delta와 정규화 Gripper 표현을 적용한 모델은 0.2454를 기록했습니다. 이후 B4 학습 과정의 체크포인트를 같은 평가 기준으로 비교해 step 6000을 최종 제출본으로 선택했습니다.
+      <b>최종 제출 모델은 B4 학습의 step 6000 체크포인트입니다.</b> 대회 평가 점수는 초기 Cosmos3-Nano의 0.268에서 최종 0.2407로 낮아졌습니다. 중간 실험에서 절대 관절 각도 기반 모델은 0.300으로 성능이 악화됐지만, EE-Delta와 정규화 Gripper 표현을 적용한 모델은 0.2454를 기록했습니다.
     </p>
     <p style="color:var(--gray-700); margin-top:10px;">
       생성 영상은 216개 평가 샘플의 Action MAE를 기준으로 정렬하고, 오차가 낮은 상위 3개와 높은 하위 3개의 첫 프레임·중간 프레임·후반 프레임 및 rollout을 비교했습니다. 낮은 오차 그룹(MAE 0.33~0.37)은 로봇 팔의 형상과 배경 배치가 비교적 안정적이었습니다. 높은 오차 그룹(MAE 1.29~1.54)은 영상 후반부에서 팔 형상이 흐려지거나 물체 위치가 어긋났으며, 큰 Gripper 이동이나 배경 물체가 많은 장면에 집중됐습니다. 따라서 이번 분석에서 확인한 핵심은 평균 점수뿐 아니라 액션 변화가 크거나 장면이 복잡한 샘플에서 예측 오차와 시각적 불안정성이 함께 커진다는 점입니다.
@@ -186,16 +180,14 @@
       </table>
     </div>
 
-    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Good / Bad case &mdash; per-sample Action MAE breakdown</h3>
+    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">샘플별 Action MAE에 따른 생성 결과 비교</h3>
     <div class="media" style="margin-top:12px;">
       <img src="../assets/p03/good_bad_grid.png"
            alt="Good / Bad case 그리드 — Cosmos3-Nano B4 step6000 pred의 per-sample action MAE 상위 3개(GOOD, MAE 0.33~0.37)와 하위 3개(BAD, MAE 1.29~1.54)에 대해 GT 첫 프레임 + pred 4개 균등 프레임(t≈0, T/3, 2T/3, T) 6행 × 5열 시각화" />
-      <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-        * 도전본(B4 step 6000) 216 sample을 자체 채점 재실행 → per-sample MAE로 랭킹. <b>GOOD 3개 (MAE 0.33~0.37)</b>는 로봇 팔과 배경이 안정적으로 유지, <b>BAD 3개 (MAE 1.29~1.54)</b>는 후반부 로봇 팔 형상이 흐릿해지거나 물체 위치가 어긋남. Bad case는 대부분 <b>이동 폭이 큰 gripper</b> 또는 <b>배경 물체 다수</b> 상황에 편중.
-      </p>
+      <p class="media-caption">최종 제출 모델(B4 step 6000)로 216개 샘플을 다시 평가하고, 샘플별 Action MAE를 기준으로 상·하위 사례를 비교했습니다. 오차가 낮은 3개 샘플(MAE 0.33~0.37)에서는 로봇 팔과 배경 배치가 비교적 안정적으로 유지됐습니다. 반면 오차가 높은 3개 샘플(MAE 1.29~1.54)에서는 후반부 팔 형상이 흐려지거나 물체 위치가 어긋났으며, 큰 Gripper 이동이나 복잡한 배경이 포함된 장면에서 이러한 현상이 자주 관찰됐습니다.</p>
     </div>
 
-    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">Good case rollout (실제 재생)</h3>
+    <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">낮은 Action MAE 샘플의 생성 영상</h3>
     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
       <div>
         <img src="../assets/p03/good_sample_085.gif"
@@ -219,9 +211,7 @@
         <div style="text-align:center; font-size:0.82rem; color:var(--gray-700); margin-top:6px; font-family:'JetBrains Mono',monospace;">sample_000052 &middot; MAE = 0.366</div>
       </div>
     </div>
-    <p style="color:var(--sub, #6B7280); font-size:0.86rem; margin-top:8px; font-style:italic; text-align:center;">
-      * Good case 3개 rollout을 원본 6 fps로 loop 재생. Cosmos3-Nano B4 step 6000 pred, 16 frame, 320px 다운스케일. 로봇 팔 궤적과 물체 위치가 부드럽게 유지되는 것을 확인할 수 있습니다.
-    </p>
+    <p class="media-caption">최종 제출 모델의 양호 사례 3개를 원본 6 fps로 재생한 결과입니다. 각 영상은 16프레임이며 320px 너비로 축소했습니다. 세 사례에서 로봇 팔의 궤적과 물체의 상대적 위치가 예측 구간 동안 비교적 안정적으로 이어지는 모습을 확인할 수 있습니다.</p>
 
     <ul style="padding-left:18px;color:var(--gray-700); margin-top:24px;">
       <li>실행 환경 &mdash; <b>Ubuntu 22.04 · Slurm · PyTorch 2.6 (inha2026 env) + PyTorch 2.15 nightly cu130 (inha2026_bw, Blackwell 전용)</b></li>
