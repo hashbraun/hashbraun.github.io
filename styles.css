@@ -1726,3 +1726,10 @@ section {
 @media (max-width: 820px) {
   .media-triplet { grid-template-columns: 1fr; }
 }
+
+/* Preserve intrinsic image proportions in project media */
+.media img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
