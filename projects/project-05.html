@@ -72,9 +72,9 @@
       <div class="article-section">
 
   <div class="media">
-<p class="media-caption">사용자가 문서를 작성하는 동안 입력 맥락을 감지하고, 로컬 문서 검색과 카드 생성을 거쳐 원문 근거가 확인된 추천을 제시하는 전체 사용자 흐름입니다.</p>
 <img src="../assets/p05/overview.png"
          alt="System Overview — Ambient Recall: 작성 중 텍스트 → Trigger → Hybrid Retrieval → sLLM 카드 생성 → Grounding-validated 근거 카드" />
+<p class="media-caption">사용자가 문서를 작성하는 동안 입력 맥락을 감지하고, 로컬 문서 검색과 카드 생성을 거쳐 원문 근거가 확인된 추천을 제시하는 전체 사용자 흐름입니다.</p>
   </div>
   <div class="article-callout">
     <strong>프로젝트 개요.</strong> SMIM (Smart Memory in Mind)은 작성 중인 맥락과 개인 문서 간의 연결을 찾아, 다시 검색하지 않아도 필요한 자료를 원문 근거가 포함된 카드로 제안하는 온디바이스 개인 기억 보조 시스템입니다. 본인은 Hybrid Retrieval과 추천 Agent의 자기 교정·근거 검증 흐름을 담당했습니다.
@@ -97,8 +97,8 @@
   <h3 class="article-subtitle">애플리케이션과 로컬 AI 실행 계층</h3>
   <p>시스템은 Electron Application과 Native AI Runtime으로 분리했습니다. UI 이벤트 처리와 모델 추론을 분리해 화면 반응성을 유지하고, 임베딩·검색·언어 모델 실행은 로컬 런타임에서 처리하도록 구성했습니다. 개인 문서와 임베딩, 생성 결과가 기기 밖으로 나가지 않는 대신 외부 검색·클라우드 모델·원격 도구를 사용할 수 없는 구조입니다.</p>
   <div class="media" style="margin-top:16px;">
-<p class="media-caption">Electron 기반 애플리케이션과 로컬 AI 실행 계층의 역할을 분리한 구조입니다. 본인은 로컬 문서 검색과 추천 Agent의 자기 교정·근거 검증 흐름을 담당했습니다.</p>
 <img src="../assets/p05/architecture.png" alt="Architecture — Electron App and Native AI Runtime; local retrieval, sLLM generation, grounding validation and ingest pipeline" />
+<p class="media-caption">Electron 기반 애플리케이션과 로컬 AI 실행 계층의 역할을 분리한 구조입니다. 본인은 로컬 문서 검색과 추천 Agent의 자기 교정·근거 검증 흐름을 담당했습니다.</p>
   </div>
 
   <h3 class="article-subtitle">문서 수집과 검색 인덱스 구성</h3>
@@ -113,8 +113,8 @@
   <h3 class="article-subtitle">추천 카드 생성과 자기 교정</h3>
   <p>검색 후보를 바탕으로 sLLM이 추천 카드를 생성하도록 구성했습니다. 외부 Corrective Loop에서는 근거가 부족한 경우 <code>low_confidence</code>를 반환하고 검색 질의를 수정해 후보 검색을 다시 수행합니다. 내부 Reflection Loop에서는 카드별 self-critique 점수가 기준에 미치지 못하면 최대 두 차례 재생성하며, 이후에도 기준을 통과하지 못하면 keyword 기반 카드로 전환합니다.</p>
   <div class="media" style="margin-top:16px;">
-<p class="media-caption">검색 후보를 재정렬한 뒤 카드를 생성하고 원문 근거를 검증합니다. 근거 부족 시 검색 질의 수정 또는 카드 재생성을 수행하며, 검증을 통과하지 못한 카드는 확정 정보처럼 노출하지 않습니다.</p>
 <img src="../assets/p05/flow_card.png" alt="Trigger, query planning, hybrid retrieval, reranking, card generation and grounding validation with corrective and reflection loops" />
+<p class="media-caption">검색 후보를 재정렬한 뒤 카드를 생성하고 원문 근거를 검증합니다. 근거 부족 시 검색 질의 수정 또는 카드 재생성을 수행하며, 검증을 통과하지 못한 카드는 확정 정보처럼 노출하지 않습니다.</p>
   </div>
 
   <h3 class="article-subtitle">Grounding Validator와 출력 제어</h3>
@@ -123,7 +123,9 @@
   <h3 class="article-subtitle">실행 데모</h3>
   <div class="media" style="margin-top:16px;">
     <div class="video-embed"><iframe src="https://www.youtube.com/embed/LxGrkbosrJY" title="SMIM — On-Device Personal Memory Agent Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-    <p class="media-caption">작성 중인 문맥을 바탕으로 개인 문서를 검색하고, 원문 근거를 검증한 추천 카드를 제시하는 데모입니다.</p>
+    <img src="../assets/p05/perf_ablation.png"
+           alt="Phase 3 Ablation — 10-query 자체 벤치. semantic_only(vec-only) MRR@3 0.70 → rrf_no_rerank(BM25+vec) 1.00 → full_current(BM25+vec+rerank+구조신호) 0.95. BM25 기여 MRR@3 +0.300." />
+<p class="media-caption">작성 중인 문맥을 바탕으로 개인 문서를 검색하고, 원문 근거를 검증한 추천 카드를 제시하는 데모입니다.</p>
   </div>
 
   <h2 class="section-title" id="decisions">04 · Design Decisions &amp; Agent State Transitions</h2>
@@ -180,8 +182,6 @@
 
     <div class="media" style="margin-top:20px;">
 <p class="media-caption">10개 질의로 수행한 자체 검색 실험 결과입니다. 벡터 검색 단독, BM25와 벡터 검색의 결합, 재랭킹과 구조 신호를 추가한 전체 구성을 비교했습니다. 이 결과에서는 BM25를 추가한 구성이 가장 높은 MRR@3를 기록했으며, 재랭킹을 포함한 최종 구성은 별도의 trade-off가 있음을 보여줍니다.</p>
-<img src="../assets/p05/perf_ablation.png"
-           alt="Phase 3 Ablation — 10-query 자체 벤치. semantic_only(vec-only) MRR@3 0.70 → rrf_no_rerank(BM25+vec) 1.00 → full_current(BM25+vec+rerank+구조신호) 0.95. BM25 기여 MRR@3 +0.300." />
     </div>
   
   <h2 class="section-title" id="reflection">06 · Technical Issues &amp; Improvements</h2>
