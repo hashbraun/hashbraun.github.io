@@ -713,14 +713,14 @@ Cache JSON (extended schema)
   <h3 class="article-subtitle">Additional Experiments · 추가 실험 기록</h3>
   <div class="card-block" style="background:#EEF3FF; border:1px solid #D4DEF0; padding:16px 20px;">
     <p style="color:var(--gray-700); margin:0;">
-      아래 대시보드는 초기 운영 모델부터 후속 실험까지의 씬 단위 데이터, attempt별 학습 제외 CCTV 평가 영상 mAP 표, 1차 운영 모델 40.4h 학습 곡선, Learned Signalman Head (ResNet18 val AP 0.9988), Overlay 시각 안정화 4단계, Slice C 오버레이 mp4 등 <b>사내 대시보드의 핵심 화면을 포트폴리오에서 확인할 수 있도록 재구성한 자료</b>입니다.
+      아래 대시보드에는 초기 운영 모델부터 후속 실험까지의 씬 단위 데이터, 학습 제외 CCTV 평가 영상, 학습 곡선, Signalman attribute head, 오버레이 시각 안정화와 Slice C 결과를 정리했습니다.
     </p>
     <p style="margin:12px 0 0 0;">
       → <a href="p02_dashboard.html" style="color:#3182F6; font-weight:600; text-decoration:none;">전체 실험 대시보드 열기 (약 33&nbsp;MB · 이미지·GIF·mp4 포함)</a>
     </p>
   </div>
 
-  <h3 class="article-subtitle" id="conclusion">Conclusion &amp; Future Work</h3>
+  <h3 class="article-subtitle" id="reflection">05 · Technical Issues &amp; Improvements</h3>
   <div class="card-block" style="background:#FAFBFF; border:1px solid #E5E7EB; border-left:4px solid #3182F6; padding:16px 20px;">
     <ul style="padding-left:18px;color:var(--gray-700); margin:0; line-height:1.85;">
       <li>프레임 단위 분할에서 기록한 mAP 약 95%는 동일 영상의 인접 프레임이 학습과 평가에 함께 포함된 데이터 누수로 인해 높게 측정된 결과였습니다. 영상 단위로 분리한 평가에서는 mAP가 약 0.4~0.6 수준으로 낮아졌으며, 이후에는 이 평가 방식을 기준으로 일반화 성능을 판단했습니다.</li>
