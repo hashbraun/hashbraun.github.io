@@ -53,9 +53,9 @@
     <main class="article-main">
 
   <div class="media">
-    <img src="../assets/p03/eval_samples.png"
+<p class="media-caption">챌린지 데이터 예시입니다. SO-100의 초기 프레임 6개(상단)와 이에 대응하는 15-step joint-angle 시퀀스(하단)를 보여줍니다. 모델은 각 초기 프레임과 액션 시퀀스를 조건으로 미래 15프레임을 생성합니다.</p>
+<img src="../assets/p03/eval_samples.png"
          alt="Eval 샘플 프리뷰 — 6개 SO-100 첫 프레임(상단, 로봇 gripper가 큐브를 조작하는 top-down view)과 각 샘플에 대응하는 15-step joint action 시퀀스(하단, shoulder/elbow/wrist/gripper 6채널 궤적)" />
-    <p class="media-caption">챌린지 데이터 예시입니다. SO-100의 초기 프레임 6개(상단)와 이에 대응하는 15-step joint-angle 시퀀스(하단)를 보여줍니다. 모델은 각 초기 프레임과 액션 시퀀스를 조건으로 미래 15프레임을 생성합니다.</p>
   </div>
 
   <div class="case-study-summary" style="margin-bottom:20px;">
@@ -71,9 +71,9 @@
     <p style="margin-top:10px;">평가 점수는 DINO 이미지 특징 유사도, VideoR3D 동영상 특징 유사도, Action MAE를 결합하며 낮을수록 좋습니다. 이 구조에서는 영상이 시각적으로 자연스러운지만으로는 충분하지 않고, 예측된 액션 값이 정답 액션과 얼마나 가까운지도 중요했습니다. 초기 분석에서 사전학습 모델의 액션 입력 분포와 대회 데이터의 절대 관절 각도 표현이 잘 맞지 않는 문제를 확인했습니다.</p>
 
     <div class="media" style="margin-top:16px;">
-      <img src="../assets/p03/dataset_eda.png"
+<p class="media-caption">SO-100 데이터의 관절별 액션 값·변화량·속도와 그리퍼 및 어깨 관절의 궤적을 분석하고, 학습 데이터와 평가 데이터의 분포 차이를 비교했습니다. 이 결과를 바탕으로 액션 표현을 재설계하고 초기 프레임 정보를 보존하는 후처리를 검토했습니다.</p>
+<img src="../assets/p03/dataset_eda.png"
            alt="SO-100 챌린지 데이터셋 EDA 9-panel — (상단) Action 분포 히스토그램, Train vs Eval 평균 비교 barplot, joint별 action velocity boxplot. (중단) Δaction 분포, gripper 궤적 20샘플, shoulder lift 궤적 20샘플. (하단) 밝기 분포, wrist roll train/eval 편차, shoulder pan start vs end 산점도" />
-      <p class="media-caption">SO-100 데이터의 관절별 액션 값·변화량·속도와 그리퍼 및 어깨 관절의 궤적을 분석하고, 학습 데이터와 평가 데이터의 분포 차이를 비교했습니다. 이 결과를 바탕으로 액션 표현을 재설계하고 초기 프레임 정보를 보존하는 후처리를 검토했습니다.</p>
     </div>
   </div>
 
@@ -182,9 +182,9 @@
 
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">샘플별 Action MAE에 따른 생성 결과 비교</h3>
     <div class="media" style="margin-top:12px;">
-      <img src="../assets/p03/good_bad_grid.png"
+<p class="media-caption">최종 제출 모델(B4 step 6000)로 216개 샘플을 다시 평가하고, 샘플별 Action MAE를 기준으로 상·하위 사례를 비교했습니다. 오차가 낮은 3개 샘플(MAE 0.33~0.37)에서는 로봇 팔과 배경 배치가 비교적 안정적으로 유지됐습니다. 반면 오차가 높은 3개 샘플(MAE 1.29~1.54)에서는 후반부 팔 형상이 흐려지거나 물체 위치가 어긋났으며, 큰 Gripper 이동이나 복잡한 배경이 포함된 장면에서 이러한 현상이 자주 관찰됐습니다.</p>
+<img src="../assets/p03/good_bad_grid.png"
            alt="Good / Bad case 그리드 — Cosmos3-Nano B4 step6000 pred의 per-sample action MAE 상위 3개(GOOD, MAE 0.33~0.37)와 하위 3개(BAD, MAE 1.29~1.54)에 대해 GT 첫 프레임 + pred 4개 균등 프레임(t≈0, T/3, 2T/3, T) 6행 × 5열 시각화" />
-      <p class="media-caption">최종 제출 모델(B4 step 6000)로 216개 샘플을 다시 평가하고, 샘플별 Action MAE를 기준으로 상·하위 사례를 비교했습니다. 오차가 낮은 3개 샘플(MAE 0.33~0.37)에서는 로봇 팔과 배경 배치가 비교적 안정적으로 유지됐습니다. 반면 오차가 높은 3개 샘플(MAE 1.29~1.54)에서는 후반부 팔 형상이 흐려지거나 물체 위치가 어긋났으며, 큰 Gripper 이동이나 복잡한 배경이 포함된 장면에서 이러한 현상이 자주 관찰됐습니다.</p>
     </div>
 
     <h3 style="margin-top:28px; font-size:1.05rem; color:var(--ink);">낮은 Action MAE 샘플의 생성 영상</h3>
